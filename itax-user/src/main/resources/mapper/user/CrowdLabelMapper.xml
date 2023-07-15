@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CrowdLabelMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CrowdLabelEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="crowd_label_name" property="crowdLabelName"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="status" property="status"/>
+			<result column="member_user_num" property="memberUserNum"/>
+			<result column="crowd_label_desc" property="crowdLabelDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap id="voMap" type="com.yuqian.itax.user.entity.vo.CrowdLabelVO">
+		<result column="id" property="id"/>
+		<result column="crowd_label_name" property="crowdLabelName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="member_user_num" property="memberUserNum"/>
+		<result column="crowd_label_desc" property="crowdLabelDesc"/>
+		<result column="status" property="status"/>
+		<result column="remark" property="remark"/>
+		<result column="add_user_mode" property="addUserMode"/>
+	</resultMap>
+
+	<resultMap id="detailMap" type="com.yuqian.itax.agent.entity.vo.OemAccessPartyDetailVO">
+		<result column="id" property="id"/>
+		<result column="crowd_label_name" property="crowdLabelName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="member_user_num" property="memberUserNum"/>
+		<result column="add_user_mode" property="addUserMode"/>
+		<result column="crowd_label_desc" property="crowdLabelDesc"/>
+		<result column="access_party_id" property="accessPartyId"/>
+		<result column="access_party_name" property="accessPartyName"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, crowd_label_name, oem_code, status, member_user_num, crowd_label_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryMemberIdByOemCodeAndStatus" resultType="long">
+		select m.member_id from t_e_crowd_label c
+		left join t_r_member_crowd_label m on c.id = m.crowd_label_id
+		where c.oem_code =  #{oemCode} and status = 1
+	</select>
+	<select id="listPageCrowdLabel" resultMap="voMap">
+		select c.id,c.crowd_label_name,c.oem_code,e.oem_name,c.member_user_num,c.status,c.remark,c.crowd_label_desc,c.add_user_mode
+		from t_e_crowd_label c
+		left join t_e_oem e on c.oem_code = e.oem_code
+		<where>
+			<if test="crowdLabelName != null and crowdLabelName.trim() != ''">
+				and c.crowd_label_name  like concat('%',#{crowdLabelName},'%')
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and c.oem_code = #{oemCode}
+			</if>
+			<if test="status != null">
+				and c.status = #{status}
+			</if>
+			<if test="addUserMode != null">
+				and c.add_user_mode = #{addUserMode}
+			</if>
+		</where>
+		order by c.id desc
+	</select>
+
+	<select id="queryCrowdLabelByLabelName" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_crowd_label
+		where crowd_label_name = #{labelName} and oem_code = #{oemCode}
+	</select>
+
+	<select id="queryCrowdLabelByLabelNameNotId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_crowd_label
+		where crowd_label_name = #{labelName} and oem_code = #{oemCode} and id != #{id}
+	</select>
+
+	<select id="getActivityByCrowdId"  resultType="integer" >
+		select  count(p.id) from
+		t_r_discount_activity_crowd_label t
+		left join t_e_product_discount_activity p on t.discount_activity_id = p.id
+		where t.crowd_label_id = #{crowdId} and p.status != 2
+	</select>
+	
+	<select id="queryCrowdLabelByOemCode" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_crowd_label
+		where oem_code = #{oemCode} and status = #{status}
+	</select>
+
+	<select id="getCrowdLabelByLabelName" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_crowd_label
+		where crowd_label_name like concat('%',#{crowdLabelName},'%') and oem_code = #{oemCode}
+	</select>
+
+	<select id="getDetailInfo" resultMap="detailMap">
+		select 	c.id,c.crowd_label_name,c.oem_code,c.member_user_num,c.crowd_label_desc,c.add_user_mode,
+		c.access_party_id,a.access_party_name,o.oem_name
+		FROM t_e_crowd_label c
+		left join t_e_oem_access_party a on c.access_party_id = a.id
+		left join t_e_oem o on o.oem_code = c.oem_code
+		where c.id = #{crowdLabelId}
+	</select>
+
+	<select id="queryByAccessPartyId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_crowd_label
+		where access_party_id = #{accessPartyId} and status = 1
+	</select>
+
+	<update id="updateStatusByid">
+		update t_e_crowd_label set status = 2
+		where id = #{id}
+	</update>
+
+
+</mapper>

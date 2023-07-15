@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkAgreementMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkAgreementEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="park_code" property="parkCode"/>
+			<result column="agreement_code" property="agreementCode"/>
+			<result column="agreement_name" property="agreementName"/>
+			<result column="agreement_view_url" property="agreementViewUrl"/>
+			<result column="agreement_tmpl_url" property="agreementTmplUrl"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, park_code, agreement_code, agreement_name, agreement_view_url, agreement_tmpl_url, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!-- 根据企业ID查询协议列表 add by Kaven 2020-09-07 -->
+	<select id="listParkAgreement" resultMap="baseEntityMap">
+		SELECT
+			t.*
+		FROM
+			t_e_park_agreement t LEFT JOIN t_e_member_company c ON t.park_id = c.park_id
+		<where>
+			c.oem_code = #{oemCode} AND t.STATUS = 1  AND c.id = #{companyId}
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyResoucesApplyRecordMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyResoucesApplyRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="company_id" property="companyId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="apply_type" property="applyType"/>
+			<result column="apply_resouces" property="applyResouces"/>
+			<result column="status" property="status"/>
+			<result column="postage_fees" property="postageFees"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="courier_number" property="courierNumber"/>
+			<result column="courier_company_name" property="courierCompanyName"/>
+			<result column="sign_user_id" property="signUserId"/>
+			<result column="sign_user_type" property="signUserType"/>
+			<result column="sign_resouces" property="signResouces"/>
+			<result column="sign_time" property="signTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.ComResApplyRecordDetailVO" id="detailVoMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="apply_type" property="applyType"/>
+		<result column="apply_resouces" property="applyResouces"/>
+		<result column="status" property="status"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, company_id, oem_code, apply_type, apply_resouces, status, postage_fees, recipient, recipient_phone, province_code, province_name, city_code, city_name, district_code, district_name, recipient_address, courier_number, courier_company_name, sign_user_id, sign_user_type, sign_resouces, sign_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyResoucesApplyRecordVO" id="companyResoucesApplyRecordMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="apply_type" property="applyType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="status" property="status"/>
+		<result column="apply_resouces" property="applyResouces"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="park_name" property="parkName"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+	</resultMap>
+
+	<select id="queryByOrderNo" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select * from t_e_company_resouces_apply_record
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</select>
+
+	<select id="queryCompanyResoucesApplyRecord" resultMap="companyResoucesApplyRecordMap">
+		SELECT
+		crar.id,
+		crar.oem_code,
+		crar.order_no,
+		crar.apply_type,
+		crar.add_time,
+		mc.company_name,
+		mc.company_type,
+		crar.status,
+		crar.apply_resouces,
+		ma.member_account,
+		ma.member_name,
+		p.park_name,
+		crar.postage_fees,
+		o.oem_name
+	FROM
+		t_e_company_resouces_apply_record crar
+	LEFT JOIN t_e_member_company mc ON crar.company_id = mc.id
+	LEFT JOIN t_e_member_account ma ON mc.member_id = ma.id
+	LEFT JOIN t_e_park p ON mc.park_id = p.id
+	LEFT JOIN t_e_oem o ON mc.oem_code = o.oem_code
+	<where>
+		<if test="orderNo != null and orderNo != ''">
+			and crar.order_no like concat('%',#{orderNo},'%')
+		</if>
+		<if test="applyType != null ">
+			and crar.apply_type =#{applyType}
+		</if>
+		<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+			and crar.add_time between #{startDate} and #{endDate}
+		</if>
+		<if test="companyName != null and companyName != ''">
+			and mc.company_name like concat('%',#{companyName},'%')
+		</if>
+		<if test="status != null ">
+			and crar.status =#{status}
+		</if>
+		<if test="applyResouces != null and applyResouces != ''">
+			and crar.apply_resouces like concat('%',#{applyResouces},'%')
+		</if>
+		<if test="memberAccount != null and memberAccount != ''">
+			and ma.member_account like concat('%',#{memberAccount},'%')
+		</if>
+		<if test="memberName != null and memberName != ''">
+			and ma.member_name like concat('%',#{memberName},'%')
+		</if>
+		<if test="oemName != null and oemName != ''">
+			and o.oem_name like concat('%',#{oemName},'%')
+		</if>
+		<if test="oemCode != null and oemCode != ''">
+			and mc.oem_code =#{oemCode}
+		</if>
+		<if test="parkId != null ">
+			and mc.park_id =#{parkId}
+		</if>
+	</where>
+	order by  crar.add_time desc
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyResoucesApplyRecordExportVO" id="companyResoucesApplyRecordExportMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="status" property="status"/>
+		<result column="company_name" property="companyName"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+	</resultMap>
+	<select id="queryExportCompanyResoucesApplyRecord" resultMap="companyResoucesApplyRecordExportMap">
+		SELECT
+		crar.id,
+		crar.order_no,
+		crar. STATUS,
+		mc.company_name,
+		crar.apply_resouces,
+		crar.recipient ,
+		crar.recipient_phone,
+		crar.province_name,
+		crar.city_name ,
+		crar.district_name,
+		crar.recipient_address,
+		crar.courier_number,
+		crar.courier_company_name
+
+		FROM
+		t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_member_company mc ON crar.company_id = mc.id
+		LEFT JOIN t_e_member_account ma ON mc.member_id = ma.id
+		LEFT JOIN t_e_park p ON mc.park_id = p.id
+		LEFT JOIN t_e_oem o ON mc.oem_code = o.oem_code
+		<where>
+			<if test="orderNo != null and orderNo != ''">
+				and crar.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="applyType != null ">
+				and crar.apply_type =#{applyType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and crar.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and mc.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="statuss != null ">
+				and crar.status in (${statuss})
+			</if>
+			<if test="applyResouces != null and applyResouces != ''">
+				and crar.apply_resouces like concat('%',#{applyResouces},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="memberName != null and memberName != ''">
+				and ma.member_name like concat('%',#{memberName},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and mc.oem_code =#{oemCode}
+			</if>
+			<if test="parkId != null ">
+				and mc.park_id =#{parkId}
+			</if>
+		</where>
+	</select>
+
+	<select id="sumCompanyResoucesApplyRecord" resultType="map">
+		SELECT
+		sum(case when crar.status = 1 then 1 else 0 end) countsending,
+		sum(case when crar.status = 2 then 1 else 0 end) countsendingonway
+		FROM
+		t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_member_company mc ON crar.company_id = mc.id
+		LEFT JOIN t_e_member_account ma ON mc.member_id = ma.id
+		LEFT JOIN t_e_park p ON mc.park_id = p.id
+		LEFT JOIN t_e_oem o ON mc.oem_code = o.oem_code
+		<where>
+			<if test="orderNo != null and orderNo != ''">
+				and crar.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="applyType != null ">
+				and crar.apply_type =#{applyType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and crar.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and mc.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="status != null ">
+				and crar.status =#{status}
+			</if>
+			<if test="applyResouces != null and applyResouces != ''">
+				and crar.apply_resouces like concat('%',#{applyResouces},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="memberName != null and memberName != ''">
+				and ma.member_name like concat('%',#{memberName},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and mc.oem_code =#{oemCode}
+			</if>
+			<if test="parkId != null ">
+				and mc.park_id =#{parkId}
+			</if>
+		</where>
+	</select>
+
+	<update id="batchUpdateStatus">
+		update t_e_company_resouces_apply_record
+		set
+		status = #{status},
+		update_user = #{updateUser},
+		update_time = #{updateTime}
+		where
+		id in
+		<foreach collection="ids" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<select id="listCompResApplyRecord" resultMap="baseEntityMap">
+		SELECT crar.*
+		FROM t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_order o on crar.order_no = o.order_no
+		where o.user_id = #{memberId} and crar.oem_code = #{oemCode} and crar.company_id = #{companyId}
+		order by crar.add_time desc
+	</select>
+
+	<select id="listCompResApplyRecordToRec" resultMap="baseEntityMap">
+		SELECT crar.*
+		FROM t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_logistics_info l on l.order_no = crar.order_no
+		where crar.apply_type = 1 and crar.status between 3 and 4 and l.order_no is null
+	</select>
+
+	<select id="checkCertOrder" resultType="integer">
+		SELECT count(1)
+		FROM t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_order o on crar.order_no = o.order_no
+		where o.user_id = #{memberId} and crar.oem_code = #{oemCode} and crar.company_id = #{companyId}
+		and locate(#{applyResouces}, crar.apply_resouces)
+		<choose>
+			<when test="applyType == 1">
+				and crar.apply_type = #{applyType} and crar.status between 0 and 3
+			</when>
+			<when test="applyType == 2">
+				and crar.apply_type = #{applyType} and crar.status = 3
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="checkCertIsInPark" resultType="integer">
+		SELECT cra.is_in_park
+		FROM t_e_member_company c
+		LEFT JOIN t_e_company_resources_address cra ON cra.company_id = c.id
+		WHERE c.member_id = #{memberId} and c.oem_code = #{oemCode} and c.id = #{companyId} and cra.resources_type = #{applyResouces}
+	</select>
+
+	<select id="queryCompResApplyRecordDetail" resultMap="detailVoMap">
+		SELECT crar.id, crar.order_no, mc.id company_id, mc.company_name,crar.apply_type, crar.apply_resouces, crar.status,
+			   crar.postage_fees, crar.recipient, crar.recipient_phone, crar.province_name, crar.city_name,
+			   crar.district_name, crar.recipient_address, crar.courier_number, crar.courier_company_name, crar.add_time
+		FROM t_e_company_resouces_apply_record crar
+		LEFT JOIN t_e_order o on crar.order_no = o.order_no
+		LEFT JOIN t_e_member_company mc on mc.id = crar.company_id
+		where o.user_id = #{memberId} and crar.oem_code = #{oemCode} and crar.order_no = #{orderNo}
+	</select>
+
+	<select id="certApplyOrderListByType" resultMap="baseEntityMap">
+		SELECT order_no,case when update_time is not null then update_time else add_time end add_time
+		FROM t_e_company_resouces_apply_record
+		where apply_type = 1 and status = 0
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyCertListApiVO" id="certListVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="apply_type" property="applyType"/>
+		<result column="apply_resouces" property="applyResouces"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="sign_resouces" property="signResouces"/>
+		<result column="sign_time" property="signTime"/>
+		<result column="status" property="status"/>
+	</resultMap>
+	<select id="getCertListByQuery" resultMap="certListVO">
+		SELECT	r.order_no, c.company_name, r.apply_type, r.apply_resouces, r.courier_number,
+				r.courier_company_name, r.sign_resouces, r.sign_time, r.status
+		FROM t_e_company_resouces_apply_record r
+		LEFT JOIN t_e_member_company c on c.id = r.company_id
+		LEFT JOIn t_e_member_account a on a.id = c.member_id
+		where r.oem_code = #{oemCode}
+		<if test="companyName != null and companyName.trim() != ''">
+			and c.company_name LIKE concat('%',#{companyName},'%')
+		</if>
+		<if test="regPhone != null and regPhone.trim() != ''">
+			and a.member_account LIKE concat('%',#{regPhone},'%')
+		</if>
+		<if test="orderNo != null and orderNo.trim() != '' ">
+			and r.order_no LIKE concat('%',#{orderNo},'%')
+		</if>
+		order by r.add_time desc
+	</select>
+</mapper>

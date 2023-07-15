@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.coupons.dao.CouponsMapper">
+    <resultMap type="com.yuqian.itax.coupons.entity.CouponsEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="coupons_code" property="couponsCode"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="face_amount" property="faceAmount"/>
+			<result column="usable_range" property="usableRange"/>
+			<result column="start_date" property="startDate"/>
+			<result column="end_date" property="endDate"/>
+			<result column="status" property="status"/>
+			<result column="description" property="description"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, coupons_code, coupons_name, oem_code, face_amount, usable_range, start_date, end_date, status, description, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.coupons.entity.vo.CouponVO" id="baseEntityVOMap">
+
+		<id column="id" property="id"/>
+		<result column="coupons_code" property="couponsCode"/>
+		<result column="coupons_name" property="couponsName"/>
+		<result column="face_amount" property="faceAmount"/>
+		<result column="status" property="status"/>
+		<result column="usable_range" property="usableRange"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="date" property="date"/>
+		<result column="start_date" property="startDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="add_time" property="addTime"/>
+		<result column="description" property="description"/>
+	</resultMap>
+
+	<select id="queryCouponList" resultMap="baseEntityVOMap">
+		SELECT
+			c.id,
+			c.coupons_code,
+			c.coupons_name,
+			convert(c.face_amount/100, decimal(12,2)) face_amount,
+			c.`status`,
+			c.usable_range,
+			o.oem_code,
+			o.oem_name,
+			c.start_date,
+			c.end_date,
+			CONCAT(c.start_date,"~",c.end_date	) date,
+			c.add_time,
+			c.description
+		FROM
+			t_e_coupons c
+		LEFT JOIN t_e_oem o ON o.oem_code = c.oem_code
+		<where>
+			<if test="id != null ">
+				and c.id =#{id}
+			</if>
+			<if test="couponsName != null and couponsName.trim() != ''">
+				and c.coupons_name like concat('%',#{couponsName},'%')
+			</if>
+			<if test="couponsCode != null and couponsCode.trim() != ''">
+				and c.coupons_code like concat('%',#{couponsCode},'%')
+			</if>
+			<if test="faceAmountMax != null  and faceAmountMin != null ">
+				and c.face_amount BETWEEN #{faceAmountMin} and #{faceAmountMax}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and c.oem_code =#{oemCode}
+			</if>
+			<if test="status != null ">
+				and c.status =#{status}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and date_format(c.add_time,'%Y-%m-%d')  <![CDATA[>=]]> #{startDate}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and  date_format(c.add_time,'%Y-%m-%d') <![CDATA[<=]]> #{endDate}
+			</if>
+			<if test="usableRange != null ">
+				and c.usable_range =#{usableRange}
+			</if>
+		</where>
+		order by c.add_time desc
+	</select>
+
+	<select id="queryCouponsByCode" resultMap="baseEntityVOMap">
+		SELECT
+		c.id,
+		c.coupons_code,
+		c.coupons_name,
+		convert(c.face_amount/100, decimal(12,2)) face_amount,
+		c.`status`,
+		c.usable_range,
+		o.oem_code,
+		o.oem_name,
+		c.start_date,
+		c.end_date,
+		CONCAT(c.start_date,"~",c.end_date	) date,
+		c.add_time,
+		c.description
+		FROM
+		t_e_coupons c
+		LEFT JOIN t_e_oem o ON o.oem_code = c.oem_code
+		<where>
+			 c.coupons_code =#{couponsCode}
+		</where>
+	</select>
+
+	<select id="queryOverTimeCouponsEntity" resultMap="baseEntityMap">
+		SELECT
+			c.*
+		FROM
+			t_e_coupons c
+		where
+			date_format(c.end_date,'%Y%m%d')  <![CDATA[<]]> date_format(now(),'%Y%m%d') and c.status in (0,1)
+	</select>
+
+	<select id="queryStartTimeCouponsEntity" resultMap="baseEntityMap">
+		SELECT
+			c.*
+		FROM
+			t_e_coupons c
+		where
+			DATE_FORMAT(c.start_date,'%Y%m%d')  <![CDATA[<=]]> date_format(now(),'%Y%m%d') and c.status in (0)
+	</select>
+</mapper>

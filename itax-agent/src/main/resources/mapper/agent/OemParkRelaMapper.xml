@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.OemParkRelaMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.OemParkRelaEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="park_id" property="parkId"/>
+			<result column="agreementTemplateId" property="agreement_template_id"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.agreement.entity.vo.AgreementTemplateInfoVO" id="infoMap">
+		<id column="id" property="id"/>
+		<id column="template_type" property="templateType"/>
+		<id column="template_name" property="templateName"/>
+		<id column="park_id" property="parkId"/>
+		<id column="template_code" property="templateCode"/>
+		<id column="template_html_url" property="templateHtmlUrl"/>
+		<id column="park_code" property="parkCode"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, park_id,agreement_template_id, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<delete id="deleteByOemCode">
+		delete from t_r_oem_park where oem_code=#{oemCode}
+	</delete>
+
+	<select id="getAgreementTemplateByOemCodeAndParkId" resultMap="infoMap">
+		SELECT t.template_name,t.id,o.park_id
+		FROM t_r_oem_park o
+		LEFT JOIN t_e_agreement_template t on o.agreement_template_id = t.id
+		where o.oem_code = #{oemCode} and o.park_id = #{parkId}
+	</select>
+
+	<select id="queryOemParkIdList" resultType="java.lang.Long">
+		SELECT op.park_id FROM t_r_oem_park op
+		WHERE  op.oem_code=#{oemCode}
+	</select>
+
+	<select id="queryOemParkByOemCodeAndParkId" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"></include>
+		FROM t_r_oem_park where oem_code=#{oemCode} and park_id = #{parkId}
+	</select>
+
+	<select id="queryOemParkCorporate" resultType="map">
+		SELECT GROUP_CONCAT(parkId) parkId,GROUP_CONCAT(parkName) parkName
+		FROM(SELECT DISTINCT
+  				p.id parkId,
+				p.park_name parkName
+			FROM t_r_oem_park op
+			INNER JOIN t_e_park p ON p.id = op.park_id AND p.status = 1
+			INNER JOIN t_e_park_corporate_account_config pcac ON pcac.park_id = op.park_id AND pcac.status = 1
+			INNER JOIN t_r_product_park pp ON pp.`park_id` = p.`id`
+			INNER JOIN t_e_product pro ON pro.`id` = pp.`product_id` AND pro.`prod_type` = 15 AND pro.`oem_code` = #{oemCode} AND pro.`status` = 1
+			WHERE op.oem_code = #{oemCode}) a
+	</select>
+	
+	<select id="getOemParkIdByAgreementTemplateId" resultType="Long">
+		SELECT op.id
+		FROM t_r_oem_park op
+		LEFT JOIN t_e_oem eo ON eo.oem_code = op.oem_code
+		LEFT JOIN t_e_park p ON p.id = op.park_id
+		where (eo.oem_status != 0 or p.status !=2) and op.agreement_template_id = #{agreementTemplateId}
+	</select>
+</mapper>

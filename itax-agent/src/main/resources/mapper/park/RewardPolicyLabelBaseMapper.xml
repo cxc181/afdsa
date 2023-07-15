@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.RewardPolicyLabelBaseMapper">
+    <resultMap type="com.yuqian.itax.park.entity.RewardPolicyLabelBaseEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="reward_label" property="rewardLabel"/>
+			<result column="reward_desc" property="rewardDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, reward_label, reward_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.RewardPolicyLabelBaseVO" id="voMap">
+		<id column="id" property="id"/>
+		<result column="reward_label" property="rewardLabel"/>
+		<result column="reward_desc" property="rewardDesc"/>
+	</resultMap>
+	<select id="queryList" resultMap="voMap">
+		     select
+		           id,
+		           reward_label,
+		           reward_desc
+		     from t_e_reward_policy_label_base
+	</select>
+
+	<!--根据奖励标签名称查询是否有该数据-->
+	<select id="getRewardPolicyLabelOne" resultMap="voMap">
+		     select
+		           id,
+		           reward_label,
+		           reward_desc
+		     from t_e_reward_policy_label_base
+		     where reward_label = #{rewardLabel}
+	</select>
+
+</mapper>

@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    environment {
+        PROJECT_ENV = 'dev'
+        REGISTRY_HOST = 'harbor.db-inc.com'
+        REGISTRY_AUTH = credentials("jenkins-harbor-creds")
+        TARGET_HOST = '172.16.100.43'
+        TARGET_PORT = '22'
+        TARGET_INNER_HOST = '172.16.100.43'
+        GIT_TAG = sh(returnStdout: true,script: 'git describe --tags').trim()
+    }
+    
+    stages {
+        stage('Maven Build') {
+            when { expression { env.GIT_TAG != null } }
+            agent {
+                docker {
+                    image 'harbor.db-inc.com/dbops/maven:3.6-jdk-8-v4'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                sh "mvn clean install -P ${PROJECT_ENV} -Dfile.encoding=UTF-8 -Dmaven.test.skip=true"
+                stash includes: 'itax-api/target/*.war', name: 'app'
+                archiveArtifacts 'itax-api/target/*.war'
+            }
+        }
+        stage('Docker Build') {
+            when { allOf { expression { env.GIT_TAG != null } } }
+            agent any
+            steps {
+                unstash 'app'
+                sh "docker login -u ${REGISTRY_AUTH_USR} -p ${REGISTRY_AUTH_PSW} ${REGISTRY_HOST}"
+                sh "docker build --build-arg WAR_FILE=`ls itax-api/target/*.war|cut -d'/' -f3` -t ${REGISTRY_HOST}/itax/itax-api:${PROJECT_ENV}-${GIT_TAG} -f itax-api/Dockerfile ."
+                sh "docker push ${REGISTRY_HOST}/itax/itax-api:${PROJECT_ENV}-${GIT_TAG}"
+                sh "docker rmi ${REGISTRY_HOST}/itax/itax-api:${PROJECT_ENV}-${GIT_TAG}"
+            }
+        }
+
+        stage('Deploy') {
+            when { expression { env.GIT_TAG != null } }
+            steps {
+                script {
+                    for (int i=0; i<TARGET_HOST.tokenize(',').size(); i++) {
+                        target_host = TARGET_HOST.tokenize(',')[i].trim()
+                        target_inner_host = TARGET_INNER_HOST.tokenize(',')[i].trim()
+                        target_port = TARGET_PORT.tokenize(',')[i].trim()
+                        sshagent(credentials:[]) {
+                             sh "ssh -o StrictHostKeyChecking=no root@${target_host} -p ${target_port} '\
+                                set +e; \
+                                 docker login -u ${REGISTRY_AUTH_USR} -p ${REGISTRY_AUTH_PSW} ${REGISTRY_HOST}; \
+                                 docker stop -t 30 itax-api;docker rm -f itax-api; \
+                                 docker run -itd --name itax-api -v /etc/localtime:/etc/localtime -v /data/logs:/app/logs -v /usr/share/fonts:/usr/share/fonts/ --restart=on-failure:3 -p 6101:8080 ${REGISTRY_HOST}/itax/itax-api:${PROJECT_ENV}-${GIT_TAG}; \
+                                 check_status=\'000\';check_cnt=0;check_cnt_total=60; \
+                                 while [ \${check_status} -eq \'000\' -a \${check_cnt} -lt \${check_cnt_total} ];do let check_cnt+=1;echo 'Waiting itax-api startup...';sleep 5; \
+                                 check_status=`curl -I -X GET --connect-timeout 1 -m 1 -o /dev/null -s -w %{http_code} \"http://${target_inner_host}:6101/\"`;done; \
+                                 if [ \${check_cnt} -lt \${check_cnt_total} ]; then echo 'Service Startup Successful!';else echo 'Service Startup Timeout!';fi; '"
+                        }
+                        echo "URL:  http://${target_inner_host}:6101/itax-api/  "
+                    }
+                }
+                echo '#### Docker Deploy Finished ####'
+            }
+        }
+    }
+}

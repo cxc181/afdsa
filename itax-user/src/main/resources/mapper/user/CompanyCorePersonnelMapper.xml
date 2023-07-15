@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyCorePersonnelMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyCorePersonnelEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="member_id" property="memberId"/>
+			<result column="company_id" property="companyId"/>
+			<result column="company_type" property="companyType"/>
+			<result column="personnel_type" property="personnelType"/>
+			<result column="partner_type" property="partnerType"/>
+			<result column="is_legal_person" property="isLegalPerson"/>
+			<result column="is_executive_partner" property="isExecutivePartner"/>
+			<result column="appoint_party_id" property="appointPartyId"/>
+			<result column="identity_type" property="identityType"/>
+			<result column="is_shareholder" property="isShareholder"/>
+			<result column="personnel_name" property="personnelName"/>
+			<result column="contact_phone" property="contactPhone"/>
+			<result column="certificate_no" property="certificateNo"/>
+			<result column="certificate_addr" property="certificateAddr"/>
+			<result column="expire_date" property="expireDate"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_reverse" property="idCardReverse"/>
+			<result column="business_license" property="businessLicense"/>
+			<result column="investment_amount" property="investmentAmount"/>
+			<result column="share_proportion" property="shareProportion"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+
+	<resultMap id="exportMap" type="com.yuqian.itax.user.entity.vo.CompanyCorePersonnelExportVO">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="company_type" property="companyType" />
+		<result column="personnel_type" property="personnelType"/>
+		<result column="partner_type" property="partnerType"/>
+		<result column="is_legal_person" property="isLegalPerson"/>
+		<result column="is_executive_partner" property="isExecutivePartner"/>
+		<result column="is_shareholder" property="isShareholder"/>
+		<result column="identity_type" property="identityType"/>
+		<result column="personnel_name" property="personnelName"/>
+		<result column="certificate_no" property="certificateNo"/>
+		<result column="certificate_addr" property="certificateAddr"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="contact_phone" property="contactPhone"/>
+		<result column="investment_amount" property="investmentAmount"/>
+		<result column="share_proportion" property="shareProportion"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, member_id, company_id, company_type, personnel_type, partner_type, is_legal_person, is_executive_partner, appoint_party_id, identity_type,is_shareholder, personnel_name, contact_phone, certificate_no, certificate_addr, expire_date, id_card_front, id_card_reverse, business_license, investment_amount, share_proportion, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="getCompanyCorePersonnelByOrderNo" resultMap="exportMap">
+		select id,order_no,company_type,personnel_type,partner_type,is_legal_person,is_executive_partner,is_shareholder,
+		identity_type,personnel_name,certificate_no,certificate_addr,expire_date,contact_phone,investment_amount,share_proportion
+		FROM t_e_company_core_personnel where order_no IN
+		<foreach collection="orderNoList" open="(" close=")" item="orderNo" separator=",">
+			#{orderNo}
+		</foreach>
+	</select>
+
+	<resultMap id="CompanyRegisterOrderMap" type="com.yuqian.itax.user.entity.vo.CompanyRegisterOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_id" property="memberId"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="registered_capital" property="registeredCapital"/>
+	</resultMap>
+    <select id="getCompanyRegOrder" resultMap="CompanyRegisterOrderMap">
+		SELECT o.order_no, o.user_id member_id, o.order_status, r.registered_capital
+		FROM t_e_order o
+		INNER JOIN t_e_register_order r on o.order_no = r.order_no
+		WHERE o.order_no = #{orderNo} AND o.order_type = 5
+	</select>
+
+	<resultMap id="ShareholderPersonnelListMap" type="com.yuqian.itax.user.entity.vo.ShareholderPersonnelListVO">
+		<result column="id" property="id"/>
+		<result column="personnel_name" property="personnelName"/>
+		<result column="certificate_no" property="certificateNo"/>
+		<result column="id_card_front" property="idCardFront"/>
+		<result column="id_card_reverse" property="idCardReverse"/>
+		<result column="certificate_addr" property="certificateAddr"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="contact_phone" property="contactPhone"/>
+	</resultMap>
+	<select id="shareholderPersonnelList" resultMap="ShareholderPersonnelListMap">
+		SELECT p.`id`, p.`personnel_name`, p.`certificate_no`, p.`id_card_front`, p.`id_card_reverse`, p.`certificate_addr`, p.`expire_date`, p.`contact_phone`
+		FROM t_e_company_core_personnel p
+		WHERE p.`order_no` = #{orderNo}
+		<if test="personnelName != null and personnelName.trim() != ''">
+			AND p.`personnel_name` LIKE CONCAT('%', #{personnelName} ,'%')
+		</if>
+		<if test="isExecutivePartner != null">
+			AND p.`is_executive_partner` = #{isExecutivePartner}
+		</if>
+		<if test="isExecutivePartner == null">
+			AND p.`identity_type` = 1
+		</if>
+	</select>
+
+    <select id="personnelList" resultType="com.yuqian.itax.user.entity.CompanyCorePersonnelEntity">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_company_core_personnel
+		WHERE member_id = #{memberId} AND order_no = #{orderNo}
+		<if test="type != null and type == 1">
+			AND is_shareholder = 1
+		</if>
+		<if test="type != null and type == 2">
+			AND ( personnel_type LIKE '%1%' OR personnel_type LIKE '%2%' OR personnel_type LIKE '%3%' OR personnel_type LIKE '%4%' OR is_legal_person = 1)
+		</if>
+		 ORDER BY update_time DESC;
+	</select>
+
+    <update id="updateCompanyCorePersonnelCompanyIdByOrderNo">
+		update t_e_company_core_personnel set company_id = #{companyId} where order_no = #{orderNo}
+	</update>
+	<update id="updateCompanyRegOrder">
+		update t_e_register_order set operator_name = #{operatorName},contact_phone = #{contactPhone},id_card_front = #{idCardFront},id_card_reverse = #{idCardReverse},
+		id_card_number = #{idCardNumber}, id_card_addr = #{idCardAddr}, expire_date = #{expireDate}
+		where order_no = #{orderNo}
+	</update>
+
+
+</mapper>

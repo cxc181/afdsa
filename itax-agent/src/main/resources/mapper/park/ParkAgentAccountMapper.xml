@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkAgentAccountMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkAgentAccountEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="agent_name" property="agentName"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+
+			<result column="id_card_no" property="idCardNo"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_back" property="idCardBack"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, agent_name, agent_account, status, add_time, add_user, update_time, update_user, remark, id_card_no, id_card_front, id_card_back
+    </sql>
+	<select id="queryParkAgentAccount" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_park_agent_account
+		<where>
+			<if test="parkId!=null and parkId!=''">
+				and park_id=#{parkId}
+			</if>
+			<if test="status!=null ">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryParkAgentAccountByAgentAccount" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_park_agent_account
+		<where>
+			<choose>
+				<when test="parkId != null">
+					and park_id = #{parkId}
+				</when>
+				<otherwise>
+					and park_id is null
+				</otherwise>
+			</choose>
+			<if test="agentAccount != null and agentAccount.trim() != ''">
+				and agent_account = #{agentAccount}
+			</if>
+			<if test="status != null ">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyInvoiceRecordMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyInvoiceRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="year" property="year"/>
+			<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+			<result column="use_invoice_amount" property="useInvoiceAmount"/>
+			<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, year, total_invoice_amount, use_invoice_amount, remain_invoice_amount, oem_code, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<update id="refund">
+		update t_e_company_invoice_record
+		set
+			use_invoice_amount = use_invoice_amount - #{amount},
+			remain_invoice_amount = remain_invoice_amount + #{amount},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			id = (SELECT id FROM (SELECT id FROM t_e_company_invoice_record WHERE company_id = #{companyId}
+			and end_time >= DATE_FORMAT(#{addTime},'%Y-%m-%d') GROUP BY company_id HAVING id = min(id)) a)
+	</update>
+
+	<select id="findByCompanyId" parameterType="java.lang.Long" resultMap="baseEntityMap">
+		SELECT r.`id`,
+			  r.`company_id`,
+			  r.`year`,
+			  r.`total_invoice_amount`,
+			  r.`use_invoice_amount`,
+			  r.`remain_invoice_amount`,
+			  r.`oem_code`,
+			  r.`add_time`,
+			  r.`add_user`,
+			  r.`update_time`,
+			  r.`update_user`,
+			  r.`remark`
+		FROM t_e_company_invoice_record r
+		LEFT JOIN `t_e_member_company` c ON c.`id` = r.`company_id`
+		WHERE r.company_id = #{companyId} AND CASE WHEN c.overdue_status != 3 THEN r.end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+		GROUP BY r.company_id HAVING r.id = min(r.id)
+	</select>
+
+	<select id="sumUseInvoiceAmount" parameterType="java.lang.Long" resultType="long">
+		SELECT SUM(a.`use_invoice_amount`)
+		FROM(
+		SELECT ifnull(t.`use_invoice_amount`, 0) use_invoice_amount
+		FROM(SELECT r.`id`, r.`company_id`, YEAR(r.`end_time`) AS `year`, r.`use_invoice_amount`
+			FROM t_e_company_invoice_record r
+			WHERE ( CASE WHEN (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) IS NULL THEN r.company_id =#{companyId} ELSE r.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+			ORDER BY r.id DESC
+			LIMIT 9999) t
+		GROUP BY t.`year`) a
+	</select>
+
+</mapper>

@@ -1,0 +1,2275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberAccountMapper">
+	<resultMap type="com.yuqian.itax.user.entity.MemberAccountEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="real_name" property="realName"/>
+		<result column="id_card_no" property="idCardNo"/>
+		<result column="id_card_front" property="idCardFront"/>
+		<result column="id_card_back" property="idCardBack"/>
+		<result column="id_card_addr" property="idCardAddr"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="auth_status" property="authStatus"/>
+		<result column="head_img" property="headImg"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="open_id" property="openId"/>
+		<result column="alipay_user_id" property="alipayUserId"/>
+		<result column="member_name" property="memberName"/>
+		<result column="password" property="password"/>
+		<result column="slat" property="slat"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="level_name" property="levelName"/>
+		<result column="status" property="status"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="parent_member_account" property="parentMemberAccount"/>
+		<result column="member_tree" property="memberTree"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="member_type" property="memberType"/>
+		<result column="pay_password" property="payPassword"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="invite_code" property="inviteCode"/>
+		<result column="employees_limit" property="employeesLimit"/>
+		<result column="extend_type" property="extendType"/>
+		<result column="attribution_employees_id" property="attributionEmployeesId"/>
+		<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+		<result column="up_diamond_id" property="upDiamondId"/>
+		<result column="up_diamond_account" property="upDiamondAccount"/>
+		<result column="super_diamond_id" property="superDiamondId"/>
+		<result column="super_diamond_account" property="superDiamondAccount"/>
+		<result column="super_employees_id" property="superEmployeesId"/>
+		<result column="super_employees_account" property="superEmployeesAccount"/>
+		<result column="source_type" property="sourceType"/>
+		<result column="sign" property="sign"/>
+		<result column="channel_service_id" property="channelServiceId"/>
+		<result column="channel_employees_id" property="channelEmployeesId"/>
+		<result column="channel_code" property="channelCode"/>
+		<result column="is_demotion" property="isDemotion"/>
+		<result column="channel_product_code" property="channelProductCode"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="channel_user_id" property="channelUserId"/>
+		<result column="auth_push_state" property="authPushState"/>
+		<result column="access_party_id" property="accessPartyId"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberStaffVO" id="staffMap">
+		<result column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="head_img" property="headImg"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_tree" property="memberTree"/>
+		<result column="status" property="status"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCoStatisticVO" id="memberComStatisticMap">
+		<result column="total_count" property="totalCount"/>
+		<result column="available_count" property="availableCount"/>
+		<result column="cancel_count" property="cancelCount"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.AchievementStatVO" id="achievementStatMap">
+		<result column="extend_user_count" property="extendUserCount"/>
+		<result column="extend_company_count" property="extendCompanyCount"/>
+		<result column="fission_user_count" property="fissionUserCount"/>
+		<result column="fission_company_count" property="fissionCompanyCount"/>
+		<result column="total_profits_amount" property="totalProfitsAmount"/>
+		<result column="add_extend_user_count" property="addExtendUserCount"/>
+		<result column="add_extend_company_count" property="addExtendCompanyCount"/>
+		<result column="add_invoice_amount" property="addInvoiceAmount"/>
+		<result column="add_profits_amount" property="addProfitsAmount"/>
+		<result column="add_fission_user_count" property="addFissionUserCount"/>
+		<result column="add_fission_company_count" property="addFissionCompanyCount"/>
+		<result column="add_fission_invoice_amount" property="addFissionInvoiceAmount"/>
+		<result column="add_fission_profits_amount" property="addFissionProfitsAmount"/>
+	</resultMap>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberComVO" id="comInvoiceStatisticMap">
+		<result column="id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="status" property="status"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="year_invoice_amount" property="yearInvoiceAmount"/>
+		<result column="month_invoice_amount" property="monthInvoiceAmount"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyRegProgressVO" id="comRegProgressMap">
+		<result column="to_be_submit_count" property="toBeSubmitCount"/>
+		<result column="to_be_check_count" property="toBeCheckCount"/>
+		<result column="to_be_dismiss_count" property="toDismissCount"/>
+		<result column="to_checkout_count" property="toCheckoutCount"/>
+		<result column="finished_count" property="finishedCount"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyInvoiceProgressVO" id="comInvoiceProgressMap">
+		<result column="to_be_submit_count" property="toBeSubmitCount"/>
+		<result column="to_be_check_count" property="toBeCheckCount"/>
+		<result column="to_be_signed_count" property="toReceiptCount"/>
+		<result column="finished_count" property="finishedCount"/>
+	</resultMap>
+
+	<sql id="Base_Columns">
+		id, member_account,real_name,auth_status,id_card_no,expire_date,id_card_front,id_card_back, id_card_addr,member_phone,member_name,
+		open_id, alipay_user_id,head_img,password, slat, oem_code, member_level, level_name, status, parent_member_id, parent_member_account,
+		member_tree, province_code, city_code, member_type, pay_password, add_time, add_user, update_time, update_user, remark,
+		invite_code,employees_limit,extend_type,attribution_employees_id,attribution_employees_account,up_diamond_id,up_diamond_account,
+		super_diamond_id,super_diamond_account,super_employees_id,super_employees_account,source_type,sign,channel_service_id,channel_employees_id,channel_code,channel_product_code,is_demotion,
+		auth_push_state,member_auth_type,channel_user_id,access_party_id
+    </sql>
+
+	<!--会员列表 -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberVO" id="memberMap">
+
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="phone_first" property="phoneFirst"/>
+		<result column="phone_two" property="phoneTwo"/>
+		<result column="city_providers_name" property="cityProvidersName"/>
+		<result column="city_partner_name" property="cityPartnerName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="to_be_sure_count" property="toBeSureCount"/>
+		<result column="to_pay_count" property="toPayCount"/>
+		<result column="to_checkout_count" property="toCheckoutCount"/>
+		<result column="finished_count" property="finishedCount"/>
+		<result column="order_no" property="orderNo"/>
+	</resultMap>
+
+	<!--推广明细订单列表结果集 -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendMemberVO" id="extendOrderMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="regist_time" property="registTime"/>
+		<result column="member_fee" property="memberFee"/>
+		<result column="finish_time" property="finishTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="dismiss_reason" property="dismissReason"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_service_fee" property="invoiceServiceFee"/>
+		<result column="cancel_fee" property="cancelFee"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="regist_fee" property="registFee"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_status_name" property="orderStatusName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendUserVO" id="extendUserMap">
+		<result column="id" property="userId"/>
+		<result column="real_name" property="userName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="extend_company_count" property="extendCompanyCount"/>
+		<result column="year_invoice_amount" property="yearInvoiceAmount"/>
+		<result column="month_invoice_amount" property="monthInvoiceAmount"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="extendType" property="extendType"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberExtendVO" id="statsMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="head_img" property="headImg"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="total_count" property="totalCount"/>
+		<result column="total_amount" property="totalAmount"/>
+		<result column="membership_rate" property="membershipRate"/>
+		<result column="profits_rate" property="profitsRate"/>
+		<result column="to_be_sign_count" property="toBeSignCount"/>
+		<result column="to_be_video_count" property="toBeVideoCount"/>
+		<result column="to_be_sure_count" property="toBeSureCount"/>
+		<result column="to_pay_count" property="toPayCount"/>
+		<result column="to_checkout_count" property="toCheckoutCount"/>
+		<result column="finished_count" property="finishedCount"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberPageInfoVO" id="memberEntityMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="area_name" property="areaName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="add_time" property="addTime"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="crowd_label_name" property="crowdLabelName"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="parent_member_account" property="parentMemberAccount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="auth_push_state" property="authPushState"/>
+		<result column="access_party_name" property="accessPartyName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.BatchMenberInfoExportVO" id="memberInfoExportMap">
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="area_name" property="areaName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="crowd_label_name" property="crowdLabelName"/>
+		<result column="parent_member_account" property="parentMemberAccount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="auth_push_state" property="authPushState"/>
+		<result column="access_party_name" property="accessPartyName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberRegisterVO" id="memberRegisterMap">
+		<result column="member_account" property="regPhone"/>
+		<result column="member_name" property="userName"/>
+		<result column="real_name" property="realName"/>
+		<result column="id_card_no" property="idCardNo"/>
+		<result column="add_time" property="regsiterTime"/>
+		<result column="parent_member_account" property="inviteCode"/>
+		<result column="status" property="status"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="city_name" property="cityName"/>
+	</resultMap>
+
+	<select id="queryMemberByAccount" parameterType="java.util.Map" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> FROM t_e_member_account
+		<where>
+			status in (0,1)
+			<if test="account != null">
+				AND member_account = #{account}
+			</if>
+			<if test="oemCode != null">
+				AND oem_code = #{oemCode}
+			</if>
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 根据层级账号获取层级信息-->
+	<select id="findMemberTreeByAccount" parameterType="java.util.Map" resultMap="baseEntityMap">
+		select b.* from t_e_member_account a ,t_e_member_account b
+			where a.member_tree like CONCAT(b.member_tree,'%')
+			and b.member_account = #{account}
+			and a.id = #{memberId}
+	</select>
+
+	<!-- 根据订单状态查询推广所属用户列表 add by Kaven 2019-12-18 -->
+	<select id="getMemberListByStatus" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="memberMap">
+		select
+		t.id,
+		t.head_img,
+		t.member_account,
+		t.real_name,
+		t.member_name,
+		o.add_time,
+		o.order_no
+		from
+		t_e_member_account t
+		left join t_r_member_order r on r.member_id = t.id and r.oem_code = t.oem_code
+		left join t_e_order o on o.rela_id = r.id and o.user_type=1 and r.oem_code = t.oem_code
+		<where>
+			o.order_status = #{orderStatus} and t.oem_code = #{oemCode} and o.order_type = 5
+			<if test="gradeNo != null and gradeNo == 2">
+				and (t.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId} and member_level in (select id from t_e_member_level where level_no != -1 and oem_code = #{oemCode}))
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				</if>
+				)
+			</if>
+			<if test="gradeNo != null and gradeNo == 1">
+				and (t.parent_member_id = #{userId}
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				</if>
+				)
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+	<!-- 根据订单状态查询总托管费（新推广中心） add by Kaven 2020-06-08 -->
+	<select id="queryTotalRegistFee" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+		SUM( CASE WHEN o.pay_amount > 0 THEN o.pay_amount ELSE 0 END) AS total_regist_fee
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_register_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		<where>
+			o.oem_code = #{oemCode} and o.order_type = 5
+			<choose>
+				<when test="orderStatus == 1">
+					and o.order_status in(0,1,3,9)
+				</when>
+				<when test="orderStatus == 4">
+					and o.order_status in (4, 10, 11, 12)
+				</when>
+				<otherwise>
+					and o.order_status = #{orderStatus}
+				</otherwise>
+			</choose>
+			<!-- 钻石会员 -->
+			<if test="levelNo == 5">
+				and ( t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+			<!--黄金会员 -->
+			<if test="levelNo == 3">
+				and (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and t.parent_member_id = #{userId}
+			</if>
+			<if test="extendUserId != null and extendUserId != '' ">
+				and t.id = #{extendUserId}
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryTotalRegistFeeByChannelSreviceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+		SUM( CASE WHEN o.pay_amount > 0 THEN o.pay_amount ELSE 0 END) AS total_regist_fee
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_register_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		<where>
+			o.oem_code = #{oemCode} and o.order_type = 5
+			<choose>
+				<when test="orderStatus == 1">
+					and o.order_status in(0,1,3,9)
+				</when>
+				<when test="orderStatus == 4">
+					and o.order_status in (4, 10, 11, 12)
+				</when>
+				<otherwise>
+					and o.order_status = #{orderStatus}
+				</otherwise>
+			</choose>
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+	</select>
+	<!-- 根据订单状态查询推广开户订单列表（新推广中心） add by Kaven 2020-06-08 -->
+	<select id="queryRegOrderListByStatus" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			t.id,
+			t.member_name,
+			t.real_name,
+			t.member_account,
+			t.add_time AS regist_time,
+			r.registered_name AS company_name,
+			r.remark AS dismiss_reason,
+			r.add_time AS create_time,
+			o.update_time,
+			o.pay_amount AS regist_fee,
+			o.order_status,
+			CASE o.order_status
+			WHEN 0 THEN '待电子签字'
+			WHEN 1 THEN '待视频认证'
+			WHEN 2 THEN '审核中'
+			WHEN 3 THEN '待付款'
+			WHEN 4 THEN '待领证'
+			WHEN 5 THEN '已完成'
+			WHEN 6 THEN '已取消'
+			WHEN 7 THEN '审核失败'
+			WHEN 8 THEN '核名驳回'
+			WHEN 9 THEN '待身份验证'
+			WHEN 10 THEN '待设立登记'
+			WHEN 11 THEN '待提交签名'
+			WHEN 12 THEN '签名待确认'
+			END AS order_status_name
+		FROM
+			t_e_order o
+			LEFT JOIN t_e_register_order r ON o.order_no = r.order_no
+			LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		<where>
+			o.oem_code = #{oemCode} and o.order_type = 5
+			<choose>
+				<when test="orderStatus == 1">
+					and o.order_status in(0,1,3,9)
+				</when>
+				<when test="orderStatus == 4">
+					and o.order_status in (4, 10, 11, 12)
+				</when>
+				<otherwise>
+					and o.order_status = #{orderStatus}
+				</otherwise>
+			</choose>
+			<!-- 钻石会员 -->
+			<if test="levelNo == 5">
+				and ( t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+			<!--黄金会员 -->
+			<if test="levelNo == 3">
+				and (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and t.parent_member_id = #{userId}
+			</if>
+			<if test="extendUserId != null and extendUserId != '' ">
+				and t.id = #{extendUserId}
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		order by o.add_time desc,o.update_time desc
+	</select>
+
+	<select id="queryRegOrderListByStatusByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+			SELECT
+				t.id,
+				IFNULL(t.real_name,t.member_name) real_name,
+				t.member_Phone,
+				t.add_time AS regist_time,
+				r.registered_name AS company_name,
+				r.remark AS dismiss_reason,
+				r.add_time AS create_time,
+				o.update_time,
+				o.pay_amount AS regist_fee,
+				o.order_status,
+				CASE o.order_status
+				WHEN 0 THEN '待电子签字'
+				WHEN 1 THEN '待视频认证'
+				WHEN 2 THEN '审核中'
+				WHEN 3 THEN '待付款'
+				WHEN 4 THEN '待领证'
+				WHEN 5 THEN '已完成'
+				WHEN 6 THEN '已取消'
+				WHEN 7 THEN '审核失败'
+				WHEN 8 THEN '核名驳回'
+				WHEN 9 THEN '待身份验证'
+				WHEN 10 THEN '待设立登记'
+				WHEN 11 THEN '待提交签名'
+				WHEN 12 THEN '签名待确认'
+				END AS order_status_name
+			FROM
+			t_e_order o
+			LEFT JOIN t_e_register_order r ON o.order_no = r.order_no
+			LEFT JOIN t_e_member_account t ON o.user_id = t.id
+			where
+			o.oem_code = #{oemCode} and o.order_type = 5
+			<choose>
+				<when test="orderStatus == 1">
+					and o.order_status in(0,1,3,9)
+				</when>
+				<when test="orderStatus == 4">
+					and o.order_status in (4, 10, 11, 12)
+				</when>
+				<otherwise>
+					and o.order_status = #{orderStatus}
+				</otherwise>
+			</choose>
+			<if test="userId != null ">
+				and (o.channel_service_id =  #{userId} or o.channel_employees_id= #{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		order by o.add_time desc,o.update_time desc
+	</select>
+	<!-- 查询已邀请注册但未开户的用户列表（新推广中心） add by Kaven 2020-06-09 -->
+	<select id="queryUnRegMemberList" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		select * from (
+			select
+				id,
+				head_img,
+				member_account,
+				member_name,
+				real_name,
+				add_time as regist_time
+			from
+				t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode} and t.member_type != 2
+			and id not in (select distinct (user_id) as id from t_e_order where oem_code = #{oemCode} and order_type =
+			5)
+			<!-- 钻石会员 -->
+			<if test="levelNo == 5">
+				and (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3)) and t.member_type != 2
+			</if>
+			<!-- 黄金会员号 -->
+			<if test="levelNo == 3">
+				and (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and t.parent_member_id = #{userId}
+			</if>
+			<if test="extendUserId != null and extendUserId != '' ">
+				and t.id = #{extendUserId}
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			</where>
+			union all
+			select
+				id,
+				head_img,
+				member_account,
+				member_name,
+				real_name,
+				add_time as regist_time
+			from
+				t_e_member_account t
+			<where>
+				t.oem_code = #{oemCode} and t.member_type != 2
+				and id in (
+				select
+				v.id
+				from
+				(
+				select
+				user_id as id,
+				ifnull( sum( case when order_status is not null then 1 else 0 end ), 0 ) as total,
+				ifnull( sum( case when order_status IN(6,7) then 1 else 0 end ), 0 ) as cancel_total
+				from
+				t_e_order
+				<where>
+					oem_code = #{oemCode} and order_type = 5
+				</where>
+				group by user_id having total = cancel_total
+				) v
+				)
+				<!-- 钻石会员 -->
+				<if test="levelNo == 5">
+					and (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+					member_type = 2)
+					or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3))
+					and t.member_type != 2
+				</if>
+				<!-- 黄金会员号 -->
+				<if test="levelNo == 3">
+					and (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+				</if>
+				<!-- 非钻石和黄金会员 -->
+				<if test="levelNo != 3 and levelNo != 5">
+					and t.parent_member_id = #{userId}
+				</if>
+				<if test="day != null and day.trim() != '' ">
+					and date_format(t.add_time,'%Y-%m-%d') = #{day}
+				</if>
+				<if test="month != null and month.trim() != '' ">
+					and date_format(t.add_time,'%Y-%m') = #{month}
+				</if>
+				<if test="startDate != null and startDate.trim() != '' ">
+					and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+				</if>
+				<if test=" endDate != null and endDate.trim() != ''">
+					and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+				</if>
+				<if test="extendUserId != null and extendUserId != '' ">
+					and t.id = #{extendUserId}
+				</if>
+			</where>
+		) vv
+		order by vv.regist_time desc
+	</select>
+
+
+	<select id="queryUnRegMemberListByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		select * from (
+			select
+				id,
+				head_img,
+				member_phone,
+				IFNULL(t.real_name,t.member_name) real_name,
+				add_time as regist_time
+			from
+				t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode} and t.member_type != 2
+			and id not in (select distinct (user_id) as id from t_e_order where oem_code =#{oemCode} and order_type =5)
+			<if test="userId != null ">
+				and (t.channel_service_id =  #{userId} or t.channel_employees_id= #{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		union all
+			select
+				id,
+				head_img,
+				member_phone,
+				IFNULL(t.real_name,t.member_name) real_name,
+				add_time as regist_time
+			from
+				t_e_member_account t
+			<where>
+				t.oem_code =  #{oemCode} and t.member_type != 2
+				and id in (
+							select
+								v.id
+							from
+							(
+								select
+								user_id as id,
+								ifnull( sum( case when order_status is not null then 1 else 0 end ), 0 ) as total,
+								ifnull( sum( case when order_status IN(6,7) then 1 else 0 end ), 0 ) as cancel_total
+								from
+								t_e_order
+								where
+									oem_code =  #{oemCode} and order_type = 5
+
+								group by user_id having total = cancel_total
+							) v
+				)
+				<if test="userId != null ">
+					and (t.channel_service_id =  #{userId} or t.channel_employees_id= #{userId})
+				</if>
+				<if test="channelUserIds != null ">
+					and t.channel_user_id  in
+					<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+						#{item}
+					</foreach>
+				</if>
+				<if test="day != null and day.trim() != '' ">
+					and date_format(t.add_time,'%Y-%m-%d') = #{day}
+				</if>
+				<if test="month != null and month.trim() != '' ">
+					and date_format(t.add_time,'%Y-%m') = #{month}
+				</if>
+				<if test="startDate != null and startDate.trim() != '' ">
+					and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+				</if>
+				<if test=" endDate != null and endDate.trim() != ''">
+					and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+				</if>
+				<if test="memberName != null and memberName.trim() != ''  ">
+					and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+				</if>
+				<if test="memberId != null ">
+					and t.id=#{memberId}
+				</if>
+			</where>
+		) vv
+		order by vv.regist_time desc
+	</select>
+
+	<select id="queryUnRegCompanyCountByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		from (
+		select
+		id,
+		head_img,
+		member_phone,
+		IFNULL(t.real_name,t.member_name) real_name,
+		add_time as regist_time
+		from
+		t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode} and t.member_type != 2
+			and id not in (select distinct (user_id) as id from t_e_order where oem_code =#{oemCode} and order_type =5)
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		union all
+		select
+		id,
+		head_img,
+		member_phone,
+		IFNULL(t.real_name,t.member_name) real_name,
+		add_time as regist_time
+		from
+		t_e_member_account t
+		<where>
+			t.oem_code =  #{oemCode} and t.member_type != 2
+			and id in (
+			select
+			v.id
+			from
+			(
+			select
+			user_id as id,
+			ifnull( sum( case when order_status is not null then 1 else 0 end ), 0 ) as total,
+			ifnull( sum( case when order_status IN(6,7) then 1 else 0 end ), 0 ) as cancel_total
+			from
+			t_e_order
+			where
+			oem_code =  #{oemCode} and order_type = 5
+
+			group by user_id having total = cancel_total
+			) v
+			)
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		) vv
+		order by vv.regist_time desc
+	</select>
+	<!-- 查询已邀请注册但未开户的用户列表 add by Kaven 2020-03-26 -->
+	<select id="getInvitedRegUserList" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="memberMap">
+		select
+		id,
+		head_img,
+		member_account,
+		member_name,
+		real_name,
+		add_time
+		from
+		t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode} and t.member_type != 2
+			and id not in (select distinct (user_id) as id from t_e_order where oem_code = #{oemCode} and order_type = 5)
+			<if test="gradeNo != null and gradeNo == 2">
+				and (t.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId} and member_level in (select id from t_e_member_level where level_no != -1 and oem_code = #{oemCode}))
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				</if>
+				)
+			</if>
+			<if test="gradeNo != null and gradeNo == 1">
+				and (t.parent_member_id = #{userId}
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				</if>
+				)
+			</if>
+		</where>
+		union all
+		select
+		id,
+		head_img,
+		member_account,
+		member_name,
+		real_name,
+		add_time
+		from
+		t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode} and t.member_type != 2
+			and id in (
+			select
+			v.id
+			from
+			(
+			select
+			user_id as id,
+			ifnull( sum( case when order_status is not null then 1 else 0 end ), 0 ) as total,
+			ifnull( sum( case when order_status = 6 then 1 else 0 end ), 0 ) as cancel_total
+			from
+			t_e_order
+			<where>
+				oem_code = #{oemCode} and order_type = 5
+			</where>
+			group by user_id having total = cancel_total
+			) v
+			)
+			<if test="gradeNo != null and gradeNo == 2">
+				and (t.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId} and member_level in (select id from t_e_member_level where level_no != -1 and oem_code = #{oemCode}))
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				</if>
+				)
+			</if>
+			<if test="gradeNo != null and gradeNo == 1">
+				and (t.parent_member_id = #{userId}
+				<if test="memberType != null and memberType == 2">
+					or t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				</if>
+				)
+			</if>
+		</where>
+		order by add_time desc
+	</select>
+
+	<!--查询会员推广统计信息 add by Kaven 2019-12-18 -->
+	<select id="queryRegOrderStats" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="statsMap">
+		select
+		m.id,
+		m.head_img,
+		m.member_account,
+		m.member_name,
+		m.add_time,
+		ifnull( sum( CASE WHEN t.order_status = 0 THEN 1 ELSE 0 END ), 0 ) AS to_be_sign_count,
+		ifnull( sum( CASE WHEN t.order_status = 1 THEN 1 ELSE 0 END ), 0 ) AS to_be_video_count,
+		ifnull( sum( case when t.order_status = 2 then 1 else 0 end ), 0 ) as to_be_sure_count,
+		ifnull( sum( case when t.order_status = 3 then 1 else 0 end ), 0 ) as to_pay_count,
+		ifnull( sum( case when t.order_status = 4 then 1 else 0 end ), 0 ) as to_checkout_count,
+		ifnull( sum( case when t.order_status = 5 then 1 else 0 end ), 0 ) as finished_count
+		from
+		t_e_order t
+		left join t_e_member_account m on t.user_id = m.id and t.user_type = 1 and m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 5
+			<if test="gradeNo != null and gradeNo == 2">
+				and (m.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId} and member_level in (select id from t_e_member_level where level_no != -1 and oem_code = #{oemCode}))
+				<if test="memberType != null and memberType == 2">
+					or m.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				</if>
+				)
+			</if>
+			<if test="gradeNo != null and gradeNo == 1">
+				and (m.parent_member_id = #{userId}
+				<if test="memberType != null and memberType == 2">
+					or m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				</if>
+				)
+			</if>
+		</where>
+	</select>
+
+	<!--查询企业注册进度统计信息 add by Kaven 2020-06-06 -->
+	<select id="queryCompanyRegProgress" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comRegProgressMap">
+		select
+		ifnull( sum( CASE WHEN t.order_status IN(0,1,3,9) THEN 1 ELSE 0 END ), 0 ) AS to_be_submit_count,
+		ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS to_be_check_count,
+		ifnull( sum( CASE WHEN t.order_status = 8 THEN 1 ELSE 0 END ), 0 ) AS to_be_dismiss_count,
+		ifnull( sum( CASE WHEN t.order_status in (4, 10, 11, 12) THEN 1 ELSE 0 END ), 0 ) AS to_checkout_count,
+		ifnull( sum( CASE WHEN t.order_status = 5 THEN 1 ELSE 0 END ), 0 ) AS finished_count
+		from
+		t_e_order t
+		left join t_e_member_account m on t.user_id = m.id and t.user_type = 1 and m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 5
+			<!--钻石会员，还需包含员工推广数 -->
+			<if test="levelNo == 5">
+				and ( m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!--黄金会员 -->
+			<if test="levelNo == 3">
+				and (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and m.parent_member_id = #{userId}
+			</if>
+			<if test="extendUserId != null and extendUserId != '' ">
+				and m.id = #{extendUserId}
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="queryCompanyRegProgressByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comRegProgressMap">
+		select
+		ifnull( sum( CASE WHEN t.order_status IN(0,1,3,9) THEN 1 ELSE 0 END ), 0 ) AS to_be_submit_count,
+		ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS to_be_check_count,
+		ifnull( sum( CASE WHEN t.order_status = 8 THEN 1 ELSE 0 END ), 0 ) AS to_be_dismiss_count,
+		ifnull( sum( CASE WHEN t.order_status in (4, 10, 11, 12) THEN 1 ELSE 0 END ), 0 ) AS to_checkout_count,
+		ifnull( sum( CASE WHEN t.order_status = 5 THEN 1 ELSE 0 END ), 0 ) AS finished_count
+		from
+		t_e_order t
+		left join t_e_member_account m on t.user_id = m.id and t.user_type = 1 and m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 5
+			<if test="userId != null ">
+				and (t.channel_service_id =  #{userId} or t.channel_employees_id= #{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m') = #{month}
+            </if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+                and ((m.member_account  like  concat('%',#{memberAccount},'%'))or (   case when m.real_name is null or m.real_name = ''	then m.member_name like concat('%',#{name},'%')		else		m.real_name like concat('%',#{name},'%')				end))
+            </if>
+			<if test="memberId != null ">
+				and m.id=#{memberId}
+			</if>
+		</where>
+	</select>
+	<!--会员中心-查询达标（开票金额大于等于10000）开票数（按企业分组） add by Kaven 2020-06-19 -->
+	<select id="queryCompanyInvoiceCount" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+			count(1)
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+			LEFT JOIN t_e_invoice_order r ON t.order_no = r.order_no AND t.order_status = 7
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 6
+			<!-- 钻石会员 -->
+			<if test="levelNo == 5">
+				AND (m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!-- 黄金会员 -->
+			<if test="levelNo == 3">
+				AND (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and m.parent_member_id = #{userId}
+			</if>
+		</where>
+			group by r.company_id HAVING SUM(r.invoice_amount) >= 1000000
+	</select>
+
+	<!--查询企业开票进度统计信息 add by Kaven 2020-06-06 -->
+	<select id="queryCompanyInvoiceProgress" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comInvoiceProgressMap">
+		SELECT
+		ifnull( sum( CASE WHEN t.order_status IN(0,1) THEN 1 ELSE 0 END ), 0 ) AS to_be_submit_count,
+		ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS to_be_check_count,
+		ifnull( sum( CASE WHEN t.order_status IN(3,4,5,6) THEN 1 ELSE 0 END ), 0 ) AS to_be_signed_count,
+		ifnull( sum( CASE WHEN t.order_status = 7 THEN 1 ELSE 0 END ), 0 ) AS finished_count
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 6
+			<!-- 钻石会员 -->
+			<if test="levelNo == 5">
+				AND (m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!-- 黄金会员 -->
+			<if test="levelNo == 3">
+				AND (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+			<!-- 非钻石和黄金会员 -->
+			<if test="levelNo != 3 and levelNo != 5">
+				and m.parent_member_id = #{userId}
+			</if>
+			<if test="extendUserId != null and extendUserId != '' ">
+				and m.id = #{extendUserId}
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="queryCompanyInvoiceProgressByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comInvoiceProgressMap">
+		SELECT
+			ifnull( sum( CASE WHEN t.order_status IN(0,1) THEN 1 ELSE 0 END ), 0 ) AS to_be_submit_count,
+			ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS to_be_check_count,
+			ifnull( sum( CASE WHEN t.order_status IN(3,4,5,6) THEN 1 ELSE 0 END ), 0 ) AS to_be_signed_count,
+			ifnull( sum( CASE WHEN t.order_status = 7 THEN 1 ELSE 0 END ), 0 ) AS finished_count
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+		where
+			t.oem_code = #{oemCode} and t.order_type = 6
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((m.member_account  like  concat('%',#{memberAccount},'%'))or (   case when m.real_name is null or m.real_name = ''	then m.member_name like concat('%',#{name},'%')		else		m.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and m.id=#{memberId}
+			</if>
+	</select>
+	<!-- 统计开户订单累计数 -->
+	<select id="statisRegOrderByUserId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="statsMap">
+		select
+		ifnull( sum( case when t.order_status = 5 and t.order_type = 5  then 1 else 0 end ), 0 ) as total_count,
+		ifnull((select sum(profits_amount) from t_e_profits_detail d where d.user_type = 1 and d.user_id = #{userId} and d.oem_code = t.oem_code and d.profits_status in (2,3)),0) as total_amount
+		from
+		t_e_order t
+		left join t_e_member_account m on t.user_id = m.id and t.user_type = 1 and m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode}
+			<if test="memberType != null and memberType == 2">
+				and (m.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId})
+				or m.parent_member_id = #{userId}
+				or m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				or m.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				)
+			</if>
+			<if test="memberType != null and memberType != 2">
+				and (m.parent_member_id = #{userId}
+				<if test="memberType != null and memberType == -1">
+					or  m.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId})
+				</if>
+				)
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询会员/员工（一级）推广用户数 add by Kaven 2020-05-18 -->
+	<select id="queryExtendUserCount" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="long">
+		select
+		ifnull(sum(case when m.status != 2 then 1 else 0 end ),0) as extend_user_count
+		from
+		t_e_member_account m
+		<where>
+			m.oem_code = #{oemCode} and m.parent_member_id = #{userId}
+		</where>
+	</select>
+
+	<!-- 查询（二级）推广用户数 add by Kaven 2020-05-18 -->
+	<select id="querySecondExtendUserCount" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="long">
+		select
+		ifnull(sum(case when m.status != 2 then 1 else 0 end ),0) as extend_user_count
+		from
+		t_e_member_account m
+		<where>
+			m.oem_code = #{oemCode}
+			<if test="memberType != null and memberType == 2"><!-- 钻石会员二级推广用户-->
+				and (m.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId})
+				or m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode}))
+				or m.parent_member_id in (select id from t_e_member_account where parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and oem_code = #{oemCode} and member_level in (select id from t_e_member_level where level_no = -1 and oem_code = #{oemCode})))
+				)
+			</if>
+			<if test="memberType != null and memberType == -1"><!-- 员工二级推广用户-->
+				and  m.parent_member_id in ( select id from t_e_member_account where parent_member_id = #{userId})
+			</if>
+		</where>
+	</select>
+
+	<!-- 用户注册信息查询-拓展宝 add by Kaven 2020-03-25 -->
+	<select id="queryRegistMemberList" parameterType="com.yuqian.itax.user.entity.query.MemberRegisterQuery" resultMap="memberRegisterMap">
+		SELECT
+		t.member_account,
+		t.member_name,
+		t.real_name,
+		t.id_card_no,
+		t.add_time,
+		t.parent_member_account,
+		t.status,
+		t.province_code,
+		p.name AS province_name,
+		t.city_code,
+		c.name AS city_name
+		FROM
+		t_e_member_account t
+		LEFT JOIN sys_e_province p ON t.province_code = p.code LEFT JOIN sys_e_city c ON t.city_code = c.code
+		<where>
+			t.oem_code = #{oemCode}
+			<if test="registerStartTime != null">
+				and t.add_time >= #{registerStartTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="registerEndTime != null">
+				and t.add_time <![CDATA[<=]]> #{registerEndTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="regPhone != null and regPhone != ''">
+				and t.member_account = #{regPhone}
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and t.id_card_no = #{idCard}
+			</if>
+			<if test="inviteCode != null and inviteCode != ''">
+				and t.parent_member_account = #{inviteCode}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<select id="queryMemberList" parameterType="com.yuqian.itax.user.entity.query.MemberQuery" resultMap="memberEntityMap">
+		select
+			a.id,
+			a.member_account,
+			a.member_name,
+			a.real_name,
+			a.parent_member_account,
+			a.member_level,
+			l.level_name,
+			l.level_no,
+			a.add_time,
+			a.member_auth_type,
+			a.auth_push_state,
+			ch.channel_name,
+			o.oem_name,
+			access.access_party_name,
+			a.status,
+			ifnull(a.employees_limit, 0) employees_limit,
+			a.extend_type,
+			cl.crowd_label_name
+		FROM t_e_member_account a
+		left join t_e_oem_access_party access on access.id = a.access_party_id
+		inner join t_e_user_rela ur  on ur.user_id=a.id and ur.user_class=5
+		left join t_e_channel_info ch on ch.channel_code=a.channel_code
+		left join t_e_oem o on  o.oem_code=a.oem_code
+		LEFT JOIN  t_e_member_level l on  l.id=a.member_level
+		LEFT JOIN  t_r_member_crowd_label mcl on  mcl.member_id=a.id
+		LEFT JOIN  t_e_crowd_label cl on  cl.id=mcl.crowd_label_id and cl.`status`=1
+		<where>
+			and ur.user_tree like  concat(#{tree},'%')
+
+			<if test="oemCode != null and oemCode != ''">
+				and a.oem_code like concat('%',#{oemCode},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and a.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="accessPartyName != null and accessPartyName != ''">
+				and access.access_party_name like concat('%',#{accessPartyName},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and a.channel_code = #{channelCode}
+			</if>
+			<if test="memberAuthType != null and memberAuthType != ''">
+				and a.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="authPushState != null and authPushState != ''">
+				and a.auth_push_state = #{authPushState}
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and a.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="realName != null and realName != ''">
+				and a.real_name like concat('%',#{realName},'%')
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and a.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="memberLevel != null and memberLevel != ''">
+				and l.level_no = #{memberLevel}
+			</if>
+			<if test="status != null and status != '' ">
+				and a.status =#{status}
+			</if>
+			<if test="crowdLabelName != null and crowdLabelName != ''">
+				and cl.crowd_label_name like concat('%',#{crowdLabelName},'%')
+			</if>
+		</where>
+		order by a.add_time desc
+	</select>
+
+	<select id="batchMemberList" parameterType="com.yuqian.itax.user.entity.query.MemberQuery" resultMap="memberInfoExportMap">
+		select
+		a.member_account,
+		a.member_name,
+		a.real_name,
+		a.sign,
+		a.parent_member_id,
+		a.parent_member_account,
+		a.member_auth_type,
+		a.auth_push_state,
+		l.level_name,
+		a.add_time,
+		access.access_party_name,
+		ch.channel_name,
+		o.oem_name,
+		a.status,
+		cl.crowd_label_name
+		FROM t_e_member_account a
+		left join t_e_oem_access_party access on access.id = a.access_party_id
+		inner join t_e_user_rela ur  on ur.user_id=a.id and ur.user_class=5
+		left join t_e_member_account one on a.parent_member_id=one.id
+		left join t_e_channel_info ch on ch.channel_code=a.channel_code
+		left join t_e_oem o on  o.oem_code=a.oem_code
+		LEFT JOIN  t_e_member_level l on  l.id=a.member_level
+		LEFT JOIN  t_e_member_level lvone on  lvone.id=one.member_level
+		left join sys_e_user parent_agent on  parent_agent.id=REPLACE(SUBSTRING(SUBSTRING_INDEX(ur.user_tree, '/', 3), LENGTH(SUBSTRING_INDEX(ur.user_tree, '/', 3 -1)) + 1),'/', '')
+		left join sys_e_user city_agent on  city_agent.id=REPLACE(SUBSTRING(SUBSTRING_INDEX(ur.user_tree, '/', 4), LENGTH(SUBSTRING_INDEX(ur.user_tree, '/', 4 -1)) + 1),'/', '')
+		LEFT JOIN  t_r_member_crowd_label mcl on  mcl.member_id=a.id
+		LEFT JOIN  t_e_crowd_label cl on  cl.id=mcl.crowd_label_id and cl.`status`=1
+		<where>
+			and ur.user_tree like  concat(#{tree},'%')
+			<if test="oemCode != null and oemCode != ''">
+				and a.oem_code like concat('%',#{oemCode},'%')
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and a.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="sign != null and sign != ''">
+				and a.sign=#{sign}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="parentMemberId != null and parentMemberId != ''">
+				and a.parent_member_id like concat('%',#{parentMemberId},'%')
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and a.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelName != null and channelName != ''">
+				and ch.channel_name like concat('%',#{channelName},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and a.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="realName != null and realName != ''">
+				and a.real_name like concat('%',#{realName},'%')
+			</if>
+			<if test="provinceName != null and provinceName != ''">
+				and pro.name like concat('%',#{provinceName},'%')
+			</if>
+			<if test="cityName != null and cityName != ''">
+				and city.name like concat('%',#{cityName},'%')
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and a.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="memberLevel != null and memberLevel != ''">
+				and l.level_no = #{memberLevel}
+			</if>
+			<if test="memberAuthType != null and memberAuthType != ''">
+				and a.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="authPushState != null and authPushState != ''">
+				and a.auth_push_state = #{authPushState}
+			</if>
+			<if test="status != null and status != '' ">
+				and a.status =#{status}
+			</if>
+			<if test="sign != null and sign != ''">
+				and a.sign=#{sign}
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and a.channel_code = #{channelCode}
+			</if>
+			<if test="accessPartyName != null and accessPartyName != ''">
+				and access.access_party_name like concat('%',#{accessPartyName},'%')
+			</if>
+			<if test="crowdLabelName != null and crowdLabelName != ''">
+				and cl.crowd_label_name like concat('%',#{crowdLabelName},'%')
+			</if>
+		</where>
+		order by a.add_time desc
+	</select>
+
+	<update id="updateStatus">
+		update t_e_member_account
+		set
+			status = #{status},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			id = #{id}
+	</update>
+
+	<select id="queryMemberEmployeeList" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_member_account
+		WHERE parent_member_id = #{memberId} AND oem_code = #{oemCode}
+		<if test="memberType != null">
+			and member_type = #{memberType}
+		</if>
+		<if test="pushMemberId != null">
+			and id = #{pushMemberId}
+		</if>
+		<if test="nameOrPhone != null and nameOrPhone.trim() != ''">
+			and (real_name like concat('%',#{nameOrPhone},'%')
+			       or member_name like concat('%',#{nameOrPhone},'%')
+			       or member_phone like concat('%',#{nameOrPhone},'%'))
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		order by id
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyPushVo" id="pushVOMap">
+		<result column="id" property="id"/>
+		<result column="channel_user_id" property="userId"/>
+		<result column="channel_product_code" property="productCode"/>
+		<result column="expire_date" property="expireDate"/>
+		<result column="id_card_addr" property="idCardAddr"/>
+		<result column="id_card_no" property="idCardNo"/>
+		<result column="real_name" property="realName"/>
+		<result column="id_card_front" property="idCardFront"/>
+		<result column="id_card_back" property="idCardBack"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="auth_push_state" property="authPushState"/>
+		<result column="channel_code" property="channelCode"/>
+	</resultMap>
+
+	<select id="queryCompanyInfoByAuthPushState" resultMap="pushVOMap">
+		SELECT id,channel_user_id,channel_product_code,expire_date,id_card_addr,id_card_no,real_name,id_card_front,id_card_back,
+		oem_code,auth_push_state,channel_code
+		FROM t_e_member_account
+		WHERE auth_push_state = #{pushState}
+	</select>
+
+
+	<update id="batchUpdateAuthPushState">
+		update t_e_member_account
+		<trim prefix="set" suffixOverrides=",">
+			auth_push_state = #{pushState}
+		</trim>
+		where id  in
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item.id}
+		</foreach>
+	</update>
+
+
+	<update id="updateAuthPushStateById">
+		update t_e_member_account
+		set
+			auth_push_state = #{state}
+		where
+			id = #{id}
+	</update>
+
+	<select id="getAllSubNodes" resultMap="baseEntityMap">
+		SELECT t3.*
+		FROM
+			(SELECT t1.*,
+					IF(find_in_set(parent_member_id, @pids) > 0, @pids := concat(@pids, ',', id ), 0) AS ischild
+				FROM
+					(SELECT * FROM t_e_member_account t where t.member_type = 1 ORDER BY parent_member_id, id) t1,
+					(SELECT @pids := #{memberId}) t2
+			) t3
+		WHERE ischild != 0
+	</select>
+
+	<update id="updateLevel">
+		update t_e_member_account
+		set
+			member_level = #{memberLevel},
+			level_name = #{levelName},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			id = #{id}
+	</update>
+
+	<select id="queryStaffExtendList" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_member_account
+		where member_tree like concat(#{memberTree}, "/%")
+		and member_tree in(substring_index(member_tree, '/', (LENGTH(#{memberTree}) - LENGTH(REPLACE(#{memberTree}, '/', '')))+3))
+	</select>
+	<select id="queryMemberAccountListByMemberTree" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_member_account
+		where member_tree like concat(#{memberTree}, "/%")
+	</select>
+
+	<select id="statisRegOrderByStaff" resultType="long">
+		SELECT count(1)
+		FROM t_e_member_company
+		WHERE member_id = #{memberId}
+		  AND date_format(add_time,'%Y%m') = date_format(CURDATE(),'%Y%m')
+	</select>
+
+	<select id="statisProfitsByStaff" resultType="long">
+		SELECT IFNULL(sum(p.profits_amount),0)
+		FROM t_e_profits_detail p
+		LEFT JOIN t_e_order o ON o.order_no = p.order_no
+		WHERE p.user_id = #{upMemberId} AND p.user_type = 1 AND p.profits_status between 2 and 3
+		  AND o.user_id = #{memberId}
+		  AND date_format(p.add_time,'%Y%m') = date_format(CURDATE(),'%Y%m')
+	</select>
+
+	<select id="queryMemberByStatus" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_member_account
+		where
+		status in (1,0) and oem_code=#{oemCode}
+		and member_type=1
+	</select>
+
+	<!-- 查询会员个体企业统计信息 add by Kaven 2020-06-05 -->
+	<select id="queryMemberCoStatistic" parameterType="com.yuqian.itax.user.entity.query.ExtendUserQuery" resultMap="memberComStatisticMap">
+		SELECT
+			count(1) total_count,
+			ifnull(sum(CASE WHEN t.STATUS != 4 THEN 1 ELSE 0 END ), 0) AS available_count,
+			ifnull(sum(CASE WHEN t.STATUS = 4 THEN 1 ELSE 0 END ), 0) AS cancel_count
+		FROM
+			t_e_member_company t
+		<where>
+			t.oem_code = #{oemCode} AND t.member_id = #{userId}
+		</where>
+	</select>
+
+	<!-- 查询企业开票统计列表 add by Kaven 2020-06-05 -->
+	<select id="queryComInvoiceStatistic" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comInvoiceStatisticMap">
+		SELECT
+			ifnull(sum( i.invoice_amount ), 0 ) AS total_invoice_amount,
+			ifnull(sum( CASE WHEN date_format( i.complete_time, '%Y%m' ) = date_format( CURDATE(), '%Y%m' ) THEN i.invoice_amount ELSE 0 END ),0) AS month_invoice_amount,
+			ifnull(sum( CASE WHEN YEAR ( i.complete_time ) = YEAR ( NOW() ) THEN i.invoice_amount ELSE 0 END ), 0 ) AS year_invoice_amount
+		FROM
+			t_e_order o LEFT JOIN t_e_invoice_order i ON o.order_no = i.order_no
+		<where>
+			o.oem_code = #{oemCode} AND i.company_id = #{companyId} AND o.order_status = 7
+		</where>
+	</select>
+
+	<!-- 推广中心-查询直推用户 add by Kaven 2020-06-05 -->
+	<select id="queryExtendUserCountNew" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT count(1) FROM t_e_member_account t
+		<where>
+			t.oem_code = #{oemCode}
+			<!--顶级直客（钻石会员），还需包含员工推广数 -->
+			<if test="extendType == 3">
+				and t.member_type != 2
+				and ( t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and member_type = 2)
+				or parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3))
+			</if>
+			<!--非顶级直客（非钻石会员） -->
+			<if test="extendType != 3">
+				and t.parent_member_id = #{userId} AND t.member_type != 2
+			</if>
+			<if test="flag == 1">
+				and DATE_FORMAT(t.add_time,'%Y%m') = DATE_FORMAT(now(),'%Y%m')
+			</if>
+		</where>
+	</select>
+
+	<!-- 推广中心-业绩总览-查询推广业绩 add by Kaven 2020-06-16-->
+	<select id="queryAchievementStatistic" resultMap="achievementStatMap">
+		SELECT
+		ifnull(sum( promote_user_direct ) ,0 ) as extend_user_count,
+		ifnull(sum( individual_direct ),0 ) as extend_company_count,
+		ifnull(sum( invoice_amount_direct ),0 ) as add_invoice_amount,
+		ifnull(sum( profits_fee_direct ),0 ) as total_profits_amount,
+		ifnull(sum( promote_user_fission ),0 ) as fission_user_count,
+		ifnull(sum( individual_fission ),0 ) as fission_company_count,
+		ifnull(sum( invoice_amount_fission ),0 ) as add_fission_invoice_amount,
+		ifnull(sum( profits_fee_fission ),0 ) as add_fission_profits_amount
+		FROM
+		t_e_user_order_statistics_day
+		<where>
+			( <!--非钻石用户（包括员工）-->
+				( user_id = #{userId} AND user_level_no != 5 ) OR
+				<!--钻石用户-->
+				( ( parent_user_id = #{userId} AND user_level_no = -1 ) OR user_id = #{userId} )
+			)
+			AND oem_code = #{oemCode}
+			<if test="flag != null and flag == 1">
+				AND DATE_FORMAT( statistics_day, '%Y-%m' ) = DATE_FORMAT( now(), '%Y-%m' )
+			</if>
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberAccountLevelProfitsRuleVO" id="accLeProfitsMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="parent_member_account" property="parentMemberAccount"/>
+		<result column="member_type" property="memberType"/>
+        <result column="attribution_employees_id" property="attributionEmployeesId"/>
+        <result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+        <result column="super_employees_id" property="superEmployeesId"/>
+        <result column="super_employees_account" property="superEmployeesAccount"/>
+        <result column="up_diamond_id" property="upDiamondId"/>
+        <result column="up_diamond_account" property="upDiamondAccount"/>
+        <result column="super_diamond_id" property="superDiamondId"/>
+        <result column="super_diamond_account" property="superDiamondAccount"/>
+        <result column="level_no" property="levelNo"/>
+        <result column="membership_fee" property="membershipFee"/>
+        <result column="profits_peers_two_membership_fee" property="profitsDiamondTwoMembershipFee"/>
+        <result column="profits_entrust_fee_rate" property="profitsEntrustFeeRate"/>
+        <result column="profits_peers_two_entrust_fee_rate" property="profitsDiamondTwoEntrustFeeRate"/>
+        <result column="service_fee_rate" property="serviceFeeRate"/>
+        <result column="profits_peers_two_service_fee_rate" property="profitsDiamondTwoServiceFeeRate"/>
+        <result column="consumption_discount" property="consumptionDiscount"/>
+    </resultMap>
+	<select id="queryMemberAccLevelProfit" resultMap="accLeProfitsMap">
+		SELECT
+			ma.id, ma.member_account, ma.member_phone, IFNULL(ma.real_name,ma.member_name) member_name, ma.parent_member_id, ma.parent_member_account,
+			ma.member_type, ma.attribution_employees_id, ma.attribution_employees_account, ma.up_diamond_id, ma.up_diamond_account,
+			ma.super_diamond_id, ma.super_diamond_account, ma.super_employees_id, ma.super_employees_account, ml.level_no,
+			IFNULL(mpr.profits_peers_two_membership_fee, 0) profits_peers_two_membership_fee,
+			IFNULL(mpr.profits_peers_two_entrust_fee_rate, 0) profits_peers_two_entrust_fee_rate,
+			IFNULL(mpr.profits_peers_two_service_fee_rate, 0) profits_peers_two_service_fee_rate,
+			IFNULL(mpr.service_fee_rate, 0) service_fee_rate, IFNULL(mpr.consumption_discount, 0) consumption_discount,
+			IFNULL(mpr.membership_fee, 0) membership_fee, IFNULL(mpr.profits_entrust_fee_rate, 0) profits_entrust_fee_rate
+		FROM
+		     t_e_member_account ma
+			 LEFT JOIN t_e_member_level ml ON ml.id = ma.member_level AND ml.oem_code = ma.oem_code
+			 LEFT JOIN t_e_member_profits_rules mpr ON mpr.user_level = ml.level_no AND mpr.oem_code = ma.oem_code AND mpr.status = 1
+		WHERE ma.id = #{userId}
+	</select>
+
+	<select id="queryInvoiceAmountByDate" resultType="long">
+		SELECT IFNULL(sum(i.invoice_amount), 0) invoice_amount
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode} and o.order_status = 7
+		<if test="month != null and month.trim() != '' ">
+			and date_format(i.complete_time,'%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+		</if>
+		<if test="year != null and year.trim() != '' ">
+			and YEAR(i.complete_time) = YEAR(NOW())
+		</if>
+	</select>
+
+	<select id="queryLastInvoice" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT i.add_time, i.invoice_amount
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode} and o.order_status = 7
+		order by i.add_time desc
+		limit 1
+	</select>
+	<update id="updateSubordinate" parameterType="com.yuqian.itax.user.entity.MemberAccountEntity">
+		UPDATE t_e_member_account
+		SET
+		 attribution_employees_id = NULL,
+		 attribution_employees_account = NULL,
+		 up_diamond_id = #{id},
+		 up_diamond_account = #{memberAccount},
+		 super_diamond_id = #{upDiamondId},
+		 super_diamond_account = #{upDiamondAccount},
+		 super_employees_id = #{attributionEmployeesId},
+		 super_employees_account = #{attributionEmployeesAccount}
+		WHERE
+			member_tree LIKE concat(#{memberTree}, '/%')
+	</update>
+
+	<update id="updateChannelInfoByMemberTree" parameterType="com.yuqian.itax.user.entity.MemberAccountEntity">
+		UPDATE t_e_member_account
+		SET
+			channel_service_id = #{channelServiceId},
+			channel_employees_id = #{channelEmployeesId},
+			update_time=now(),
+			update_user=#{updateUser}
+		WHERE
+			member_tree LIKE concat(#{memberTree}, '/%')
+	</update>
+
+	<!--推广中心-修改备注信息 add by Kaven 2020-06-18 -->
+	<update id="updateRemark" parameterType="com.yuqian.itax.user.entity.MemberAccountEntity">
+		update t_e_member_account
+		<set>
+			remark = #{remark},
+			update_time = #{updateTime},
+			update_user = #{updateUser}
+		</set>
+		<where>
+			id = #{id}
+			AND oem_code = #{oemCode}
+		</where>
+	</update>
+
+	<select id="queryMemberByNameOrPhone" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		FROM t_e_member_account
+		where id = #{memberId} AND oem_code = #{oemCode}
+		<if test="nameOrPhone != null and nameOrPhone.trim() != ''">
+			AND (real_name like concat('%',#{nameOrPhone},'%')
+			OR member_name like concat('%',#{nameOrPhone},'%')
+			OR member_phone like concat('%',#{nameOrPhone},'%'))
+		</if>
+	</select>
+
+	<select id="statExtendStdComCount" resultType="java.lang.Long">
+		SELECT IFNULL(COUNT(1),0) companyCount
+		FROM(
+			SELECT COUNT(DISTINCT i.company_id)
+			FROM t_e_invoice_order i
+			LEFT JOIN t_e_order t ON i.order_no = t.order_no
+			WHERE i.oem_code = #{oemCode} AND FIND_IN_SET(t.user_id, #{ids})
+			AND t.order_status = 7
+			GROUP BY i.company_id
+			HAVING SUM(i.invoice_amount) >= #{invoiceMinMoney}
+		) b
+	</select>
+
+	<!-- ########会员注销相关账号修改ni.jiang start######-->
+	<!-- 修改上级账号-->
+	<update id="updateParentMemberAccountByMemberId">
+		update t_e_member_account account INNER JOIN
+			(select id,member_account from t_e_member_account where id = #{id}) b
+			set account.parent_member_account = b.member_account
+			where account.parent_member_id = b.id
+	</update>
+
+	<!-- 修改 所属员工账号-->
+	<update id="updateAttributionEmployeesAccountByMemberId">
+		update t_e_member_account account INNER JOIN
+			(select id,member_account from t_e_member_account where id = #{id}) b
+			set account.attribution_employees_account = b.member_account
+			where account.attribution_employees_id = b.id
+	</update>
+
+	<!-- 修改 上级钻石会员账号-->
+	<update id="updateUpDiamondAccountByMemberId">
+		update t_e_member_account account INNER JOIN
+			(select id,member_account from t_e_member_account where id = #{id}) b
+			set account.up_diamond_account = b.member_account
+			where account.up_diamond_id = b.id
+	</update>
+
+	<!-- 修改 上上级钻石会员账号-->
+	<update id="updateSuperDiamondAccountByMemberId">
+		update t_e_member_account account INNER JOIN
+			(select id,member_account from t_e_member_account where id = #{id}) b
+			set account.super_diamond_account = b.member_account
+			where account.super_diamond_id = b.id
+	</update>
+
+	<!-- 修改 上上级员工账号-->
+	<update id="updateSuperEmployeesAccountByMemberId">
+		update t_e_member_account account INNER JOIN
+			(select id,member_account from t_e_member_account where id = #{id}) b
+			set account.super_employees_account = b.member_account
+			where account.super_employees_id = b.id
+	</update>
+	<!-- ########会员注销相关账号修改 end######-->
+
+
+    <resultMap type="com.yuqian.itax.user.entity.vo.AccountVO" id="accountVOMap">
+        <result column="id" property="bindAccountId"/>
+        <result column="member_account" property="account"/>
+        <result column="level_no" property="bindAccountLevel"/>
+        <result column="name" property="name"/>
+        <result column="member_phone" property="phone"/>
+    </resultMap>
+    <select id="queryMemberByPhone" parameterType="java.util.Map" resultMap="accountVOMap">
+        SELECT
+        m.id,
+        m.member_account,
+        l.level_no,
+        IFNULL( real_name, member_name ) name,
+        m.member_phone
+        FROM
+        t_e_member_account m
+        LEFT JOIN t_e_member_level l ON m.member_level = l.id AND m.oem_code = l.oem_code
+		<where>
+			status in (0,1) and l.level_no in(3,5)
+			<if test="phone != null">
+				AND m.member_phone = #{phone}
+			</if>
+			<if test="oemCode != null">
+				AND m.oem_code = #{oemCode}
+			</if>
+		</where>
+	</select>
+	<select id="queryMemberByPhoneAndOemCode" resultMap="baseEntityMap">
+		SELECT
+		 <include refid="Base_Columns"/>
+		FROM
+		t_e_member_account m
+		<where>
+			status in (0,1)
+			<if test="phone != null">
+				AND m.member_phone = #{phone}
+			</if>
+			<if test="oemCode != null">
+				AND m.oem_code = #{oemCode}
+			</if>
+		</where>
+	</select>
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberAccountOemInfoVO" id="oemMap">
+		<result column="params_value" property="paramsValue"/>
+		<result column="oem_code" property="oemCode"/>
+	</resultMap>
+
+	<select id="queryMemberOemInfo" resultMap="oemMap">
+		SELECT
+		m.oem_code,t.params_value
+		FROM
+		t_e_member_account m
+		left join t_e_oem_config t on m.oem_code = t.oem_code
+		<where>
+			m.id = #{id}
+			and t.params_code = 'is_open_channel'
+		</where>
+	</select>
+
+	<select id="queryProfitsByUserId" resultType="java.lang.Long">
+		SELECT
+		IFNULL(SUM(profits_amount),0)
+		FROM
+		t_e_profits_detail
+		WHERE
+		USER_ID = #{memberId} AND oem_code = #{oemCode} AND user_type != 1
+		<if test="flag != null and flag == 1">
+			AND DATE_FORMAT(add_time, '%Y-%m') = DATE_FORMAT(now(), '%Y-%m')
+		</if>
+	</select>
+
+	<!--==========国金助手============== -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.GjMemberInfoVO" id="gjMemberInfoVO">
+		<result column="id" property="id"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="channel_user_id" property="channelUserId"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="level_name" property="levelName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="status" property="status"/>
+		<result column="channel_service_id" property="channelServiceId"/>
+		<result column="channel_employees_id" property="channelEmployeesId"/>
+		<result column="channel_code" property="channelCode"/>
+		<result column="channel_product_code" property="channelProductCode"/>
+		<result column="status" property="status"/>
+	</resultMap>
+	<resultMap type="com.yuqian.itax.user.entity.vo.EmpManageOfPushListVO" id="empManageOfPushListVO">
+		<result column="id" property="userId"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="channel_user_id" property="channelUserId"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="level_name" property="levelName"/>
+		<result column="remark" property="remark"/>
+		<result column="pushMemberCount" property="pushMemberCount"/>
+		<result column="pushPersonalityCount" property="pushPersonalityCount"/>
+		<result column="monthInvoiceAmount" property="monthInvoiceAmount"/>
+		<result column="yearInvoiceAmount" property="yearInvoiceAmount"/>
+		<result column="totalInvoiceAmount" property="totalInvoiceAmount"/>
+	</resultMap>
+	<select id="getMemberInfoByChannelServiceId" resultMap="gjMemberInfoVO">
+		select m.id,IFNULL(m.real_name,m.member_name) member_name,m.member_account,l.level_no level_no,m.level_name,m.oem_code,m.channel_user_id,
+		m.channel_service_id,m.channel_employees_id,m.channel_code,m.channel_product_code,m.status
+		from t_e_member_account m,t_e_member_level l
+		where m.member_level = l.id and m.oem_code = l.oem_code and m.oem_code = #{oemCode} and m.member_type = 1
+		<if test="memberName != null and memberName != ''">
+			and (m.member_account like concat('%', #{memberName}, '%') or m.real_name like concat('%', #{memberName}, '%')  or member_name like concat('%', #{memberName}, '%'))
+		</if>
+		<if test="channelServiceId!=null">
+			and (m.channel_service_id = #{channelServiceId} or m.channel_employees_id = #{channelServiceId})
+		</if>
+		<if test="channelUserId!=null">
+			and m.channel_user_id = #{channelUserId}
+		</if>
+		<if test="statusList!=null">
+			and m.status in
+			<foreach collection="statusList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="isFission!=null">
+			<if test="isFission == 1">
+				and m.parent_member_id is not null
+			</if>
+			<if test="isFission == 0">
+				and m.parent_member_id is null
+			</if>
+		</if>
+	</select>
+
+	<select id="getUserPushResultListByChannelUser" resultMap="empManageOfPushListVO">
+		select m.id ,IFNULL(m.real_name,m.member_name) member_name,m.oem_code,m.member_phone,l.level_no,m.level_name,m.remark,m.channel_user_id,
+		(select count(1) from t_e_member_account where parent_member_id = m.id and oem_code = m.oem_code and status != 2) pushMemberCount,
+		(select count(1) from t_e_member_company comp where comp.member_id = m.id and comp.oem_code=m.oem_code and status != 4) pushPersonalityCount,
+		sum(case when DATE_FORMAT(io.complete_time,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m') and o.order_status = 7 then io.invoice_amount else 0 end)  monthInvoiceAmount,
+		sum(case when DATE_FORMAT(io.complete_time,'%Y') = DATE_FORMAT(now(),'%Y') and o.order_status = 7 then io.invoice_amount else 0 end) yearInvoiceAmount,
+		sum(case when o.order_status = 7 then io.invoice_amount else 0 end) totalInvoiceAmount
+		from t_e_member_account m
+		inner join t_e_member_level l on m.member_level = l.id and m.oem_code = l.oem_code
+		left join t_e_order o on o.oem_code = m.oem_code and o.user_id = m.id and o.oem_code=m.oem_code and o.order_type = 6
+		left join t_e_invoice_order io on o.order_no = io.order_no and o.oem_code = io.oem_code
+		where m.oem_code = #{oemCode} and m.member_type != 2
+		<if test="channelServiceId!=null">
+			and (m.channel_service_id = #{channelServiceId} or m.channel_employees_id = #{channelServiceId})
+		</if>
+		<if test="channelUserId!=null">
+			and m.channel_user_id = #{channelUserId}
+		</if>
+		<if test="memberId!=null">
+			and m.id = #{memberId}
+		</if>
+		<if test="statusList!=null">
+			and m.status in
+			<foreach collection="statusList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="isFission!=null">
+			<if test="isFission == 1">
+				and m.parent_member_id is not null
+			</if>
+			<if test="isFission == 0">
+				and m.parent_member_id is null
+			</if>
+		</if>
+		group by m.id
+	</select>
+	<resultMap type="com.yuqian.itax.user.entity.vo.AgentMemberVO" id="agentMemberInfoVO">
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="level_name" property="levelName"/>
+		<result column="add_time" property="registTime"/>
+		<result column="status" property="status"/>
+		<result column="channel_service_id" property="channelServiceId"/>
+		<result column="channel_employees_id" property="channelEmployeesId"/>
+		<result column="channel_code" property="channelCode"/>
+		<result column="channel_product_code" property="channelProductCode"/>
+		<result column="isFission" property="isFission"/>
+		<result column="id" property="memberId"/>
+		<result column="channel_user_id" property="channelUserId"/>
+	</resultMap>
+	<resultMap type="com.yuqian.itax.user.entity.vo.GjPushStatisInfoVO" id="gjPushStatisInfoVO">
+		<result column="totalFissionCompanyCount" property="totalFissionCompanyCount"/>
+		<result column="totalDirectCompanyCount" property="totalDirectCompanyCount"/>
+		<result column="totalFissionUserCount" property="totalFissionUserCount"/>
+		<result column="totalDirectUserCount" property="totalDirectUserCount"/>
+		<result column="monthFissionCompanyCount" property="monthFissionCompanyCount"/>
+		<result column="monthDirectCompanyCount" property="monthDirectCompanyCount"/>
+		<result column="monthFissionUserCount" property="monthFissionUserCount"/>
+		<result column="monthDirectUserCount" property="monthDirectUserCount"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="channel_service_id" property="channelServiceId"/>
+		<result column="channel_employees_id" property="channelEmployeesId"/>
+		<result column="channel_code" property="channelCode"/>
+		<result column="channel_product_code" property="channelProductCode"/>
+	</resultMap>
+	<select id="queryAgentMemberList" resultMap="agentMemberInfoVO">
+			SELECT
+				m.id,
+				IFNULL(m.real_name, m.member_name) member_name,
+				m.member_phone,
+				l.level_no level_no,
+				m.level_name,
+				m.add_time,
+				m.channel_service_id,
+				m.channel_employees_id,
+				m.channel_code,
+				m.channel_product_code,
+				case when m.parent_member_id is not null then 1 else 0 end isFission,
+				m. STATUS,
+				m.channel_user_id
+			FROM
+				t_e_member_account m,
+				t_e_member_level l
+			WHERE
+				m.member_level = l.id and m.member_type != 2
+			AND m.oem_code = l.oem_code and m.channel_service_id is not null
+			<if test="memberName != null and memberName != ''">
+				and case when m.real_name is null or m.real_name = ''
+				then m.member_name like concat('%',#{memberName},'%')
+				else m.real_name like concat('%',#{memberName},'%') end
+			</if>
+			<if test="memberPhone != null and memberPhone != ''">
+				and m.member_phone  like concat('%',#{memberPhone},'%')
+			</if>
+			<if test="memberLevel != null ">
+				and l.level_no =#{memberLevel}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and m.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="channelServiceIdList!=null and channelServiceIdList.size()>0">
+				and m.channel_service_id in
+				<foreach collection="channelServiceIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="channelEmployeesIdList!=null and channelEmployeesIdList.size()>0">
+				and m.channel_employees_id in
+				<foreach collection="channelEmployeesIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="channelUserIds!=null and channelUserIds.size()>0">
+				and m.channel_user_id in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="isFission!=null">
+				<if test="isFission == 1">
+					and m.parent_member_id is not null
+				</if>
+				<if test="isFission == 0">
+					and m.parent_member_id is null
+				</if>
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and m.channel_code  =#{channelCode}
+			</if>
+			<if test="channelProductCode != null and channelProductCode != ''">
+				and m.channel_product_code  =#{channelProductCode}
+			</if>
+			<if test="status!=null">
+				and m.status =#{status}
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and m.oem_code =#{oemCode}
+			</if>
+	</select>
+
+	<select id="userPushResultStatisByChannelUser" resultMap="gjPushStatisInfoVO">
+	select a.oem_code,a.channel_service_id,a.channel_employees_id,a.channel_product_code,a.channel_code,a.monthDirectUserCount,a.monthFissionUserCount,a.monthDirectCompanyCount,a.monthFissionCompanyCount,
+	b.totalDirectUserCount,b.totalFissionUserCount,b.totalDirectCompanyCount,b.totalFissionCompanyCount from (
+	select m.oem_code,m.channel_service_id,m.channel_employees_id,m.channel_product_code,m.channel_code,
+		 sum(case when  m.status != 2 and m.member_type = 1 and DATE_FORMAT(m.add_time,'%Y-%M') = DATE_FORMAT(now(),'%Y-%M') and m.parent_member_id is null then 1 else 0 end) 'monthDirectUserCount',
+		 sum(case when m.status != 2 and m.member_type = 1 and DATE_FORMAT(m.add_time,'%Y-%M') = DATE_FORMAT(now(),'%Y-%M') and m.parent_member_id is not null then 1 else 0 end) 'monthFissionUserCount',
+			(select count(1) from t_e_member_company where DATE_FORMAT(add_time,'%Y-%M') = DATE_FORMAT(now(),'%Y-%M') and status != 4 and member_id in (select id from t_e_member_account
+		<where>
+		<if test="channelServicerUsers !=null">
+			and channel_service_id = m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			and channel_employees_id = m.channel_employees_id
+		</if>
+		 and oem_code = m.oem_code and status != 2 and parent_member_id is null and member_type=1
+		</where>))'monthDirectCompanyCount',
+		(select count(1) from t_e_member_company where DATE_FORMAT(add_time,'%Y-%M') = DATE_FORMAT(now(),'%Y-%M') and status != 4 and member_id in (select id from t_e_member_account
+		<where>
+		<if test="channelServicerUsers !=null">
+			and channel_service_id = m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			and channel_employees_id = m.channel_employees_id
+		</if>
+		and oem_code = m.oem_code and status != 2 and parent_member_id is not null and member_type=1
+		</where>))'monthFissionCompanyCount'
+	 from t_e_member_account m
+	where m.channel_service_id is not null
+	and m.oem_code = #{oemCode}
+		<if test="channelServicerUsers!=null">
+			and m.channel_service_id in
+			<foreach collection="channelServicerUsers" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="channelEmployeesUsers!=null">
+			and m.channel_employees_id in
+			<foreach collection="channelEmployeesUsers" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	group by m.oem_code
+		<if test="channelServicerUsers !=null">
+			,m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			,m.channel_employees_id
+		</if>
+	) a ,(
+	select m.oem_code,m.channel_service_id,m.channel_employees_id,m.channel_product_code,m.channel_code,
+		 sum(case when m.status != 2 and m.member_type = 1 and m.parent_member_id is null then 1 else 0 end) 'totalDirectUserCount',
+			 sum(case when m.status != 2 and m.member_type = 1 and m.parent_member_id is not null then 1 else 0 end) 'totalFissionUserCount',
+			(select count(1) from t_e_member_company where status != 4 and member_id in (select id from t_e_member_account
+		<where>
+		<if test="channelServicerUsers !=null">
+			and channel_service_id = m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			and channel_employees_id = m.channel_employees_id
+		</if>
+		  and oem_code = m.oem_code and status != 2 and parent_member_id is null and member_type=1
+		</where>))'totalDirectCompanyCount',
+		(select count(1) from t_e_member_company where status != 4 and member_id in (select id from t_e_member_account
+		<where>
+		<if test="channelServicerUsers !=null">
+			and channel_service_id = m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			and channel_employees_id = m.channel_employees_id
+		</if>
+		and oem_code = m.oem_code and status != 2 and parent_member_id is not null and member_type=1
+	</where>))'totalFissionCompanyCount'
+	 from t_e_member_account m
+	where m.channel_service_id is not null
+		and m.oem_code = #{oemCode}
+		<if test="channelServicerUsers!=null">
+			and m.channel_service_id in
+			<foreach collection="channelServicerUsers" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="channelEmployeesUsers!=null">
+			and m.channel_employees_id in
+			<foreach collection="channelEmployeesUsers" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	group by m.oem_code
+		<if test="channelServicerUsers !=null">
+			,m.channel_service_id
+		</if>
+		<if test="channelEmployeesUsers !=null">
+			,m.channel_employees_id
+		</if>
+	) b
+	where a.channel_service_id = b.channel_service_id and (a.channel_employees_id = b.channel_employees_id or (a.channel_employees_id is null and b.channel_employees_id is null)) and a.oem_code = b.oem_code
+	</select>
+
+	<update id="updateChannelServiceIdByChannelUserId">
+		update t_e_member_account set channel_service_id = #{channelServiceId} ,channel_employees_id = #{channelEmployeesId},
+			update_time = now(),update_user='国金助手'
+   		where `status` != 2 and channel_code = #{channelCode} and oem_code = #{oemCode} and member_type = 1
+		and channel_user_id  in
+		<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- 国金数据统计 -->
+	<select id="gjCompanyStatisByChannelUser" resultType="Map">
+		select count(c.id) totalCompanyNum,
+		ifnull(sum(case when DATE_FORMAT(c.add_time,'%Y-%M') = DATE_FORMAT(now(),'%Y-%M') then 1 else 0 end),0) monthCompanyNum
+		from t_e_member_account a,t_e_member_company c where a.id = c.member_id and a.oem_code = c.oem_code and c.`status` != 4
+		<if test="oemCode!=null and oemCode!=''">
+			and c.oem_code = #{oemCode}
+		</if>
+		<if test="channelServiceIds!=null">
+			and (a.channel_service_id in
+			<foreach collection="channelServiceIds" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			or
+			a.channel_employees_id in
+			<foreach collection="channelServiceIds" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+		<if test="channelUserIds !=null">
+			and a.channel_user_id in
+			<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="queryIdByAccessPartyId" resultType="long">
+		select id
+		from t_e_member_account
+		where access_party_id = #{accessPartyId} and status != 2
+	</select>
+
+    <select id="queryByAccessPartyId" resultType="com.yuqian.itax.user.entity.MemberAccountEntity">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_member_account
+		WHERE access_party_id = #{accessPartyId} AND status != 2
+	</select>
+
+	<resultMap id="RegisterPreOrderVOMap" type="com.yuqian.itax.user.entity.vo.RegPreOrderVO">
+		<result property="orderNo" column="order_no"/>
+		<result property="registeredCapital" column="registered_capital"/>
+		<result property="companyType" column="company_type"/>
+	</resultMap>
+    <select id="queryRegOrderByOrderNo" resultMap="RegisterPreOrderVOMap">
+		SELECT o.order_no, o.registered_capital, o.company_type
+		FROM t_e_register_order o
+		WHERE o.order_no = #{orderNo}
+	</select>
+</mapper>

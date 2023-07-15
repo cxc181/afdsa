@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.workorder.dao.WorkOrderMapper">
+    <resultMap type="com.yuqian.itax.workorder.entity.WorkOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="oem_name" property="oemName"/>
+			<result column="work_order_no" property="workOrderNo"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="order_type" property="orderType"/>
+			<result column="work_order_type" property="workOrderType"/>
+			<result column="work_order_status" property="workOrderStatus"/>
+			<result column="work_order_desc" property="workOrderDesc"/>
+			<result column="processor_name" property="processorName"/>
+			<result column="customer_service_id" property="customerServiceId"/>
+			<result column="customer_service_account" property="customerServiceAccount"/>
+			<result column="customer_service_name" property="customerServiceName"/>
+			<result column="processor_account" property="processorAccount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="processor_type" property="processorType"/>
+			<result column="account_statement" property="accountStatement"/>
+			<result column="park_name" property="parkName"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, oem_name, work_order_no, order_no, order_type, work_order_type, work_order_status, work_order_desc, processor_name, processor_account,customer_service_id,customer_service_account,customer_service_name, add_time, add_user, update_time, update_user, remark,processor_type, account_statement
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.workorder.entity.vo.WorkOrderListVO" id="workOrderEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="work_order_no" property="workOrderNo"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="order_type" property="orderType"/>
+		<result column="work_order_type" property="workOrderType"/>
+		<result column="work_order_status" property="workOrderStatus"/>
+		<result column="work_order_desc" property="workOrderDesc"/>
+		<result column="processor_name" property="processorName"/>
+		<result column="customer_service_account" property="customerServiceAccount"/>
+		<result column="customer_service_name" property="customerServiceName"/>
+		<result column="processor_account" property="processorAccount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="processor_type" property="processorType"/>
+		<result column="park_name" property="parkName"/>
+		<result column="crowd_label_name" property="crowdLabelName"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+	<select id="queryWorkOrderList" resultMap="workOrderEntityMap" parameterType="com.yuqian.itax.workorder.entity.query.WorkOrderQuery">
+		select * from (
+			SELECT
+				wo.id,
+				wo.work_order_no,
+				a.real_name,
+				a.member_account,
+				wo.order_no,
+				case when wo.order_type=1 then (select ro.operator_name from t_e_register_order  ro where ro.order_no=wo.order_no)
+				when wo.order_type=2 then (select mc.operator_name from t_e_member_company  mc,t_e_invoice_order io where mc.id=io.company_id and io.order_no=wo.order_no )   end operator_name,
+				wo.work_order_type,
+				wo.add_time,
+				wo.work_order_status,
+				wo.customer_service_name,
+				wo.processor_name,
+				wo.processor_account,
+				wo.oem_name,
+				(select park_name from t_e_park where id = o.park_id) park_name,
+				cl.crowd_label_name,
+				r.taxpayer_type
+			FROM
+				t_e_work_order wo
+			LEFT JOIN t_e_order o ON o.order_no=wo.order_no
+			LEFT JOIN t_e_register_order r on r.order_no = wo.order_no
+			LEFT JOIN t_e_invoice_order inv on inv.order_no = wo.order_no
+			LEFT JOIN t_e_member_company cn on cn.id = inv.company_id
+			LEFT JOIN t_e_member_account a ON a.id=o.user_id
+			LEFT JOIN t_e_crowd_label cl ON cl.id=o.crowd_label_id
+
+		<where>
+				o.user_type='1'
+				<if test="workOrderType != null and workOrderType != '' and workOrderType == 1 and isSupplement != null and isSupplement != '' and isSupplement == 2">
+					and wo.work_order_no not in (select wo.work_order_no FROM t_e_work_order wo
+					INNER JOIN t_e_order_attachment t ON wo.order_no = t.order_no)
+				</if>
+				<if test="workOrderType != null and workOrderType != '' and workOrderType == 1 and isSupplement != null and isSupplement != '' and isSupplement == 1">
+					and  wo.order_no IN (SELECT DISTINCT order_no FROM t_e_order_attachment)
+				</if>
+				<if test="oemCode != null and oemCode != ''">
+					 and wo.oem_code=#{oemCode}
+				</if>
+				<if test="workOrderNo != null and workOrderNo != ''">
+					and wo.work_order_no like concat('%',#{workOrderNo},'%')
+				</if>
+				<if test="orderNo != null and orderNo != ''">
+					and wo.order_no like concat('%',#{orderNo},'%')
+				</if>
+				<if test="realName != null and realName != ''">
+					and a.real_name like concat('%',#{realName},'%')
+				</if>
+				<if test="memberAccount != null and memberAccount != ''">
+					and a.member_account like concat('%',#{memberAccount},'%')
+				</if>
+				<if test="workOrderType != null and workOrderType != ''">
+					and wo.work_order_type =#{workOrderType}
+				</if>
+				<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+					and wo.add_time between #{startDate} and #{endDate}
+				</if>
+				<if test="workOrderStatus != null ">
+					and wo.work_order_status =#{workOrderStatus}
+				</if>
+				<if test="workOrderStatuss != null and workOrderStatuss != ''">
+					and wo.work_order_status in (${workOrderStatuss})
+				</if>
+				<if test="processorName != null and processorName != ''">
+					and wo.processor_name like concat('%',#{processorName},'%')
+				</if>
+				<if test="processorAccount != null and processorAccount != ''">
+					and wo.processor_account like concat('%',#{processorAccount},'%')
+				</if>
+				<if test="customerServiceName != null and customerServiceName != ''">
+					and wo.customer_service_name like concat('%',#{customerServiceName},'%')
+				</if>
+				<if test="customerServiceId != null and customerServiceId != ''">
+					and wo.customer_service_id =#{customerServiceId}
+				</if>
+				<if test="customerServiceAccount != null and customerServiceAccount != ''">
+					and (wo.customer_service_account =#{customerServiceAccount} or wo.customer_service_account  is null)
+				</if>
+				<if test="parkId != null and parkId != ''">
+					and o.park_id=#{parkId}
+				</if>
+				<if test="crowdLabelName != null and crowdLabelName != ''">
+					and cl.crowd_label_name like concat('%',#{crowdLabelName},'%')
+				</if>
+				<if test="registeredName != null and registeredName != ''">
+					and cn.company_name like concat('%',#{registeredName},'%')
+				</if>
+				<if test="isAllCodes != null">
+					and r.is_all_codes  = #{isAllCodes}
+				</if>
+				<if test="taxpayerType != null">
+					and (inv.taxpayer_type  = #{taxpayerType}
+					or r.taxpayer_type  = #{taxpayerType}  )
+				</if>
+				<if test="isPay != null and isPay == 1">
+					and (r.payment_voucher  is not null or (r.pay_type = 1 and o.is_self_paying = 1))
+				</if>
+				<if test="isPay != null and isPay == 2">
+					and r.payment_voucher  is null and r.pay_type != 1
+				</if>
+				<if test="invoiceType != null">
+					and inv.invoice_type  = #{invoiceType}
+				</if>
+				<if test="companyType != null">
+					and (r.company_type  = #{companyType} or cn.company_type = #{companyType})
+				</if>
+			</where>
+			order by wo.add_time asc
+		) oo
+		<where>
+			<if test="operatorName != null and operatorName != ''">
+				and oo.operator_name like concat('%',#{operatorName},'%')
+			</if>
+		</where>
+	</select>
+
+	<!--查询可取消状态的工单 add by Kaven 2019-12-27 -->
+	<select id="queryOrderByStatus" parameterType="com.yuqian.itax.workorder.entity.WorkOrderEntity" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+		from
+			t_e_work_order
+		where
+			order_no = #{orderNo} and oem_code = #{oemCode} and work_order_status in (0, 1)
+	</select>
+
+	<select id="queryWorkOrderByOrderNo" parameterType="com.yuqian.itax.workorder.entity.WorkOrderEntity" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from
+		t_e_work_order
+		where
+		order_no = #{orderNo}
+		order By add_time desc
+	</select>
+    <select id="queryByUserId" resultType="com.yuqian.itax.workorder.entity.WorkOrderEntity">
+		SELECT wo.`id`, wo.`customer_service_account`
+		FROM t_e_work_order wo
+		INNER JOIN t_e_order o ON o.`order_no` = wo.`order_no`
+		WHERE 1 = 1
+		<if test="filterableOrder != null and filterableOrder.trim() != ''">
+			AND wo.`order_no` != #{filterableOrder}
+		</if>
+		<if test="workOrderType != null">
+			AND wo.`work_order_type` = #{workOrderType}
+		</if>
+		<if test="userId != null">
+			AND o.`user_id`= #{userId}
+		</if>
+		<if test="addTime != null">
+			AND DATE_FORMAT(wo.`add_time`, '%Y-%m-%d') >= DATE_FORMAT(#{addTime}, '%Y-%m-%d')
+		</if>
+		ORDER BY wo.`id` DESC
+	</select>
+
+</mapper>

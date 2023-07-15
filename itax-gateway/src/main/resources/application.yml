@@ -1,0 +1,36 @@
+server:
+  servlet:
+    context-path: /itax-gateway
+  port: 8091
+  max-http-header-size: 100000
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  freemarker:
+    request-context-attribute: rc
+  profiles:
+    active: @profileActive@
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50Mb
+      max-request-size: 50Mb
+  mvc:
+    view:
+      prefix: classpath:/static/
+      suffix : .html
+
+  #公共配置与profiles选择无关
+mybatis:
+  config-location: classpath:/mybatis-config.xml
+  mapper-locations: classpath*:/mapper/*/*.xml
+  type-aliases-package: com.yuqian.itax
+mapper:
+  not-empty: false
+  identity: MYSQL
+
+#sign签名白名单设置
+request:
+  uri:
+    whitelist: /,/doc.html,/swagger-ui.html,/swagger-resources,/api-docs,/webjars/**,/webjars/img,/api-docs-ext,/ui,/chunk-vendors.9ff0f717.js,/app.b299109b.js,/app.ba351dc1.css,/favicon.ico

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.RegisterOrderChangeRecordMapper">
+    <resultMap type="com.yuqian.itax.order.entity.RegisterOrderChangeRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="order_status" property="orderStatus"/>
+			<result column="operator_name" property="operatorName"/>
+			<result column="shop_name" property="shopName"/>
+			<result column="organization_form" property="organizationForm"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="business_address" property="businessAddress"/>
+			<result column="contact_phone" property="contactPhone"/>
+			<result column="email" property="email"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_reverse" property="idCardReverse"/>
+			<result column="id_card_number" property="idCardNumber"/>
+			<result column="expire_date" property="expireDate"/>
+			<result column="ratify_tax" property="ratifyTax"/>
+			<result column="business_scope" property="businessScope"/>
+			<result column="registered_name" property="registeredName"/>
+			<result column="pay_order_no" property="payOrderNo"/>
+			<result column="sign_img" property="signImg"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="discount_amount" property="discountAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="regist_file" property="registFile"/>
+			<result column="alert_number" property="alertNumber"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="company_type" property="companyType"/>
+			<result column="video_addr" property="videoAddr"/>
+			<result column="customer_service_phone" property="customerServicePhone"/>
+			<result column="id_card_addr" property="idCardAddr"/>
+			<result column="registered_capital" property="registeredCapital"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+			<result column="is_auto_create" property="isAutoCreate"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, order_status, operator_name, shop_name, organization_form, industry_id, business_address, contact_phone,
+			email, id_card_front, id_card_reverse, id_card_number,expire_date, ratify_tax, business_scope, registered_name, pay_order_no, sign_img,
+			order_amount, discount_amount, pay_amount, regist_file, alert_number, agent_account, add_time, add_user, update_time, update_user,
+			 remark, company_type,video_addr,customer_service_phone, id_card_addr, registered_capital, is_auto_create
+    </sql>
+</mapper>

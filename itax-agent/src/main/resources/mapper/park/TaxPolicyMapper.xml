@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.TaxPolicyMapper">
+    <resultMap type="com.yuqian.itax.park.entity.TaxPolicyEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="company_type" property="companyType"/>
+			<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+			<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+			<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+			<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+			<result column="surcharge_breaks_amount" property="surchargeBreaksAmount"/>
+			<result column="surcharge_breaks_cycle" property="surchargeBreaksCycle"/>
+			<result column="transact_require" property="transactRequire"/>
+			<result column="read_content" property="readContent"/>
+			<result column="status" property="status"/>
+			<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+			<result column="quarter_invoice_amount" property="quarterInvoiceAmount"/>
+			<result column="month_invoice_amount" property="monthInvoiceAmount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="policy_file_url" property="policyFileUrl"/>
+			<result column="levy_way" property="levyWay"/>
+			<result column="income_levy_type" property="incomeLevyType"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+			<result column="park_policy_desc" property="parkPolicyDesc"/>
+			<result column="special_considerations" property="specialConsiderations"/>
+			<result column="stamp_duty_breaks_cycle" property="stampDutyBreaksCycle"/>
+			<result column="is_stamp_duty_halved" property="isStampDutyHalved"/>
+			<result column="water_conservancy_fund_breaks_cycle" property="waterConservancyFundBreaksCycle"/>
+			<result column="is_water_conservancy_fund_halved" property="isWaterConservancyFundHalved"/>
+			<result column="income_taxable_income_breaks" property="incomeTaxableIncomeBreaks"/>
+			<result column="income_tax_relief_ratio" property="incomeTaxReliefRatio"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, company_type, VAT_breaks_amount, VAT_breaks_cycle, income_tax_breaks_amount, income_tax_breaks_cycle, surcharge_breaks_amount,surcharge_breaks_cycle,transact_require,read_content,
+		 status, total_invoice_amount, add_time, add_user, update_time, update_user, remark, policy_file_url, levy_way,income_levy_type,quarter_invoice_amount,month_invoice_amount,taxpayer_type,park_policy_desc,special_considerations,
+		 stamp_duty_breaks_cycle,is_stamp_duty_halved,water_conservancy_fund_breaks_cycle,is_water_conservancy_fund_halved, income_taxable_income_breaks, income_tax_relief_ratio
+    </sql>
+
+	<select id="queryTaxPolicyCompanyTypeByParkId" resultType="map">
+		select park_id parkId,company_type companyType from t_e_tax_policy where park_id = #{parkId} group by company_type order by company_type
+	</select>
+
+	<select id="queryTaxPolicyByParkIdAndCompanyType" resultMap="baseEntityMap">
+		select  <include refid="Base_Columns"/>
+		from t_e_tax_policy
+		where park_id=#{parkId} and company_type = #{companyType}
+		<if test="taxpayerType !=null ">
+			and taxpayer_type = #{taxpayerType}
+		</if>
+		order by add_time desc
+	</select>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.TaxPolicySelectVO" id="taxPolicySelectMap">
+		<id column="id" property="id"/>
+		<result column="company_type" property="companyType"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="policy_file_url" property="policyFileUrl"/>
+		<result column="quarter_invoice_amount" property="quarterInvoiceAmount"/>
+	</resultMap>
+
+	<select id="queryTaxPolicySelectByParkId" resultMap="taxPolicySelectMap">
+		select id,company_type,total_invoice_amount,policy_file_url,quarter_invoice_amount
+		from t_e_tax_policy
+		where park_id=#{parkId}
+		order by add_time desc
+	</select>
+
+	<select id="queryTaxPolicy" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_tax_policy
+		where park_id = #{parkId} and company_type = #{companyType}
+		<choose>
+			<when test="taxType == 1">
+				and income_tax_breaks_cycle = #{calType}
+			</when>
+			<when test="taxType == 2">
+				and VAT_breaks_cycle = #{calType}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.IndustryPolicyVO" id="industryRulesMap">
+		<result column="policy_id" property="policyId"/>
+		<result column="tax_type" property="taxType"/>
+		<result column="industry_id" property="industryId"/>
+		<result column="industry_name" property="industryName"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+	</resultMap>
+	<select id="listIndustryRules" resultMap="industryRulesMap" parameterType="com.yuqian.itax.park.entity.query.IndustryPolicyQuery">
+		select
+			distinct config.industry_id, config.policy_id, industry.industry_name, policy.VAT_breaks_cycle,config.tax_type
+		from
+			t_e_tax_policy policy
+		inner join
+			t_e_tax_rules_config config on policy.id = config.policy_id
+		left join
+			t_e_industry industry on industry.id = config.industry_id
+		where
+			policy.id = #{policyId} and  config.tax_type = #{taxType}
+		<if test="industryId != null">
+			and config.industry_id = #{industryId}
+		</if>
+		<choose>
+			<when test="industryName != null and industryName.trim() != ''">
+				and industry.industry_name like concat('%', #{industryName}, '%')
+			</when>
+			<otherwise>
+				and config.industry_id is not null
+			</otherwise>
+		</choose>
+		order by config.add_time desc
+	</select>
+
+	<select id="queryTaxPolicyByParkId" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+		from
+			t_e_tax_policy
+		where
+			park_id = #{parkId}
+			and company_type = #{companyType}
+			and taxpayer_type = #{taxpayerType}
+		limit 1
+	</select>
+    <select id="queryByIncomeLevyType" resultMap="baseEntityMap">
+		SELECT p.*
+		FROM t_e_tax_policy p
+		INNER JOIN t_e_park park ON park.`id` = p.`park_id`
+		INNER JOIN t_r_oem_park op ON op.`park_id` = park.`id`
+		WHERE park.`status` IN(1,3) AND p.`income_levy_type` = #{incomeLevyType} AND op.`oem_code` = #{oemCode}
+	</select>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.roles.dao.RolesMapper">
+    <resultMap type="com.yuqian.itax.roles.entity.RolesEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="role_ame" property="roleAme"/>
+			<result column="role_code" property="roleCode"/>
+			<result column="type" property="type"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, role_name, role_code, type, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<select id="getRolesEntityByRoleCode" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		from sys_e_roles
+		where role_code=#{roleCode} and oem_code=#{oemCode}
+	</select>
+	<select id="queryListByOrgId" resultMap="baseEntityMap">
+		select  *
+		from sys_e_roles r
+		<where>
+			r.status!=0
+			<if test="orgId != null and orgId != ''">
+				and r.org_id=#{orgId}
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and r.role_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and r.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="type != null">
+				and r.type =#{type}
+			</if>
+			order by r.add_time desc
+		</where>
+	</select>
+</mapper>

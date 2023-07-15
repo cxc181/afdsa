@@ -1,0 +1,36 @@
+server:
+  servlet:
+    context-path: /itax-api
+  port: 8088
+  max-http-header-size: 100000
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  freemarker:
+    request-context-attribute: rc
+  profiles:
+    active:  @profileActive@
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100Mb
+      max-request-size: 100Mb
+  mvc:
+    view:
+      prefix: classpath:/static/
+      suffix : .html
+
+  #公共配置与profiles选择无关
+mybatis:
+  config-location: classpath:/mybatis-config.xml
+  mapper-locations: classpath*:/mapper/*/*.xml
+  type-aliases-package: com.yuqian.itax
+mapper:
+  not-empty: false
+  identity: MYSQL
+
+#sign签名白名单设置
+request:
+  uri:
+    whitelist: /,/getAppTypeInfo,/mposProtocol.html,/memberRegist.htm,/operatorThreeVerify.data,/checkFourKeysService.data,/wechatNotify,/queryBankCard,/yishui/notify

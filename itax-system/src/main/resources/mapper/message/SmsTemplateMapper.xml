@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.message.dao.SmsTemplateMapper">
+    <resultMap type="com.yuqian.itax.message.entity.SmsTemplateEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="template_type" property="templateType"/>
+			<result column="template_content" property="templateContent"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, template_type, template_content, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!--根据模板类型和OCEM机构码查询短信模板 add by Kaven 2019/12/6 15:33 -->
+	<select id="getByTemplateType" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			t_e_sms_template
+		<where >
+			template_type = #{templateType} AND status = '1'
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code = #{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode.trim() == ''">
+				and (oem_code is null or oem_code='')
+			</if>
+		</where>
+	</select>
+
+	<insert id="addBatch">
+		insert into t_e_sms_template(oem_code, template_type, template_content, status,add_time,add_user,remark)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{oemCode}, #{item.templateType}, #{item.templateContent}, #{item.status},  #{addTime},#{account}, #{item.remark})
+		</foreach>
+	</insert>
+</mapper>

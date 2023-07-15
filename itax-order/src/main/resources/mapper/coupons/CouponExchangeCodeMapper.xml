@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.coupons.dao.CouponExchangeCodeMapper">
+    <resultMap type="com.yuqian.itax.coupons.entity.CouponExchangeCodeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="exchange_code" property="exchangeCode"/>
+			<result column="exchange_name" property="exchangeName"/>
+			<result column="limited_number" property="limitedNumber"/>
+			<result column="exchange_number_person" property="exchangeNumberPerson"/>
+			<result column="has_exchange_number" property="hasExchangeNumber"/>
+			<result column="status" property="status"/>
+			<result column="coupons_id" property="couponsId"/>
+			<result column="start_date" property="startDate"/>
+			<result column="end_date" property="endDate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, exchange_code, exchange_name, limited_number, exchange_number_person, has_exchange_number, status, coupons_id, start_date, end_date, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<resultMap type="com.yuqian.itax.coupons.entity.vo.CouponExchangeCodeVO" id="voEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="exchange_code" property="exchangeCode"/>
+		<result column="exchange_name" property="exchangeName"/>
+		<result column="limited_number" property="limitedNumber"/>
+		<result column="exchange_number_person" property="exchangeNumberPerson"/>
+		<result column="has_exchange_number" property="hasExchangeNumber"/>
+		<result column="status" property="status"/>
+		<result column="coupons_code" property="couponsCode"/>
+		<result column="coupons_name" property="couponsName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="date" property="date"/>
+		<result column="start_date" property="startDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="add_time" property="addTime"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	<select id="queryCouponExchangeCodeList" resultMap="voEntityMap">
+		SELECT
+			cec.id,
+			cec.exchange_code,
+			cec.exchange_name,
+			cec.limited_number,
+			cec.exchange_number_person,
+			cec.has_exchange_number,
+			cec.`status`,
+			c.coupons_code,
+			c.coupons_name,
+			CONCAT(	date_format(cec.start_date,'%Y-%m-%d'),'~',date_format(cec.end_date,'%Y-%m-%d')	) date,
+			cec.start_date,
+			cec.end_date,
+			o.oem_code,
+			o.oem_name,
+			cec.add_time,
+			cec.remark
+		FROM
+			t_e_coupon_exchange_code cec
+		LEFT JOIN t_e_coupons c ON c.id = cec.coupons_id
+		LEFT JOIN t_e_oem o ON o.oem_code = c.oem_code
+		<where>
+			<if test="id != null ">
+				and cec.id =#{id}
+			</if>
+			<if test="exchangeName != null and exchangeName.trim() != ''">
+				and cec.exchange_name like concat('%',#{exchangeName},'%')
+			</if>
+			<if test="exchangeCode != null and exchangeCode.trim() != ''">
+				and cec.exchange_code like concat('%',#{exchangeCode},'%')
+			</if>
+			<if test="couponsName != null and couponsName.trim() != ''">
+				and c.coupons_name like concat('%',#{couponsName},'%')
+			</if>
+			<if test="couponsCode != null and couponsCode.trim() != ''">
+				and c.coupons_code like concat('%',#{couponsCode},'%')
+			</if>
+			<if test="status != null ">
+				and cec.status =#{status}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and c.oem_code =#{oemCode}
+			</if>
+			<if test="startDate != null and startDate.trim() != ''">
+				and date_format(cec.add_time,'%Y-%m-%d')  <![CDATA[>=]]> #{startDate}
+			</if>
+			<if test="endDate != null and endDate.trim() != ''">
+				and date_format(cec.add_time,'%Y-%m-%d') <![CDATA[<=]]> #{endDate}
+			</if>
+		</where>
+		order by cec.add_time desc
+	</select>
+
+	<select id="queryOverTimeCouponExchangeCodeEntity" resultMap="baseEntityMap">
+		SELECT
+			c.*
+		FROM
+			t_e_coupon_exchange_code c
+		where
+			date_format(c.end_date,'%Y%m%d')  <![CDATA[<]]> date_format(now(),'%Y%m%d') and c.status in (0,1,4)
+	</select>
+
+	<select id="queryStartTimeCouponExchangeCodeEntity" resultMap="baseEntityMap">
+		SELECT
+			c.*
+		FROM
+			t_e_coupon_exchange_code c
+		where
+			date_format(c.start_date,'%Y%m%d')  <![CDATA[<=]]> date_format(now(),'%Y%m%d') and c.status in (0)
+	</select>
+
+	<select id="queryCouponExchangeCodeByCouponsId" resultMap="baseEntityMap">
+		SELECT
+			c.*
+		FROM
+			t_e_coupon_exchange_code c
+		where
+			c.coupons_id=#{couponsId} and c.status !=3
+	</select>
+
+	<select id="queryByExchangeCode" resultMap="baseEntityMap">
+		SELECT
+		  <include refid="Base_Columns"/>
+		FROM
+		  `t_e_coupon_exchange_code` cec
+		WHERE
+		  cec.`exchange_code` = #{exchangeCode}
+	</select>
+</mapper>

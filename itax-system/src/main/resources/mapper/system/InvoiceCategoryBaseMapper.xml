@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.InvoiceCategoryBaseMapper">
+    <resultMap type="com.yuqian.itax.system.entity.InvoiceCategoryBaseEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="tax_classification_code" property="taxClassificationCode"/>
+			<result column="tax_classification_name" property="taxClassificationName"/>
+			<result column="tax_classification_abbreviation" property="taxClassificationAbbreviation"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, tax_classification_code, tax_classification_name, tax_classification_abbreviation, goods_name, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.InvoiceCategoryBaseVO" id="voMap">
+
+		<id column="id" property="id"/>
+		<result column="tax_classification_code" property="taxClassificationCode"/>
+		<result column="tax_classification_name" property="taxClassificationName"/>
+		<result column="tax_classification_abbreviation" property="taxClassificationAbbreviation"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="flag" property="flag"/>
+	</resultMap>
+	<select id="queryInvoiceCategoryBaseList" resultMap="voMap">
+		SELECT DISTINCT
+			ICB.*,
+			CASE WHEN cic.id IS NULL AND ic.id IS NULL  AND OIC.id IS NULL THEN 	0 ELSE 	1 END flag
+		FROM
+		t_e_invoice_category_base icb
+		LEFT JOIN t_e_company_invoice_category cic ON icb.id = cic.category_base_id
+		LEFT JOIN t_e_invoice_category IC ON icb.id = IC.category_base_id
+		LEFT JOIN t_r_oem_invoice_category OIC ON icb.id = OIC.category_base_id
+		<where>
+			<if test="taxClassificationCode != null and taxClassificationCode.trim() != ''">
+				and icb.tax_classification_code like concat('%',#{taxClassificationCode},'%')
+			</if>
+			<if test="taxClassificationName != null and taxClassificationName.trim() != ''">
+				and icb.tax_classification_name like concat('%',#{taxClassificationName},'%')
+			</if>
+			<if test="taxClassificationAbbreviation != null and taxClassificationAbbreviation.trim() != ''">
+				and icb.tax_classification_abbreviation like concat('%',#{taxClassificationAbbreviation},'%')
+			</if>
+			<if test="goodsName != null and goodsName.trim() != ''">
+				and icb.goods_name like concat('%',#{goodsName},'%')
+			</if>
+			<if test="companyId != null ">
+				and icb.id in(SELECT category_base_id from t_e_company_invoice_category where company_id=#{companyId})
+			</if>
+		</where>
+	</select>
+
+	<insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+		insert into t_e_invoice_category_base
+		(tax_classification_code, tax_classification_name, tax_classification_abbreviation, goods_name, add_time, add_user,
+		update_time, update_user, remark)
+		values
+			(
+			#{taxClassificationCode},
+			#{taxClassificationName},
+			#{taxClassificationAbbreviation},
+			#{goodsName},
+			#{addTime},
+			#{addUser},
+			#{updateTime},
+			#{updateUser},
+			#{remark},
+			)
+	</insert>
+	<resultMap type="com.yuqian.itax.system.entity.vo.TaxClassificationAbbreviationVO" id="taxClassificationAbbreviationMap">
+
+		<id column="id" property="id"/>
+		<result column="tax_classification_abbreviation" property="taxClassificationAbbreviation"/>
+	</resultMap>
+	<select id="queryTaxClassificationAbbreviationList" resultType="java.lang.String">
+		SELECT
+			DISTINCT ICB.tax_classification_abbreviation
+		FROM
+		t_e_invoice_category_base icb
+		<where>
+			<if test="taxClassificationAbbreviation != null and taxClassificationAbbreviation.trim() != ''">
+				and icb.tax_classification_abbreviation like concat('%',#{taxClassificationAbbreviation},'%')
+			</if>
+			<if test="companyId != null ">
+				and icb.id in(SELECT category_base_id from t_e_company_invoice_category where company_id=#{companyId})
+			</if>
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.GroupSelectVO" id="groupSelectMap">
+
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+	</resultMap>
+	<select id="queryInvoiceCategoryBaseGroupSelect" resultMap="groupSelectMap">
+		select id,CONCAT(tax_classification_abbreviation,'*',goods_name) name from t_e_invoice_category_base
+	</select>
+
+	<resultMap id="SearchInvoiceCategoryBaseMap" type="com.yuqian.itax.system.entity.vo.SearchInvoiceCategoryBaseVO">
+		<id column="id" property="id"/>
+		<result column="invoice_category" property="invoiceCategory"/>
+	</resultMap>
+	<select id="queryCategoryByKeyWord" resultMap="SearchInvoiceCategoryBaseMap">
+		SELECT
+			icb.`id`,
+			CONCAT(icb.`tax_classification_abbreviation`,'*',icb.`goods_name`) invoice_category
+		FROM
+			`t_e_invoice_category_base` icb
+		WHERE
+			(icb.`tax_classification_abbreviation` LIKE CONCAT('%', #{keyWord}, '%') OR icb.`goods_name` LIKE CONCAT('%', #{keyWord}, '%'))
+		ORDER BY icb.`id`
+		LIMIT 30
+	</select>
+	
+	<select id="findVatFeeRateByCategoryId" resultType="java.math.BigDecimal">
+		select c.vat_fee_rate from t_e_invoice_category_base b,t_r_classification_code_vat c
+		where b.tax_classification_code = c.tax_classification_code
+		and b.id = #{categoryId}
+	</select>
+
+	<select id="getInvoiceCategoryOne" resultType="java.lang.Integer">
+		     select count(1) from t_e_invoice_category_base
+		     where tax_classification_code = #{taxClassificationCode}
+	</select>
+
+
+</mapper>

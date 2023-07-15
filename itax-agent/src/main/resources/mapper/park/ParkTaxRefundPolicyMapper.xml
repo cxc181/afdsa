@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkTaxRefundPolicyMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkTaxRefundPolicyEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="min_value" property="minValue"/>
+			<result column="max_value" property="maxValue"/>
+			<result column="reward_rate" property="rewardRate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, min_value, max_value, reward_rate, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkTaxRefundPolicyVO" id="voMap">
+		<id column="id" property="id"/>
+		<result column="park_id" property="parkId"/>
+		<result column="min_value" property="minValue"/>
+		<result column="max_value" property="maxValue"/>
+		<result column="reward_rate" property="rewardRate"/>
+	</resultMap>
+
+	<!--根据园区id查询园区返税政策数据-->
+	<select id="queryList" resultMap="voMap">
+		     select
+		           id,
+		           park_id,
+		           min_value,
+		           max_value,
+		           reward_rate
+		     from t_e_park_tax_refund_policy
+		     where park_id = #{parkId}
+	</select>
+
+	<!--根据园区id删除原有的返税政策数据-->
+	<delete id="deletePolicyAll" parameterType="java.lang.Long">
+		   delete from t_e_park_tax_refund_policy where park_id = #{parkId}
+	</delete>
+
+</mapper>

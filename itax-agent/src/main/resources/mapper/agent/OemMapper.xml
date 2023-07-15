@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.OemMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.OemEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_name" property="oemName"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="oem_user" property="oemUser"/>
+			<result column="oem_phone" property="oemPhone"/>
+			<result column="oem_status" property="oemStatus"/>
+			<result column="oem_logo" property="oemLogo"/>
+			<result column="company_name" property="companyName"/>
+			<result column="net_address" property="netAddress"/>
+			<result column="settlement_cycle" property="settlementCycle"/>
+			<result column="settlement_type" property="settlementType"/>
+			<result column="customer_service_tel" property="customerServiceTel"/>
+			<result column="commission_service_fee_rate" property="commissionServiceFeeRate"/>
+			<result column="diamond_commission_service_fee_rate" property="diamondCommissionServiceFeeRate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="oem_secret" property="oemSecret"/>
+			<result column="is_inviter_check" property="isInviterCheck"/>
+			<result column="is_open_promotion" property="isOpenPromotion"/>
+			<result column="employees_limit" property="employeesLimit"/>
+			<result column="version_code" property="versionCode"/>
+			<result column="use_way" property="useWay"/>
+			<result column="min_consumption_wallet_limit" property="minConsumptionWalletLimit"/>
+			<result column="min_commission_wallet_limit" property="minCommissionWalletLimit"/>
+			<result column="inviter_account" property="inviterAccount"/>
+			<result column="default_sms_code" property="defaultSmsCode"/>
+			<result column="is_big_customer" property="isBigCustomer"/>
+			<result column="work_audit_way" property="workAuditWay"/>
+			<result column="agreement_template_id" property="agreementTemplateId"/>
+			<result column="official_seal_img" property="officialSealImg"/>
+			<result column="official_seal_img_public" property="officialSealImgPublic"/>
+			<result column="is_send_audit_bills_message" property="isSendAuditBillsMessage"/>
+			<result column="is_other_oem_pay" property="isOtherOemPay"/>
+			<result column="other_pay_oemcode" property="otherPayOemcode"/>
+			<result column="is_checkstand" property="isCheckstand"/>
+			<result column="oem_appid" property="oemAppid"/>
+		   <result column="receiving_bank_account_branch" property="receivingBankAccountBranch"/>
+		   <result column="receiving_bank_account" property="receivingBankAccount"/>
+			<result column="consumption_withdraw_explain" property="consumptionWithdrawExplain"/>
+			<result column="consumption_withdraw_free_credit" property="consumptionWithdrawFreeCredit"/>
+			<result column="consumption_withdraw_rate" property="consumptionWithdrawRate"/>
+			<result column="max_commission_withdraw_single_limit" property="maxCommissionWithdrawSingleLimit"/>
+			<result column="commission_withdraw_month_limit" property="commissionWithdrawMonthLimit"/>
+			<result column="recharge_days" property="rechargeDays"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_name, oem_code, oem_user, oem_phone, oem_status, oem_logo, company_name, net_address,commission_service_fee_rate, diamond_commission_service_fee_rate, add_time, add_user, update_time, update_user, remark,
+		settlement_cycle,settlement_type,customer_service_tel,oem_secret,is_inviter_check, is_open_promotion,employees_limit,version_code,use_way,
+		min_consumption_wallet_limit,min_commission_wallet_limit,inviter_account,default_sms_code,is_big_customer,work_audit_way,agreement_template_id,official_seal_img,official_seal_img_public,is_send_audit_bills_message,
+		is_other_oem_pay,other_pay_oemcode,oem_appid,is_checkstand,receiving_bank_account_branch,receiving_bank_account,consumption_withdraw_explain,consumption_withdraw_free_credit,consumption_withdraw_rate,
+		max_commission_withdraw_single_limit,commission_withdraw_month_limit, recharge_days
+    </sql>
+	<resultMap type="com.yuqian.itax.agent.entity.vo.OemListVO" id="oemListMap">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="phone" property="phone"/>
+		<result column="company_name" property="companyName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_logo" property="oemLogo"/>
+		<result column="net_address" property="netAddress"/>
+		<result column="oem_status" property="oemStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="is_inviter_check" property="isInviterCheck"/>
+		<result column="is_open_promotion" property="isOpenPromotion"/>
+		<result column="employees_limit" property="employeesLimit"/>
+		<result column="is_other_oem_pay" property="isOtherOemPay"/>
+		<result column="other_pay_oemcode" property="otherPayOemcode"/>
+		<result column="is_checkstand" property="isCheckstand"/>
+		<result column="otherPayOemName" property="otherPayOemName"/>
+	</resultMap>
+	<select id="getOem" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from
+		t_e_oem
+		<where>
+			<if test="oemCode != null and oemCode != ''">
+				and oem_code=#{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode == ''">
+				and (oem_code is null or oem_code='')
+			</if>
+		</where>
+	</select>
+	<select id="queryOemList" resultMap="oemListMap" parameterType="com.yuqian.itax.agent.entity.query.OemQuery">
+		select  o.id,u.username,ue.phone,o.company_name,o.oem_name,o.oem_logo,o.net_address,o.add_time,o.oem_status,o.oem_code,
+		o.is_inviter_check, o.is_open_promotion,o.employees_limit,o.commission_service_fee_rate,o.diamond_commission_service_fee_rate,
+		o.is_other_oem_pay,o.other_pay_oemcode,o.is_checkstand,(select oem_name from t_e_oem where oem_code = o.other_pay_oemcode and is_checkstand = 1) otherPayOemName
+		from t_e_oem o
+		inner join  sys_e_user u on u.oem_code=o.oem_code and u.platform_type=2 and u.account_type=1
+		left join  sys_e_user_extend ue on ue.user_id=u.id
+		<where>
+			<if test="oemName != null and oemName.trim() != '' ">
+				and o.oem_name  like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCompanyName != null and oemCompanyName.trim() != '' ">
+				and o.company_name like concat('%',#{oemCompanyName},'%')
+			</if>
+			<if test="status != null ">
+				and o.oem_status = #{status}
+			</if>
+			<if test="otherPayOemName != null and otherPayOemName.trim() != '' ">
+				and o.is_other_oem_pay = 1 and o.other_pay_oemcode in (select oem_code from t_e_oem where oem_name like concat('%',#{otherPayOemName},'%'))
+			</if>
+		</where>
+		order by o.add_time desc
+
+	</select>
+
+	<!-- 查询当天需要结算的机构信息 -->
+	<select id="findOemInfosBySettlementCycle" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns" />
+		from t_e_oem where ((settlement_type = 1 and settlement_cycle = DATE_FORMAT(now(),'%w'))
+		or (settlement_type = 2 and settlement_cycle = DATE_FORMAT(now(),'%d')) or settlement_type = 3)
+		and oem_status = 1
+	</select>
+
+	<select id="queryOemInfoByOemCodeAndWorkAuditWay" resultMap="oemListMap">
+		select
+		id
+		from t_e_oem
+		<where>
+			oem_status != 0
+			<if test="oemCode != null and oemCode != ''">
+				and oem_code=#{oemCode}
+			</if>
+			<if test="workAuditWay != null">
+				and work_audit_way=#{workAuditWay}
+			</if>
+		</where>
+	</select>
+
+    <select id="querySecretKey" resultType="java.util.Map">
+		SELECT o.`oem_secret`, p.`access_party_secret`
+		FROM `t_e_oem` o
+		INNER JOIN `t_e_oem_access_party` p
+		ON p.`oem_code` = o.`oem_code`
+		WHERE p.`access_party_code` = #{accessPartyCode}
+		AND o.`oem_code` = #{oemCode}
+	</select>
+
+	<select id="getOemIdByAgreementTemplateId" resultType="Long">
+		SELECT o.id
+		FROM t_e_oem o
+		WHERE o.oem_status != 0 and o.agreement_template_id = #{agreementTemplateId}
+	</select>
+</mapper>

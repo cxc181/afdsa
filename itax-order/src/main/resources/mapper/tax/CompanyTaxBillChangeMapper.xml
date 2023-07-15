@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.CompanyTaxBillChangeMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.CompanyTaxBillChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_tax_bill_id" property="companyTaxBillId"/>
+			<result column="park_tax_bill_id" property="parkTaxBillId"/>
+			<result column="tax_bill_year" property="taxBillYear"/>
+			<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+			<result column="park_id" property="parkId"/>
+			<result column="company_id" property="companyId"/>
+			<result column="zp_invoice_amount" property="zpInvoiceAmount"/>
+			<result column="pp_invoice_amount" property="ppInvoiceAmount"/>
+			<result column="invoice_money" property="invoiceMoney"/>
+			<result column="already_tax_money" property="alreadyTaxMoney"/>
+			<result column="should_tax_money" property="shouldTaxMoney"/>
+			<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+			<result column="supplement_tax_money" property="supplementTaxMoney"/>
+			<result column="vat_taxable_income_amount" property="vatTaxableIncomeAmount"/>
+			<result column="vat_rate" property="vatRate"/>
+			<result column="vat_already_tax_money" property="vatAlreadyTaxMoney"/>
+			<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+			<result column="vat_recoverable_tax_money" property="vatRecoverableTaxMoney"/>
+			<result column="vat_supplement_tax_money" property="vatSupplementTaxMoney"/>
+			<result column="tax_bill_status" property="taxBillStatus"/>
+			<result column="affirm_time" property="affirmTime"/>
+			<result column="complete_time" property="completeTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="additional_taxable_income_amount" property="additionalTaxableIncomeAmount"/>
+			<result column="additional_rate" property="additionalRate"/>
+			<result column="additional_already_tax_money" property="additionalAlreadyTaxMoney"/>
+			<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+			<result column="additional_recoverable_tax_money" property="additionalRecoverableTaxMoney"/>
+			<result column="additional_supplement_tax_money" property="additionalSupplementTaxMoney"/>
+			<result column="income_taxable_income_amount" property="incomeTaxableIncomeAmount"/>
+			<result column="income_levy_way" property="incomeLevyWay"/>
+			<result column="taxable_income_rate" property="taxableIncomeRate"/>
+			<result column="income_rate" property="incomeRate"/>
+			<result column="income_already_tax_money" property="incomeAlreadyTaxMoney"/>
+			<result column="income_should_tax_money" property="incomeShouldTaxMoney"/>
+			<result column="income_recoverable_tax_money" property="incomeRecoverableTaxMoney"/>
+			<result column="income_supplement_tax_money" property="incomeSupplementTaxMoney"/>
+			<result column="over_time_is_sms" property="overTimeIsSms"/>
+			<result column="iit_voucher_pic" property="iitVoucherPic"/>
+			<result column="vat_voucher_pic" property="vatVoucherPic"/>
+			<result column="ticket_pic" property="ticketPic"/>
+			<result column="iit_vouchers_status" property="iitVouchersStatus"/>
+			<result column="vat_vouchers_status" property="vatVouchersStatus"/>
+			<result column="cancellation_amount" property="cancellationAmount"/>
+			<result column="year_cost_amount" property="yearCostAmount"/>
+			<result column="year_income_amount" property="yearIncomeAmount"/>
+			<result column="cost_item_imgs" property="costItemImgs"/>
+			<result column="ticket_free_income_amount" property="ticketFreeIncomeAmount"/>
+			<result column="vat_deduction_taxfee" property="vatDeductionTaxfee"/>
+			<result column="additional_deduction_taxfee" property="additionalDeductionTaxfee"/>
+			<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+			<result column="quarter_cost_amount" property="quarterCostAmount"/>
+			<result column="quarter_income_amount" property="quarterIncomeAmount"/>
+			<result column="sign_img" property="signImg"/>
+			<result column="income_levy_type" property="incomeLevyType"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="generate_type" property="generateType"/>
+			<result column="descrip" property="descrip"/>
+			<result column="income_tax_refund_amount" property="incomeTaxRefundAmount"/>
+			<result column="income_tax_year_freeze_amount" property="incomeTaxYearFreezeAmount"/>
+			<result column="is_send_notice" property="isSendNotice"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillChangeVO" id="infoMap">
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="descrip" property="descrip"/>
+	</resultMap>
+    <sql id="Base_Columns">
+		id, company_tax_bill_id, park_tax_bill_id, tax_bill_year, tax_bill_seasonal, park_id, company_id, zp_invoice_amount, pp_invoice_amount, invoice_money, already_tax_money, should_tax_money, recoverable_tax_money, supplement_tax_money, vat_taxable_income_amount, vat_rate, vat_already_tax_money, vat_should_tax_money, vat_recoverable_tax_money, vat_supplement_tax_money, tax_bill_status, affirm_time, complete_time, add_time, add_user, update_time, update_user, remark, additional_taxable_income_amount, additional_rate, additional_already_tax_money, additional_should_tax_money, additional_recoverable_tax_money, additional_supplement_tax_money, income_taxable_income_amount, income_levy_way, taxable_income_rate, income_rate, income_already_tax_money, income_should_tax_money, income_recoverable_tax_money, income_supplement_tax_money, over_time_is_sms, iit_voucher_pic, vat_voucher_pic, ticket_pic, iit_vouchers_status, vat_vouchers_status, cancellation_amount, year_cost_amount, year_income_amount, cost_item_imgs, ticket_free_income_amount, vat_deduction_taxfee, additional_deduction_taxfee, iit_deduction_amount, quarter_cost_amount, quarter_income_amount, sign_img, income_levy_type, order_no, generate_type,income_tax_refund_amount,income_tax_year_freeze_amount,is_send_notice
+    </sql>
+	
+	<select id="getCompanyTaxBillChange" resultMap="infoMap">
+		select tax_bill_status,descrip,add_time,add_user
+		from t_e_company_tax_bill_change where company_tax_bill_id = #{companyTaxBillId}
+		order by add_time desc
+	</select>
+</mapper>

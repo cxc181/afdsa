@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberLevelMapper">
+    <resultMap type="com.yuqian.itax.user.entity.MemberLevelEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="level_name" property="levelName"/>
+			<result column="level_no" property="levelNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="regist_company_num" property="registCompanyNum"/>
+			<result column="invoice_min_money" property="invoiceMinMoney"/>
+			<result column="complete_invoice_company_num" property="completeInvoiceCompanyNum"/>
+			<result column="is_pay_upgrade" property="isPayUpgrade"/>
+			<result column="pay_money" property="payMoney"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberUpgradeRulesVO" id="memberUpgradeRulesVO">
+
+		<id column="id" property="id"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="regist_company_num" property="registCompanyNum"/>
+		<result column="invoice_min_money" property="invoiceMinMoney"/>
+		<result column="complete_invoice_company_num" property="completeInvoiceCompanyNum"/>
+		<result column="is_pay_upgrade" property="isPayUpgrade"/>
+		<result column="pay_money" property="payMoney"/>
+		<result column="membership_fee" property="membershipFee"/>
+		<result column="profits_entrust_fee_rate" property="profitsEntrustFeeRate"/>
+		<result column="profits_peers_two_entrust_fee_rate" property="profitsDiamondTwoEntrustFeeRate"/>
+		<result column="service_fee_rate" property="serviceFeeRate"/>
+		<result column="profits_peers_two_service_fee_rate" property="profitsDiamondTwoServiceFeeRate"/>
+		<result column="profits_peers_two_membership_fee" property="profitsPeersTwoMembershipFee"/>
+		<result column="consumption_discount" property="consumptionDiscount"/>
+		<result column="total_invoice_money" property="totalInvoiceMoney"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, level_name, level_no, oem_code,regist_company_num, invoice_min_money, complete_invoice_company_num, is_pay_upgrade, pay_money, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryMemberLevel" parameterType="java.util.Map" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+	    from
+	    	t_e_member_level
+		where
+			oem_code = #{oemCode} and level_no = #{levelNo}
+	</select>
+
+	<!-- 查询会员升级信息 add by Kaven 2020-06-03 -->
+	<select id="selectUpgradeInfo" resultMap="memberUpgradeRulesVO">
+		select
+			t.level_no,
+			t.id,
+			t.oem_code,
+			t.regist_company_num,
+			t.invoice_min_money,
+			t.complete_invoice_company_num,
+			t.pay_money,
+			t.total_invoice_money,
+			r.membership_fee,
+			r.service_fee_rate,
+			r.consumption_discount,
+			r.profits_entrust_fee_rate,
+			r.profits_peers_two_entrust_fee_rate,
+			r.profits_peers_two_service_fee_rate,
+			r.profits_peers_two_membership_fee
+		from
+			t_e_member_level t
+			left join t_e_member_profits_rules r on t.level_no = r.user_level
+		where
+			t.oem_code = #{oemCode} and r.oem_code = #{oemCode}
+		group by
+			t.level_no
+	</select>
+
+	<insert id="addBatch">
+		insert into t_e_member_level
+		( level_name, level_no, oem_code,add_time,add_user,remark)
+		values
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(
+			#{item.levelName},
+			#{item.levelNo},
+			#{oemCode},
+			#{addTime},
+			#{account},
+			#{item.remark}
+			)
+		</foreach>
+	</insert>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberLevelVO" id="memberLevelVOMap">
+		<id column="id" property="id"/>
+		<result column="level_name" property="levelName"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="regist_company_num" property="registCompanyNum"/>
+		<result column="invoice_min_money" property="invoiceMinMoney"/>
+		<result column="complete_invoice_company_num" property="completeInvoiceCompanyNum"/>
+	</resultMap>
+	<select id="selectCanUpgradeList" resultMap="memberLevelVOMap">
+		select
+			id, level_name, level_no,regist_company_num,invoice_min_money,complete_invoice_company_num
+		from
+			t_e_member_level
+		where
+			oem_code = #{oemCode}
+			and level_no > (select level_no from t_e_member_level where id = #{id})
+		order by
+			level_no ${orderBy}
+	</select>
+</mapper>

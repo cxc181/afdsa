@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.ActivityMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.ActivityEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="activity_name" property="activityName"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="start_time" property="startTime"/>
+			<result column="end_time" property="endTime"/>
+			<result column="status" property="status"/>
+			<result column="activity_rules" property="activityRules"/>
+			<result column="activity_way" property="activityWay"/>
+			<result column="activity_discount" property="activityDiscount"/>
+			<result column="activity_product_type" property="activityProductType"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, activity_name, oem_code, start_time, end_time, status, activity_rules, activity_way, activity_discount, activity_product_type, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

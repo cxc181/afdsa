@@ -1,0 +1,32 @@
+spring:
+  #mysql
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.16.100.40:3306/itax_yanshi
+    username: itax_yanshi
+    password: Itax_yanshi_7890
+  #redis
+  redis:
+      database: 11
+      host: 172.16.100.40
+      port: 6379
+      password: redis_test123
+  rabbitmq:
+    host: 172.16.100.40
+    port: 5672
+    username: rabbit_itax_pre
+    password: 123456
+    virtual-host: /itax_pre
+
+# log config
+xxl:
+  job:
+    admin:
+      addresses: http://172.16.100.40:8080/xxl-job-admin
+    executor:
+      appname: itax-xxl-job-pre
+      ip: 172.16.100.46
+      port: 6666
+      logpath: /app/logs/itax-xxl-job/jobhandler
+      logretentiondays: -1
+    accessToken:

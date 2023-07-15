@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.ConsumptionInvoiceOrderChangeMapper">
+    <resultMap type="com.yuqian.itax.order.entity.ConsumptionInvoiceOrderChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="invoice_amount" property="invoiceAmount"/>
+			<result column="company_name" property="companyName"/>
+			<result column="company_address" property="companyAddress"/>
+			<result column="ein" property="ein"/>
+			<result column="phone" property="phone"/>
+			<result column="regist_address" property="registAddress"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="bank_number" property="bankNumber"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="category_id" property="categoryId"/>
+			<result column="category_name" property="categoryName"/>
+			<result column="invoice_type" property="invoiceType"/>
+			<result column="invoice_way" property="invoiceWay"/>
+			<result column="invoice_type_name" property="invoiceTypeName"/>
+			<result column="complete_time" property="completeTime"/>
+			<result column="bill_to_email" property="billToEmail"/>
+			<result column="consumption_order_rela" property="consumptionOrderRela"/>
+			<result column="consumption_invoice_remark" property="consumptionInvoiceRemark"/>
+			<result column="invoice_operator" property="invoiceOperator"/>
+			<result column="invoice_imgs" property="invoiceImgs"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, invoice_amount, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address,
+		 province_code, province_name, city_code, city_name, district_code, district_name, category_id,category_name, invoice_type, invoice_way, invoice_type_name, complete_time, bill_to_email,
+		  consumption_order_rela, consumption_invoice_remark, invoice_operator,invoice_imgs, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

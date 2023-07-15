@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.message.dao.NoticeManageMapper">
+    <resultMap type="com.yuqian.itax.message.entity.NoticeManageEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="notice_type" property="noticeType"/>
+			<result column="notice_position" property="noticePosition"/>
+			<result column="open_mode" property="openMode"/>
+			<result column="notice_title" property="noticeTitle"/>
+			<result column="notice_content" property="noticeContent"/>
+			<result column="notice_subtitle" property="noticeSubtitle"/>
+			<result column="jump_url" property="jumpUrl"/>
+			<result column="notice_obj" property="noticeObj"/>
+			<result column="user_phones" property="userPhones"/>
+			<result column="release_way" property="releaseWay"/>
+			<result column="send_time" property="sendTime"/>
+			<result column="out_time" property="outTime"/>
+			<result column="send_status" property="sendStatus"/>
+			<result column="user_phones" property="userPhones"/>
+			<result column="user_list_url" property="userListUrl"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, notice_type, notice_position, open_mode, notice_title, notice_content,notice_subtitle, jump_url, notice_obj, user_phones, release_way, send_time,out_time, send_status, user_phones, user_list_url, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+
+	<resultMap type="com.yuqian.itax.message.entity.vo.NoticeManageVO" id="voEntityMap">
+		<id column="id" property="id"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="notice_type" property="noticeType"/>
+		<result column="notice_title" property="noticeTitle"/>
+		<result column="notice_obj" property="noticeObj"/>
+		<result column="send_time" property="sendTime"/>
+		<result column="out_time" property="outTime"/>
+		<result column="send_status" property="sendStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+	</resultMap>
+	<select id="getNoticeManage" resultMap="voEntityMap">
+		SELECT m.id,M.NOTICE_TYPE,
+		M.NOTICE_TITLE,
+		M.NOTICE_OBJ,
+		M.ADD_TIME,
+		M.SEND_TIME,
+		M.OUT_TIME,
+		M.SEND_STATUS,
+		M.ADD_USER,
+		M.OEM_CODE,
+		O.OEM_NAME
+		FROM T_E_NOTICE_MANAGE M
+		LEFT JOIN T_E_OEM O ON O.OEM_CODE=M.OEM_CODE
+		<where>
+			<if test="noticeType!=null">
+				and m.notice_type=#{noticeType}
+			</if>
+			<if test="noticeTitle!=null and noticeTitle!=''">
+				and m.notice_title like  concat('%',#{noticeTitle},'%')
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and m.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="sendStatus!=null">
+				and m.send_status=#{sendStatus}
+			</if>
+			<if test="addUser!=null and addUser!=''">
+				and m.add_user like  concat('%',#{addUser},'%')
+			</if>
+			<if test="oemName!=null and oemName!=''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode!=null and oemCode!=''">
+				and o.oem_code = #{oemCode}
+			</if>
+		</where>
+		ORDER BY ADD_TIME DESC
+
+	</select>
+
+
+	<!-- 查询已发布的悬浮公告列表 -->
+	<resultMap type="com.yuqian.itax.message.entity.vo.NoticeManageListVO" id="publishedListMap">
+		<id column="id" property="id"/>
+		<result column="open_mode" property="openMode"/>
+		<result column="notice_title" property="noticeTitle"/>
+		<result column="jump_url" property="jumpUrl"/>
+	</resultMap>
+	<select id="getPublishedList" resultMap="publishedListMap">
+		SELECT id, open_mode, notice_title, jump_url
+		FROM t_e_notice_manage
+		WHERE notice_type = 3 AND send_status = 1 AND oem_code = #{oemCode}
+	</select>
+
+
+	<!-- 查询悬浮公告详情 -->
+	<select id="getDetail" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"></include>
+		FROM t_e_notice_manage
+		WHERE oem_code = #{oemCode} AND id = #{id}
+	</select>
+</mapper>

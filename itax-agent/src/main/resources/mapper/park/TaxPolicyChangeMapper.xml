@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.TaxPolicyChangeMapper">
+    <resultMap type="com.yuqian.itax.park.entity.TaxPolicyChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="policy_id" property="policyId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="company_type" property="companyType"/>
+			<result column="levy_way" property="levyWay"/>
+			<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+			<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+			<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+			<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+			<result column="surcharge_breaks_amount" property="surchargeBreaksAmount"/>
+			<result column="surcharge_breaks_cycle" property="surchargeBreaksCycle"/>
+			<result column="transact_require" property="transactRequire"/>
+			<result column="status" property="status"/>
+			<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+			<result column="policy_file_url" property="policyFileUrl"/>
+			<result column="income_levy_type" property="incomeLevyType"/>
+			<result column="read_content" property="readContent"/>
+			<result column="tax_rules_config_json" property="taxRulesConfigJson"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+			<result column="park_policy_desc" property="parkPolicyDesc"/>
+			<result column="special_considerations" property="specialConsiderations"/>
+			<result column="stamp_duty_breaks_cycle" property="stampDutyBreaksCycle"/>
+			<result column="is_stamp_duty_halved" property="isStampDutyHalved"/>
+			<result column="water_conservancy_fund_breaks_cycle" property="waterConservancyFundBreaksCycle"/>
+			<result column="is_water_conservancy_fund_halved" property="isWaterConservancyFundHalved"/>
+			<result column="income_taxable_income_breaks" property="incomeTaxableIncomeBreaks"/>
+			<result column="income_tax_relief_ratio" property="incomeTaxReliefRatio"/>
+    </resultMap>
+
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.TaxPolicyChangeVO" id="infoMap">
+		<result column="tax_rules_config_json" property="taxRulesConfigJson"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, policy_id, park_id, company_type, levy_way, VAT_breaks_amount, VAT_breaks_cycle, income_tax_breaks_amount, income_tax_breaks_cycle, surcharge_breaks_amount, surcharge_breaks_cycle,
+		transact_require, status, total_invoice_amount, policy_file_url, income_levy_type, read_content, tax_rules_config_json, add_time, add_user, update_time, update_user, remark,taxpayer_type,park_policy_desc,special_considerations,
+		 stamp_duty_breaks_cycle,is_stamp_duty_halved,water_conservancy_fund_breaks_cycle,is_water_conservancy_fund_halved, income_taxable_income_breaks, income_tax_relief_ratio
+    </sql>
+
+	<select id="getTaxPolicyChangeList" resultMap="infoMap">
+		select tax_rules_config_json,add_time,add_user,remark
+		from t_e_tax_policy_change
+		where park_id = #{parkId} and policy_id = #{policyId}
+		 <if test="type != null and type == 2">
+			 and remark like '%其他政策%'
+		 </if>
+			<if test="type == null or type != 2">
+				and remark not like '%其他政策%'
+			</if>
+		 order by add_time desc
+	</select>
+
+</mapper>

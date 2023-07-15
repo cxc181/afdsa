@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.OemAccessPartyMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.OemAccessPartyEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="access_party_name" property="accessPartyName"/>
+			<result column="access_party_code" property="accessPartyCode"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="access_party_secret" property="accessPartySecret"/>
+			<result column="status" property="status"/>
+			<result column="login_time" property="loginTime"/>
+		    <result column="applet_address" property="appletAddress"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.agent.entity.vo.OemAccessPartyVO" id="listMap">
+		<id column="id" property="id"/>
+		<result column="access_party_name" property="accessPartyName"/>
+		<result column="access_party_code" property="accessPartyCode"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="remark" property="remark"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.agent.entity.vo.OemAccessPartyInfoVO" id="infoMap">
+		<id column="id" property="id"/>
+		<result column="access_party_name" property="accessPartyName"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, access_party_name, access_party_code, oem_code, access_party_secret, status, login_time, applet_address, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryByCode" resultMap="baseEntityMap"
+			parameterType="com.yuqian.itax.agent.entity.query.OemAccessPartyQuery">
+		SELECT
+		<include refid="Base_Columns"/>
+		FROM `t_e_oem_access_party` oap
+		<where>
+			<if test="accessPartyName != null and accessPartyName.trim() != ''">
+				AND oap.`access_party_name` = #{accessPartyName}
+			</if>
+			<if test="accessPartyCode != null and accessPartyCode.trim() != ''">
+				AND oap.`access_party_code` = #{accessPartyCode}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				AND oap.`oem_code` = #{oemCode}
+			</if>
+			<if test="accessPartySecret != null and accessPartySecret.trim() != ''">
+				AND oap.`access_party_secret` = #{accessPartySecret}
+			</if>
+			<if test="status != null">
+				AND oap.`status` = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryOemAccessPartyPageInfo" resultMap="listMap">
+		SELECT
+		oap.id,oap.access_party_name,oap.access_party_code,oap.oem_code,oap.status,oap.add_time,oap.add_user,oap.remark,o.oem_name
+		FROM `t_e_oem_access_party` oap
+		left join t_e_oem o on oap.oem_code = o.oem_code
+		<where>
+			<if test="accessPartyName != null and accessPartyName.trim() != ''">
+				AND oap.`access_party_name` like concat('%',#{accessPartyName},'%')
+			</if>
+			<if test="accessPartyCode != null and accessPartyCode.trim() != ''">
+				AND oap.`access_party_code` like concat('%',#{accessPartyCode},'%')
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				AND oap.`oem_code` = #{oemCode}
+			</if>
+			<if test="status != null">
+				AND oap.`status` = #{status}
+			</if>
+		</where>
+		order by oap.id desc
+	</select>
+
+	<select id="queryByOemCodeAndStatus" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"/>
+		FROM `t_e_oem_access_party`
+		where oem_code = #{oemCode} and status = #{status}
+	</select>
+
+	<select id="queryByOemCode" resultMap="infoMap">
+		SELECT
+		id,access_party_name
+		FROM `t_e_oem_access_party`
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				AND oem_code = #{oemCode}
+			</if>
+			<if test="status != null">
+				AND status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryById" resultMap="listMap">
+		SELECT
+		ap.id,ap.access_party_name,ap.access_party_code,ap.oem_code,ap.status,ap.add_time,ap.add_user,ap.remark,o.oem_name
+		FROM `t_e_oem_access_party` ap
+		left join t_e_oem o on ap.oem_code = o.oem_code
+		where ap.id = #{id}
+	</select>
+
+	<select id="queryByOemCodeAndAccessPartyName" resultMap="baseEntityMap">
+		SELECT id
+		FROM `t_e_oem_access_party`
+		where oem_code = #{oemCode} and access_party_name = #{accessPartyName}
+		<if test="id != null">
+			AND id != #{id}
+		</if>
+	</select>
+
+	<select id="queryByAccessPartyCode" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM `t_e_oem_access_party`
+		where access_party_code = #{oemAccessPartyCode}
+	</select>
+</mapper>

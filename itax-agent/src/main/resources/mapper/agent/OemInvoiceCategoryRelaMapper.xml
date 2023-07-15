@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.OemInvoiceCategoryRelaMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.OemInvoiceCategoryRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_invoice_info_id" property="oemInvoiceInfoId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="category_base_id" property="categoryBaseId"/>
+			<result column="category_name" property="categoryName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_invoice_info_id, oem_code, category_base_id,category_name, add_time, add_user, update_time, update_user, remark
+    </sql>
+    <select id="queryCategoryNameByOemCode" resultType="map">
+		SELECT
+			GROUP_CONCAT(oic.`category_base_id`) categoryBaseId,
+			GROUP_CONCAT(oic.category_name) categoryName
+		FROM
+			t_r_oem_invoice_category oic
+		WHERE
+			oem_code = #{oemCode}
+	</select>
+	<delete id="delByOemCode">
+		delete from
+			t_r_oem_invoice_category
+		where
+			oem_code = #{oemCode}
+	</delete>
+	<delete id="deleteByCategoryBaseId">
+		delete from
+			t_r_oem_invoice_category
+		where
+			category_base_id = #{categoryBaseId}
+	</delete>
+	<insert id="addBatch">
+		insert into t_r_oem_invoice_category
+		( oem_invoice_info_id,oem_code, category_base_id,category_name, add_time, add_user, remark)
+		values
+		<foreach collection ="categoryList" item="item" separator =",">
+			(
+			#{entity.id},
+			#{entity.oemCode},
+			#{item.id},
+			concat(#{item.taxClassificationAbbreviation}, '*' ,#{item.goodsName}),
+			#{entity.addTime},
+			#{entity.addUser},
+			#{entity.remark}
+			)
+		</foreach>
+	</insert>
+
+	<update id="batchUpdateByCategoryBaseId">
+		UPDATE t_r_oem_invoice_category
+			SET category_name = (
+				SELECT
+					CONCAT(
+						tax_classification_abbreviation,
+						"*",
+						goods_name
+					)
+				FROM
+					t_e_invoice_category_base
+				WHERE
+					id = #{categoryBaseId}
+			)
+			WHERE
+				category_base_id = #{categoryBaseId}
+	</update>
+</mapper>

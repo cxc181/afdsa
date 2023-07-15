@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.roles.dao.RoleMenuRelaMapper">
+	<resultMap type="com.yuqian.itax.roles.entity.UserRoleRelaEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="role_id" property="roleId"/>
+		<result column="menu_id" property="menuId"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+	</resultMap>
+
+	<sql id="Base_Columns">
+		id, role_id, menu_id, add_time, add_user
+    </sql>
+
+	<select id="queryRoleMenu" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from sys_r_role_menu
+		<where>
+			role_id = #{roleId}
+		</where>
+	</select>
+
+	<delete id="deleteByRoleId">
+		delete  from sys_r_role_menu
+		where role_id =#{roleId}
+	</delete>
+
+	<resultMap type="com.yuqian.itax.roles.entity.RoleMenuRelaEntity" id="selectMap">
+
+		<id column="id" property="id"/>
+		<result column="role_id" property="roleId"/>
+		<result column="menu_id" property="menuId"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+	</resultMap>
+	<!--根据roleId查询-->
+	<select id="selectByRoleId" resultMap="selectMap">
+		select r.id, r.role_id, r.menu_id, r.add_time, r.add_user
+		from sys_r_role_menu r,sys_e_menu m
+		where r.menu_id=m.id and r.role_id = #{roleId} and (m.level =4 )
+	</select>
+</mapper>

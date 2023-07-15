@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkDisableWordMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkDisableWordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="disable_word" property="disableWord"/>
+			<result column="add_user" property="addUser"/>
+			<result column="add_time" property="addTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap id="listMap" type="com.yuqian.itax.park.entity.vo.ParkDisableWordVO">
+		<id column="id" property="id"/>
+		<result column="disable_word" property="disableWord"/>
+		<result column="add_user" property="addUser"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, disable_word, add_user, add_time, update_user, update_time, remark
+    </sql>
+
+	<select id="queryParkDisableWord" resultMap="listMap">
+		select id, disable_word, add_user, add_time
+		FROM t_e_park_disable_word
+		<where>
+			<if test="parkId != null">
+			 and park_id = #{parkId}
+			</if>
+			<if test="disableWord != null and disableWord.trim() != ''">
+				and disable_word like concat ('%', #{disableWord}, '%')
+			</if>
+			<if test="addTimeBeg != null">
+				and add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and add_time &lt;= #{addTimeEnd}
+			</if>
+		</where>
+		order by id desc
+	</select>
+
+	<select id="getDisableWordByParkIdAndDisableWord" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_park_disable_word
+		where park_id = #{parkId} and disable_word = #{disableWord}
+	</select>
+
+	<select id="getDisableWordByParkId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_park_disable_word
+		where park_id = #{parkId}
+	</select>
+
+	<select id="queryByShopName" resultType="java.lang.String">
+		select
+		disable_word
+		from t_e_park_disable_word
+		<where>
+			park_id = #{parkId}
+			and(
+			<if test="shopName != null and shopName.trim() != ''">
+				#{shopName} like concat('%', disable_word, '%')
+			</if>
+			<if test="shopNameOne != null and shopNameOne.trim() != ''">
+				or #{shopNameOne} like concat('%', disable_word, '%')
+			</if>
+			<if test="shopNameTwo != null and shopNameTwo.trim() != ''">
+				or #{shopNameTwo} like concat('%', disable_word, '%')
+			</if>)
+		</where>
+	</select>
+
+	<insert id="batchAddDisableWord">
+		insert into t_e_park_disable_word (park_id,disable_word,add_user,add_time)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.parkId},#{item.disableWord},#{item.addUser},#{item.addTime})
+		</foreach>
+	</insert>
+
+</mapper>

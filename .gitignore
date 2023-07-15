@@ -1,0 +1,12 @@
+# My configurations:
+target
+*.iml
+*.idea
+*.git
+workspace.xml
+itax-api/.rebel-remote.xml.bak
+itax-api/src/main/resources/rebel.xml
+itax-user/.rebel.xml.bak
+itax-api/.rebel-remote.xml
+itax-api/.rebel.xml.bak
+itax-system/.rebel.xml.bak

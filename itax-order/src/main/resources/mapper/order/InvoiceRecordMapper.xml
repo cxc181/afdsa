@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.InvoiceRecordMapper">
+    <resultMap type="com.yuqian.itax.order.entity.InvoiceRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="company_id" property="companyId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="invoice_record_no" property="invoiceRecordNo"/>
+			<result column="trade_no" property="tradeNo"/>
+			<result column="invoice_amount" property="invoiceAmount"/>
+			<result column="status" property="status"/>
+			<result column="handling_way" property="handlingWay"/>
+			<result column="park_id" property="parkId"/>
+			<result column="invoice_desc" property="invoiceDesc"/>
+			<result column="invoice_total_price" property="invoiceTotalPrice"/>
+			<result column="invoice_total_tax" property="invoiceTotalTax"/>
+			<result column="invoice_total_price_tax" property="invoiceTotalPriceTax"/>
+			<result column="ticket_time" property="ticketTime"/>
+			<result column="complete_time" property="completeTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no,company_id, oem_code, invoice_record_no,trade_no, invoice_amount, status, handling_way, park_id, invoice_desc, invoice_total_price, invoice_total_tax, invoice_total_price_tax,ticket_time,
+		 complete_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceRecordVO" id="invoiceRecordMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="user_name" property="userName"/>
+		<result column="reg_phone" property="regPhone"/>
+		<result column="invoice_record_no" property="invoiceRecordNo"/>
+		<result column="status" property="status"/>
+		<result column="handling_way" property="handlingWay"/>
+		<result column="invHeadCompanyName" property="invHeadCompanyName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="export_invoice_amount" property="exportInvoiceAmount"/>
+		<result column="create_way" property="createWay"/>
+		<result column="park_name" property="parkName"/>
+		<result column="invoice_desc" property="invoiceDesc"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="add_time" property="addTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="ticket_time" property="ticketTime"/>
+		<result column="remark" property="remark"/>
+		<result column="pay_type" property="payType"/>
+	</resultMap>
+
+	<!-- 根据条件查询开票记录 -->
+	<select id="querylistInvoiceRecord" resultMap="invoiceRecordMap">
+		select
+		      r.id,
+		      r.order_no,
+		      r.company_id,
+		      i.company_name,
+		      IFNULL(a.real_name,a.member_name) user_name ,
+		      worko.remark,
+		      a.member_account reg_phone,
+		      r.invoice_record_no,
+		      r.ticket_time,
+		      r.`status`,
+		      r.handling_way,
+		      i.invHeadCompanyName,
+		      i.invoice_type,
+		      i.invoice_way,
+		      r.invoice_amount,
+		      i.create_way,
+		      p.park_name,
+		      r.invoice_desc,
+		      i.group_order_no,
+		      io.pay_type,
+		      convert(r.invoice_amount/100, decimal(12,2)) export_invoice_amount,
+		      r.add_time,
+		      r.complete_time
+		from t_e_invoice_record r
+		LEFT JOIN t_e_work_order worko ON r.order_no = worko.order_no and worko.work_order_type = 2
+		INNER JOIN (select io.order_no,io.company_name invHeadCompanyName,io.invoice_type,io.invoice_way,io.create_way,io.group_order_no,(select company_name from t_e_member_company where id = io.company_id) company_name from t_e_invoice_order io
+		union all
+		select cio.order_no,cio.company_name invHeadCompanyName,cio.invoice_type,cio.invoice_way, '4' create_way,'' group_order_no,(select company_name from t_e_invoice_info_by_oem where oem_code = cio.oem_code) company_name from t_e_consumption_invoice_order cio) i on  r.order_no = i.order_no
+		INNER JOIN t_e_order o on r.order_no = o.order_no
+		INNER JOIN t_e_member_account a on a.id = o.user_id and o.user_type = 1
+		LEFT JOIN t_e_invoice_order io on io.order_no = o.order_no
+		LEFT JOIN t_e_park p on r.park_id = p.id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				and r.order_no like CONCAT('%',#{orderNo},'%')
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and i.company_name like CONCAT('%',#{companyName},'%')
+			</if>
+			<if test="userName != null and userName != ''">
+				and (a.real_name like CONCAT('%',#{userName},'%') or a.member_name like CONCAT('%',#{userName},'%'))
+			</if>
+			<if test="userPhone != null and userPhone != ''">
+				and a.member_account like CONCAT('%',#{userPhone},'%')
+			</if>
+			<if test="status != null">
+				and r.status = ${status}
+			</if>
+			<if test="statuss != null and statuss != ''">
+				and r.status in ( ${statuss})
+			</if>
+			<if test="parkName != null and parkName != ''">
+				and p.park_name like CONCAT('%',${parkName},'%')
+			</if>
+			<if test="parkId != null">
+				and p.id = #{parkId}
+			</if>
+			<if test="headCompanyName != null and headCompanyName != ''">
+				and i.invHeadCompanyName like CONCAT('%',#{headCompanyName},'%')
+			</if>
+			<if test="invoiceRecordNo != null and invoiceRecordNo != ''">
+				and r.invoice_record_no like CONCAT('%',#{invoiceRecordNo},'%')
+			</if>
+			<if test="invoiceMountMin != null">
+				and r.invoice_amount >= #{invoiceMountMin}
+			</if>
+			<if test="invoiceMountMax != null">
+				and r.invoice_amount  <![CDATA[ <=]]> #{invoiceMountMax}
+			</if>
+			<if test="invoiceWay != null">
+				and i.invoice_way = #{invoiceWay}
+			</if>
+			<if test="invoiceType != null">
+				and i.invoice_type = #{invoiceType}
+			</if>
+			<if test="createWay != null">
+				and i.create_way = #{createWay}
+			</if>
+			<if test="handlingWay != null">
+				and r.handling_way = #{handlingWay}
+			</if>
+			<if test="groupOrderNo != null and groupOrderNo != ''">
+				and i.group_order_no like CONCAT('%',#{groupOrderNo},'%')
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and r.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="ticketTimeStart != null and ticketTimeStart != '' and ticketTimeEnd != '' and ticketTimeEnd != null  ">
+				and DATE_FORMAT(r.ticket_time,'%Y-%m-%d') >= #{ticketTimeStart} and DATE_FORMAT(r.ticket_time,'%Y-%m-%d') <![CDATA[<=]]> #{ticketTimeEnd}
+			</if>
+		</where>
+		order by r.add_time desc
+	</select>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConfirmInvoiceRecordVo" id="confirmInvoiceRecordVoMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_record_no" property="invoiceRecordNo"/>
+		<result column="status" property="status"/>
+		<result column="handling_way" property="handlingWay"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="create_way" property="createWay"/>
+		<result column="park_name" property="parkName"/>
+		<result column="invoice_desc" property="invoiceDesc"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="add_time" property="addTime"/>
+		<result column="invoice_order_add_time" property="invoiceOrderAddTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="ticket_time" property="ticketTime"/>
+	</resultMap>
+
+	<!-- 确认出票页面 -->
+	<select id="gotoConfirmInvoiceRecord" resultMap="confirmInvoiceRecordVoMap">
+		select r.id,r.order_no,r.company_id,i.company_name,r.invoice_record_no,
+		r.`status`,r.handling_way,i.invoice_type,r.invoice_amount,i.create_way,r.ticket_time,
+		p.park_name,r.invoice_desc,i.group_order_no,i.add_time invoice_order_add_time,r.add_time,r.complete_time
+		from t_e_invoice_record r
+		INNER JOIN (select io.order_no,io.company_name invHeadCompanyName,io.invoice_type,io.invoice_way,io.create_way,io.group_order_no,io.add_time,
+			(select company_name from t_e_member_company where id = io.company_id) company_name from t_e_invoice_order io
+		union all
+		select cio.order_no,cio.company_name invHeadCompanyName,cio.invoice_type,cio.invoice_way, '4' create_way,'' group_order_no,cio.add_time,
+			(select company_name from t_e_invoice_info_by_oem where oem_code = cio.oem_code) company_name from
+				t_e_consumption_invoice_order cio) i on  r.order_no = i.order_no
+		LEFT JOIN t_e_park p on r.park_id = p.id
+ 			where r.invoice_record_no = #{invoiceRecordNo}
+	</select>
+
+	<select id="queryGroupInvoiceOrderByGroupOrderNo" resultMap="baseEntityMap">
+		SELECT
+			ir.*
+			from  t_e_invoice_order_group og
+			INNER JOIN t_e_invoice_order io ON io.group_order_no=og.order_no
+			INNER JOIN t_e_invoice_record ir ON ir.order_no=io.order_no
+		WHERE  og.order_no=#{orderNo}
+			<if test="status != null">
+				and ir.status in (${status})
+			</if>
+			<if test="notCompleted != null">
+				and ir.status not in (${notCompleted})
+			</if>
+	</select>
+
+	<update id="updateInvoiceRecordStatusByGroupOrderNoAndStatuss">
+		update t_e_invoice_record
+		set
+			status =#{status},
+			invoice_desc = #{desc},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			order_no in (select order_no from t_e_invoice_order WHERE group_order_no = #{groupOrderNo})
+			<if test="statuss != null">
+				and status in (${statuss})
+			</if>
+			<if test="notStatuss != null">
+				and status not in (${notStatuss})
+			</if>
+
+	</update>
+	<select id="queryInvoiceRecordByOrderNoAndStatus" resultMap="baseEntityMap">
+		select * from t_e_invoice_record
+		where order_no=#{orderNo} and status  not in (${statuss})
+	</select>
+
+	<!-- 根据订单号查询开票中的记录数-->
+	<select id="countInvoicingRecordNumByOrderNo" resultType="java.lang.Integer">
+		select count(1) from t_e_invoice_record_detail d,t_e_invoice_record r
+			where d.invoice_record_no = r.invoice_record_no
+			and r.order_no = #{orderNo}
+			and d.status = 4;
+	</select>
+
+	<!-- 根据开票订单号获取发票地址信息-->
+	<select id="getInvoiceDetailImgUrlsByOrder" resultType="java.lang.String" flushCache="true">
+		select GROUP_CONCAT(d.eInvoice_oss_img_url) from t_e_invoice_record r,t_e_invoice_record_detail d
+			where r.invoice_record_no = d.invoice_record_no
+			and d.`status` = 0
+			and r.order_no = #{orderNo}
+	</select>
+</mapper>

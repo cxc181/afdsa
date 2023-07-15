@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.EmployeesSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.EmployeesSnapshotEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="member_id" property="memberId"/>
+			<result column="member_account" property="memberAccount"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="parent_member_id" property="parentMemberId"/>
+			<result column="add_revenue" property="addRevenue"/>
+			<result column="status" property="status"/>
+			<result column="regist_time" property="registTime"/>
+			<result column="snapshot_time" property="snapshotTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, member_account, oem_code, parent_member_id, add_revenue, status, regist_time, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!-- 保存员工快照（有收益） -->
+	<insert id="saveEmployeeSnapshotByProfits">
+		INSERT INTO `t_e_employees_snapshot` (`member_id`, `member_account`, `oem_code`, `parent_member_id`, `add_revenue`, `status`, `regist_time`,
+			`snapshot_time`, `add_time`, `add_user`, `update_time`, `update_user`, `remark`)
+		select m.id `member_id`, m.`member_account`, m.`oem_code`, m.`parent_member_id`,
+		IFNULL(sum(p.profits_amount),0)  `add_revenue`, m.`status`, m.add_time `regist_time`,
+		 p.profits_time `snapshot_time`, now() `add_time`, null `add_user`, null `update_time`, null `update_user`, '历史数据处理' `remark`
+		  from t_e_member_account m  left join t_e_profits_detail p
+			on m.member_type = 2 and p.attribution_employees_id = m.id  and profits_status in (2,3)
+		  where DATE_FORMAT(p.profits_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')
+			<if test="userId != null ">
+				AND m.id=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND m.oem_code=#{oemCode}
+			</if>
+		group by p.attribution_employees_id
+	</insert>
+	<!-- 保存员工快照（没有收益） -->
+	<insert id="saveEmployeeSnapshotByNotChange">
+		INSERT INTO `t_e_employees_snapshot` (`member_id`, `member_account`, `oem_code`, `parent_member_id`, `add_revenue`, `status`, `regist_time`,
+		`snapshot_time`, `add_time`, `add_user`, `update_time`, `update_user`, `remark`)
+		select m.id `member_id`, m.`member_account`, m.`oem_code`, m.`parent_member_id`,
+		0  `add_revenue`, m.`status`, m.add_time `regist_time`,
+		#{snapshotTime} `snapshot_time`, now() `add_time`, null `add_user`, null `update_time`, null `update_user`, '历史数据处理' `remark`
+		from t_e_member_account m where
+		m.id not in (select member_id from t_e_employees_snapshot where DATE_FORMAT(snapshot_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d'))
+		and DATE_FORMAT(m.add_time,'%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')
+		and ((DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{snapshotTime},'%Y-%m-%d') and m.status != 2) or
+		(DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')) or m.update_time is null)
+		and m.member_type = 2
+		<if test="userId != null ">
+			AND m.id=#{userId}
+		</if>
+		<if test="oemCode != null ">
+			AND m.oem_code=#{oemCode}
+		</if>
+	</insert>
+
+	<delete id="deleteEmployeeSnapshotByDate">
+		DELETE from t_e_employees_snapshot
+		<where>
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="userId != null ">
+				AND member_id=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND oem_code=#{oemCode}
+			</if>
+		</where>
+	</delete>
+</mapper>

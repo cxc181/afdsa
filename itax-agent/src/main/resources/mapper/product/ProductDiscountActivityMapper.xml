@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.ProductDiscountActivityMapper">
+    <resultMap type="com.yuqian.itax.product.entity.ProductDiscountActivityEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+			<result column="activity_name" property="activityName"/>
+			<result column="product_type" property="productType"/>
+			<result column="special_price_amount" property="specialPriceAmount"/>
+			<result column="status" property="status"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="activity_start_date" property="activityStartDate"/>
+			<result column="activity_end_date" property="activityEndDate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.product.entity.vo.ProductDiscountActivityListVO" id="listMap">
+		<id column="id" property="id"/>
+		<id column="activity_name" property="activityName"/>
+		<id column="crowd_label_name" property="crowdLabelName"/>
+		<id column="product_type" property="productType"/>
+		<id column="status" property="status"/>
+		<id column="activity_end_date" property="activityEndDate"/>
+		<id column="activity_start_date" property="activityStartDate"/>
+		<id column="termOfValidity" property="termOfValidity"/>
+		<id column="oem_name" property="oemName"/>
+		<id column="add_user" property="addUser"/>
+		<id column="update_user" property="updateUser"/>
+	</resultMap>
+
+	<resultMap id="crowdInfo" type="com.yuqian.itax.product.entity.vo.ProductDiscountActivityOnCrowdLabelVO">
+		<id column="discount_activity_id" property="discountActivityId"/>
+		<id column="crowd_label_id" property="crowdLabelId"/>
+		<id column="activity_name" property="activityName"/>
+		<id column="crowd_label_name" property="crowdLabelName"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, activity_name, product_type, special_price_amount, status, oem_code, activity_start_date, activity_end_date, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.product.entity.vo.ProductDiscountActivityVO" id="productDiscountActivityVO">
+		<id column="prod_name" property="prodName"/>
+		<result column="prod_amount" property="prodAmount"/>
+		<result column="product_type" property="prodType"/>
+		<result column="prod_code" property="prodCode"/>
+		<result column="special_price_amount" property="specialPriceAmount"/>
+		<result column="cancel_total_limit" property="cancelTotalLimit"/>
+		<result column="consumption_discount" property="consumptionDiscount"/>
+		<result column="crowd_label_id" property="crowdLabelId"/>
+		<result column="processing_fee" property="processingFee"/>
+		<result column="discount_activity_id" property="discountActivityId"/>
+	</resultMap>
+
+	<resultMap id="detailMap" type="com.yuqian.itax.product.entity.vo.ProductActivityDetailVO">
+		<id column="oem_code" property="oemCode"/>
+		<id column="oem_name" property="oemName"/>
+		<id column="id" property="activityid"/>
+		<id column="activity_name" property="activityName"/>
+		<id column="crowdLabelIds" property="crowdLabelIds"/>
+		<id column="parkIds" property="parkIds"/>
+		<id column="industryIds" property="industryIds"/>
+		<id column="product_type" property="productType"/>
+		<id column="special_price_amount" property="specialPriceAmount"/>
+		<id column="activity_start_date" property="activityStartDate"/>
+		<id column="activity_end_date" property="activityEndDate"/>
+		<id column="processing_fee" property="processingFee"/>
+		<id column="cancel_total_limit" property="cancelTotalLimit"/>
+		<id column="chargeStandard" property="chargeStandard"/>
+	</resultMap>
+
+
+	<select id="getProductDiscountActivityByProductType" resultMap="productDiscountActivityVO">
+		select ifnull(v.activity_name,p.prod_name) prod_name,
+			p.prod_amount,v.id discount_activity_id,
+            p.prod_type,p.prod_code,v.crowd_label_id,
+            ifnull(v.processing_fee,IFNULL(pp.`processing_fee`, p.`processing_fee`)) processing_fee,
+			ifnull(v.special_price_amount,IFNULL(pp.`prod_amount`, p.`prod_amount`)) special_price_amount,
+			ifnull(v.cancel_total_limit,IFNULL(pp.`cancel_total_limit`,p.cancel_total_limit)) cancel_total_limit,
+			ifnull(m.consumption_discount,0) consumption_discount
+			  from t_e_product p
+			  LEFT JOIN t_e_product_by_park pp ON pp.`product_id` = p.`id` AND pp.`is_delete` = 0 AND pp.`park_id` = #{parkId}
+			  left join (select * from product_discount_activity_view where member_id = #{memberId} and park_id = #{parkId} and industry_id =#{industryId}
+			  			and product_type =  #{productType} and activity_start_date <![CDATA[ <= ]]> date_format(now(), '%Y-%m-%d')
+			  			and activity_end_date <![CDATA[ >= ]]> date_format(now(), '%Y-%m-%d') AND `status` = 1) v
+				on p.prod_type = v.product_type and p.oem_code = v.oem_code and v.status = 1
+			  inner join (select l.*,mpr.consumption_discount,ma.id member_id from t_e_member_level l,t_e_member_profits_rules mpr,t_e_member_account ma
+												where l.level_no = mpr.user_level and l.oem_code = mpr.oem_code and mpr.status = 1
+													and ma.member_level = l.id and ma.oem_code = l.oem_code and ma.id = #{memberId}) m
+				on m.oem_code = p.oem_code
+			  where p.prod_type = #{productType} and p.oem_code =#{oemCode} and p.`status` = 1
+	</select>
+
+	<select id="getDetail" resultMap="detailMap">
+		select p.id,p.activity_name,p.product_type,p.oem_code,p.activity_start_date,p.activity_end_date,
+		CONVERT (p.processing_fee / 100,DECIMAL (12, 2)) processing_fee,
+		CONVERT (p.special_price_amount / 100,DECIMAL (12, 2)) special_price_amount,
+		CONVERT (p.cancel_total_limit / 100,DECIMAL (12, 2)) cancel_total_limit,
+		o.oem_name,GROUP_CONCAT( distinct d.crowd_label_id) crowdLabelIds,GROUP_CONCAT(distinct pa.park_id) parkIds,GROUP_CONCAT(distinct ind.industry_id) industryIds,GROUP_CONCAT(distinct sta.id) chargeStandard
+		from t_e_product_discount_activity p
+		left join t_e_oem o on o.oem_code = p.oem_code
+		left join t_r_discount_activity_crowd_label d on d.discount_activity_id = p.id
+		left join t_r_discount_activity_park pa on pa.discount_activity_id = p.id
+		left join t_r_discount_activity_industry ind on ind.discount_activity_id = p.id
+		left join t_r_discount_activity_charge_standard sta on sta.discount_activity_id = p.id
+		where p.id = #{discountActivityId} GROUP BY p.id
+	</select>
+
+	<select id="listPageProductDiscountActivity" resultMap="listMap">
+		select p.id,p.activity_name,GROUP_CONCAT(distinct c.crowd_label_name) crowd_label_name,p.product_type,p.status, concat_ws('-',p.activity_start_date,p.activity_end_date) termOfValidity,
+		o.oem_name,p.add_user,p.update_user
+		from t_e_product_discount_activity p
+		left join t_r_discount_activity_crowd_label d on p.id = d.discount_activity_id
+		left join t_e_crowd_label c on d.crowd_label_id = c.id
+		left join t_e_oem  o on p.oem_code = o.oem_code
+		<where>
+			<if test="activityName != null and activityName.trim() != ''">
+				and p.activity_name like concat('%',#{activityName},'%')
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and p.oem_code = #{oemCode}
+			</if>
+			<if test="productType != null">
+				and p.product_type = #{productType}
+			</if>
+			<if test="status != null">
+				and p.status = #{status}
+			</if>
+		</where>
+		GROUP BY p.id order by p.id desc
+	</select>
+
+	<select id="queryProductDiscountActivityByactivityNameAndType" resultMap="listMap">
+		select p.id
+		from t_e_product_discount_activity p
+		where activity_name = #{activityName} and product_type = #{productType}
+		<if test="activityId != null">
+			and id != #{activityId}
+		</if>
+	</select>
+
+	<select id="getCrowdLabelAndParkByProductType" resultMap="crowdInfo">
+		select d.discount_activity_id,d.crowd_label_id,p.activity_name,c.crowd_label_name
+		from t_e_product_discount_activity p
+		left join t_r_discount_activity_crowd_label d on p.id = d.discount_activity_id
+		left join t_e_crowd_label c on d.crowd_label_id = c.id
+		where p.product_type = #{productType} and p.oem_code = #{oemCode} and c.status != 2 and p.status != 2
+	</select>
+    <select id="queryByCrowdLabel" resultType="com.yuqian.itax.product.entity.ProductDiscountActivityEntity">
+		SELECT pda.`id`, pda.`special_price_amount` specialPriceAmount, pda.`processing_fee`
+		FROM t_e_product_discount_activity pda
+		INNER JOIN t_r_discount_activity_crowd_label dacl ON dacl.`discount_activity_id` = pda.`id`
+		WHERE pda.`status` = 1 AND DATE_FORMAT(NOW(),'%y-%m-%d') <![CDATA[ >= ]]> pda.`activity_start_date` AND DATE_FORMAT(NOW(),'%y-%m-%d') <![CDATA[ <= ]]> pda.`activity_end_date`
+		AND pda.`product_type` = #{productType} AND dacl.`crowd_label_id` = #{crowdLabelId}
+	</select>
+	<select id="queryByAccessPartyCode" resultMap="baseEntityMap">
+		SELECT p.id, p.activity_name, p.product_type, p.special_price_amount, p.status, p.oem_code, p.activity_start_date,
+				p.activity_end_date, p.add_time, p.add_user, p.update_time, p.update_user, p.remark
+		FROM t_e_product_discount_activity p
+		INNER JOIN t_r_discount_activity_crowd_label dc ON dc.`discount_activity_id` = p.`id`
+		INNER JOIN t_e_crowd_label cl ON cl.`id` = dc.`crowd_label_id`
+		INNER JOIN t_e_oem_access_party o ON o.`id` = cl.`access_party_id`
+		INNER JOIN t_r_discount_activity_park dap ON dap.`discount_activity_id` = p.`id`
+		WHERE p.`status` = 1 AND NOW() <![CDATA[ >= ]]> p.`activity_start_date` AND NOW() <![CDATA[ <= ]]> p.`activity_end_date`
+		AND p.`product_type` = #{productType} AND o.`access_party_code` = #{accessPartyCode} AND dap.`park_id` = #{parkId}
+	</select>
+</mapper>

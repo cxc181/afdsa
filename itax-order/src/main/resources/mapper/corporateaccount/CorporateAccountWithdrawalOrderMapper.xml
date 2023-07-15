@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.corporateaccount.dao.CorporateAccountWithdrawalOrderMapper">
+    <resultMap type="com.yuqian.itax.corporateaccount.entity.CorporateAccountWithdrawalOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="corporate_account_id" property="corporateAccountId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="withdrawal_amount" property="withdrawalAmount"/>
+			<result column="arrive_bank_account" property="arriveBankAccount"/>
+			<result column="arrive_bank_name" property="arriveBankName"/>
+			<result column="arrive_user_name" property="arriveUserName"/>
+			<result column="arrive_time" property="arriveTime"/>
+			<result column="invoice_order_no" property="invoiceOrderNo"/>
+			<result column="collection_record_ids" property="collectionRecordIds"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, corporate_account_id, park_id, withdrawal_amount, arrive_bank_account, arrive_bank_name, arrive_user_name, arrive_time, invoice_order_no, collection_record_ids, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap id="orderMap" type="com.yuqian.itax.corporateaccount.vo.CorporateAccountWithdrawOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="company_name" property="companyName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="withdrawal_amount" property="withdrawalAmount"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="add_time" property="addTime"/>
+		<result column="arrive_user_name" property="arriveUserName"/>
+		<result column="arrive_bank_account" property="arriveBankAccount"/>
+		<result column="arrive_bank_name" property="arriveBankName"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="remark" property="remark"/>
+		<result column="park_name" property="parkName"/>
+	</resultMap>
+
+	<resultMap id="withdrawOrderMap" type="com.yuqian.itax.order.entity.vo.CorpAccWithdrawOrderVO">
+		<result column="order_type" property="orderType"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+
+	<select id="listCorporateWithdrawOrder" parameterType="com.yuqian.itax.corporateaccount.query.CorporateAccountWithdrawOrderQuery" resultMap="orderMap">
+		SELECT o.order_no, o.order_type, acc.member_phone, comp.company_name, cca.corporate_account, pcac.corporate_account_bank_name,
+		convert(cawo.withdrawal_amount/100, decimal(12,2)) withdrawal_amount, mo.member_level, o.add_time, cawo.arrive_user_name, cawo.arrive_bank_account,
+		cawo.arrive_bank_name, o.order_status, oem.oem_name, cawo.remark, p.park_name
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		INNER JOIN t_e_corporate_account_withdrawal_order cawo on cawo.order_no = o.order_no
+		INNER JOIN t_e_company_corporate_account cca on cca.id = cawo.corporate_account_id
+		INNER JOIN t_e_member_company comp on comp.id = cca.company_id
+		INNER JOIN t_e_park_corporate_account_config pcac on pcac.id = cca.corporate_account_config_id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		INNER JOIN t_e_park p ON p.id = comp.park_id
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="orderNo != null and orderNo.trim() != ''">
+				and o.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="memberPhone != null and memberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{memberPhone},'%')
+			</if>
+			<if test="companyName != null and companyName.trim() != ''">
+				and comp.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="arriveUserName != null and arriveUserName.trim() != ''">
+				and cawo.arrive_user_name like concat('%',#{arriveUserName},'%')
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and oem.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="parkId != null">
+				and comp.park_id = #{parkId}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+	<resultMap id="waterMap" type="com.yuqian.itax.corporateaccount.vo.CorporateAccountWithdrawWaterVO">
+		<result column="pay_no" property="payNo"/>
+		<result column="pay_water_type" property="payWaterType"/>
+		<result column="external_order_no" property="externalOrderNo"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="company_name" property="companyName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="withdrawal_amount" property="withdrawalAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="pay_way" property="payWay"/>
+		<result column="pay_channels" property="payChannels"/>
+		<result column="pay_status" property="payStatus"/>
+		<result column="arrive_bank_account" property="arriveBankAccount"/>
+		<result column="arrive_bank_name" property="arriveBankName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="park_name" property="parkName"/>
+	</resultMap>
+	<select id="listCorporateWithdrawWater" parameterType="com.yuqian.itax.corporateaccount.query.CorporateAccountWithdrawWaterQuery" resultMap="waterMap">
+		SELECT water.pay_no, water.pay_water_type, water.external_order_no, o.order_no, o.order_type, comp.company_name, cca.corporate_account, pcac.corporate_account_bank_name,
+		convert(cawo.withdrawal_amount/100, decimal(12,2)) withdrawal_amount, o.add_time, water.pay_way, water.pay_channels, water.pay_status,
+		cawo.arrive_user_name, cawo.arrive_bank_account, cawo.arrive_bank_name, water.oem_name, p.park_name
+		FROM t_e_order o
+		INNER JOIN t_e_pay_water water on water.order_no = o.order_no
+		INNER JOIN t_e_corporate_account_withdrawal_order cawo on cawo.order_no = o.order_no
+		INNER JOIN t_e_company_corporate_account cca on cca.id = cawo.corporate_account_id
+		INNER JOIN t_e_member_company comp on comp.id = cca.company_id
+		INNER JOIN t_e_park_corporate_account_config pcac on pcac.id = cca.corporate_account_config_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		INNER JOIN t_e_park p ON p.id = comp.park_id
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="payNo != null and payNo.trim() != ''">
+				and water.pay_no like concat('%',#{payNo},'%')
+			</if>
+			<if test="externalOrderNo != null and externalOrderNo.trim() != ''">
+				and water.external_order_no like concat('%',#{externalOrderNo},'%')
+			</if>
+			<if test="orderNo != null and orderNo.trim() != ''">
+				and o.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="companyName != null and companyName.trim() != ''">
+				and comp.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="corporateAccount != null and corporateAccount.trim() != ''">
+				and cca.corporate_account like concat('%',#{corporateAccount},'%')
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="arriveBankAccount != null and arriveBankAccount.trim() != ''">
+				and cawo.arrive_bank_account like concat('%',#{arriveBankAccount},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and water.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="parkId != null">
+				and comp.park_id = #{parkId}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+	<!--查询对公户当天累计提现金额 add by Kaven 2020-09-09 -->
+	<select id="countDailyTotalWithdrawAmount" resultType="java.lang.Long">
+		SELECT
+			IFNULL(sum(c.withdrawal_amount), 0) daily_total_amount
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_corporate_account_withdrawal_order c ON t.order_no = c.order_no
+		<where>
+			t.order_type = 11 AND t.order_status IN (1, 2) AND date(t.add_time) = CURDATE()
+			AND c.corporate_account_id = #{corporateAccountId}
+		</where>
+	</select>
+
+	<!--查询对公户提现订单列表 add by Kaven 2020-09-09 -->
+	<select id="listWithdrawOrder" parameterType="com.yuqian.itax.user.entity.query.ComCorpAccQuery" resultMap="withdrawOrderMap">
+		SELECT
+			t.id,
+			t.order_type,
+			t.order_no,
+			t.order_status,
+			t.order_amount,
+			t.add_time,
+			mc.operator_name
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_corporate_account_withdrawal_order c ON t.order_no = c.order_no
+			LEFT JOIN t_e_company_corporate_account a ON c.corporate_account_id = a.id
+			LEFT JOIN t_e_member_company mc ON mc.id = a.company_id
+		<where>
+			t.order_type = 11
+			AND t.order_status IN (1, 2, 3, 5)
+			AND c.corporate_account_id = #{corporateAccountId}
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!--统计总提现金额 add by Kaven 2020-09-09 -->
+	<select id="countTotalWithdrawAmount" resultType="java.lang.Long">
+		SELECT
+			IFNULL(sum(c.withdrawal_amount), 0) total_amount
+		FROM
+			t_e_order t
+		LEFT JOIN t_e_corporate_account_withdrawal_order c ON t.order_no = c.order_no
+		<where>
+			t.order_type = 11 AND t.order_status IN(1,2) AND c.corporate_account_id = #{corporateAccountId}
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and t.add_time between #{startDate} and #{endDate}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryWithdrawOrderByInvoiceOrderNo" resultMap="baseEntityMap">
+		SELECT awo.corporate_account_id
+		FROM
+		t_e_corporate_account_withdrawal_order awo
+		left join t_e_order o on o.order_no = awo.order_no
+		where invoice_order_no = #{invoiceOrderNO} and o.order_status in(0,1,2)
+	</select>
+
+</mapper>

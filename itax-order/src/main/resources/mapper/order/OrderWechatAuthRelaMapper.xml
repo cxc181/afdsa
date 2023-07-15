@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.OrderWechatAuthRelaMapper">
+    <resultMap type="com.yuqian.itax.order.entity.OrderWechatAuthRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="member_id" property="memberId"/>
+			<result column="wechat_tmpl_type" property="wechatTmplType"/>
+			<result column="wechat_tmpl_id" property="wechatTmplId"/>
+			<result column="auth_status" property="authStatus"/>
+			<result column="wechat_result" property="wechatResult"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, member_id, wechat_tmpl_type, wechat_tmpl_id, auth_status, wechat_result, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			t_r_order_wechat_auth
+		where
+			order_no = #{orderNo} and wechat_tmpl_type = #{wechatTmplType}
+		<if test="authStatus != null ">
+			and auth_status = #{authStatus}
+		</if>
+		limit 1
+	</select>
+</mapper>

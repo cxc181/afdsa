@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CustomerServiceWorkNumberMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CustomerServiceWorkNumberEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="work_number" property="workNumber"/>
+			<result column="work_number_pwd" property="workNumberPwd"/>
+			<result column="slat" property="slat"/>
+			<result column="work_number_name" property="workNumberName"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id, work_number, work_number_pwd, slat, work_number_name, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryCustomerServiceWorkNumberEntityByuserId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_customer_service_work_number
+		where  user_id=#{userId} and status != 2
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CustomerServiceWorkVO" id="voMap">
+
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="nickname" property="nickname"/>
+		<result column="work_number" property="workNumber"/>
+		<result column="work_number_name" property="workNumberName"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+	<select id="getCustomerServiceWorkList"  parameterType="com.yuqian.itax.user.entity.query.CustomerServiceWorkQuery" resultMap="voMap">
+		select cs.id,
+		u.username,
+		u.nickname,
+		cs.work_number,
+		cs.work_number_name,
+		cs.add_time,
+		cs.status,
+		u.oem_name
+		from t_e_customer_service_work_number cs
+		LEFT JOIN sys_e_user u on cs.user_id=u.id
+		<where>
+			<if test="username != null and username != ''">
+				and u.username like concat('%',#{username},'%')
+			</if>
+			<if test="nickname != null and nickname != ''">
+				and u.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="workNumber != null and workNumber != ''">
+				and cs.work_number like concat('%',#{workNumber},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and u.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and u.oem_code =#{oemCode}
+			</if>
+			<if test="status != null ">
+				and cs.status =#{status}
+			</if>
+		</where>
+		order by cs.add_time desc
+	</select>
+</mapper>

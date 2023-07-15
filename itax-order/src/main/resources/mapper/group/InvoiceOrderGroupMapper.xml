@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.group.dao.InvoiceOrderGroupMapper">
+    <resultMap type="com.yuqian.itax.group.entity.InvoiceOrderGroupEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="invoice_amount" property="invoiceAmount"/>
+			<result column="order_status" property="orderStatus"/>
+			<result column="VAT_fee" property="vatFee"/>
+			<result column="personal_income_tax" property="personalIncomeTax"/>
+			<result column="service_fee" property="serviceFee"/>
+			<result column="service_fee_discount" property="serviceFeeDiscount"/>
+			<result column="company_name" property="companyName"/>
+			<result column="company_address" property="companyAddress"/>
+			<result column="ein" property="ein"/>
+			<result column="phone" property="phone"/>
+			<result column="regist_address" property="registAddress"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="bank_number" property="bankNumber"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="category_group_id" property="categoryGroupId"/>
+			<result column="category_group_name" property="categoryGroupName"/>
+			<result column="invoice_type" property="invoiceType"/>
+			<result column="invoice_way" property="invoiceWay"/>
+			<result column="invoice_type_name" property="invoiceTypeName"/>
+			<result column="account_statement" property="accountStatement"/>
+			<result column="courier_number" property="courierNumber"/>
+			<result column="courier_company_name" property="courierCompanyName"/>
+			<result column="postage_fees" property="postageFees"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="VAT_fee_rate" property="vatFeeRate"/>
+			<result column="email" property="email"/>
+			<result column="pay_img_url" property="payImgUrl"/>
+			<result column="audit_desc" property="auditDesc"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, invoice_amount, order_status, VAT_fee, personal_income_tax, service_fee, service_fee_discount, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name, city_code, city_name, district_code, district_name, category_group_id, category_group_name, invoice_type, invoice_way, invoice_type_name, account_statement, courier_number, courier_company_name, postage_fees, add_time, add_user, update_time, update_user, remark, VAT_fee_rate,email,pay_img_url,audit_desc
+    </sql>
+    <sql id="Query_Base_Columns">
+		o.id, o.order_no, o.oem_code, o.order_status,
+		o.company_name, o.category_group_name, o.invoice_type_name, o.invoice_way, o.add_time, o.add_user
+    </sql>
+	<resultMap type="com.yuqian.itax.group.entity.vo.InvoiceOrderGroupListVO" id="baseListMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="company_name" property="companyName"/>
+		<result column="category_group_name" property="categoryGroupName"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="oem_company_name" property="oemCompanyName"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+	</resultMap>
+	<select id="listInvoiceOrderGroup" parameterType="com.yuqian.itax.group.entity.query.InvoiceOrderGroupQuery" resultMap="baseListMap">
+		select
+		<include refid="Query_Base_Columns"/>,
+		oem.oem_name, oem.company_name oem_company_name,
+		convert(o.invoice_amount/100, decimal(12,2)) invoice_amount,
+		convert(o.VAT_fee/100, decimal(12,2)) VAT_fee,
+		convert(o.personal_income_tax/100, decimal(12,2)) personal_income_tax,
+		convert(o.VAT_payment/100, decimal(12,2)) VAT_payment,
+		convert(o.surcharge/100, decimal(12,2)) surcharge,
+		convert(o.surcharge_payment/100, decimal(12,2)) surcharge_payment,
+		convert(o.income_tax_payment/100, decimal(12,2)) income_tax_payment,
+		convert(o.VAT_fee_rate*100, decimal(12,0)) VAT_fee_rate
+		from
+		t_e_invoice_order_group o
+		left join t_e_oem oem on oem.oem_code = o.oem_code
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeCompanyName != null and likeCompanyName.trim() != ''">
+				and o.company_name like concat('%',#{likeCompanyName},'%')
+			</if>
+			<if test="invoiceType != null">
+				and o.invoice_type = #{invoiceType}
+			</if>
+			<if test="likeCategoryName != null and likeCategoryName.trim() != ''">
+				and o.category_group_name like concat('%',#{likeCategoryName},'%')
+			</if>
+			<if test="invoiceAmountBeg != null">
+				and o.invoice_amount >= #{invoiceAmountBeg}
+			</if>
+			<if test="invoiceAmountEnd != null">
+				and o.invoice_amount &lt;= #{invoiceAmountEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="likeAddUser != null and likeAddUser.trim() != ''">
+				and o.add_user like concat('%',#{likeAddUser},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+		</where>
+		order by add_time desc
+	</select>
+	<resultMap type="com.yuqian.itax.group.entity.vo.InvoiceOrderGroupAuditVo" id="auditListMap">
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="oem_company_name" property="oemCompanyName"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="order_status" property="orderStatus"/>
+	</resultMap>
+
+	<select id="queryInvoiceOrderByOrderNo" resultMap="auditListMap">
+		select
+		o.invoice_type_name,
+		o.order_status,
+ 		oem.company_name oem_company_name,
+		convert(o.invoice_amount/100, decimal(12,2)) invoice_amount,
+		convert(o.VAT_fee/100, decimal(12,2)) VAT_fee,
+		convert(o.personal_income_tax/100, decimal(12,2)) personal_income_tax,
+		convert(o.surcharge/100, decimal(12,2)) surcharge
+		from
+		t_e_invoice_order_group o
+		left join t_e_oem oem on oem.oem_code = o.oem_code
+		where
+		o.order_no = #{orderNo}
+	</select>
+
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+		from
+			t_e_invoice_order_group
+		where
+			order_no = #{orderNo}
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code = #{oemCode}
+			</if>
+		limit 1
+	</select>
+
+	<select id="queryOrderByOrderNo" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from
+		t_e_invoice_order_group
+		where
+		order_no = #{orderNo}
+		limit 1
+	</select>
+
+	<update id="updateStatusByOrderNo">
+		update
+			t_e_invoice_order_group
+		set
+			order_status = #{orderStatus},
+			update_user = #{updateUser},
+			update_time = #{updateTime},
+			remark = #{remark}
+		where
+			order_no = #{orderNo}
+			and oem_code = #{oemCode}
+	</update>
+	<select id="queryByStatus" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from
+		t_e_invoice_order_group
+		where
+		order_status = #{orderStatus}
+	</select>
+</mapper>

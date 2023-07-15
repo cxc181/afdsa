@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.corporateaccount.dao.CollectionWithdrawalAmountChangeRecordMapper">
+    <resultMap type="com.yuqian.itax.corporateaccount.entity.CollectionWithdrawalAmountChangeRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="corporate_account_id" property="corporateAccountId"/>
+			<result column="bank_collection_record_no" property="bankCollectionRecordNo"/>
+			<result column="arrive_amount" property="arriveAmount"/>
+			<result column="before_amount" property="beforeAmount"/>
+			<result column="change_amount" property="changeAmount"/>
+			<result column="after_amount" property="afterAmount"/>
+			<result column="change_time" property="changeTime"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="change_type" property="changeType"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="invoice_order_no" property="invoiceOrderNo"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, corporate_account_id, bank_collection_record_no, arrive_amount, before_amount, change_amount, after_amount, change_time, order_no, change_type, add_time, add_user, update_time, update_user, remark,invoice_order_no
+    </sql>
+</mapper>

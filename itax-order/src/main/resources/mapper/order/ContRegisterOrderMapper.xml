@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.ContRegisterOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.ContRegisterOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="memeber_id" property="memeberId"/>
+			<result column="company_id" property="companyId"/>
+			<result column="corporate_account_id" property="corporateAccountId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="park_id" property="parkId"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="cont_type" property="contType"/>
+			<result column="order_status" property="orderStatus"/>
+			<result column="complete_time" property="completeTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, memeber_id, company_id, corporate_account_id, oem_code, park_id, order_amount, pay_amount, cont_type, order_status, complete_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<resultMap id="invOrderMap" type="com.yuqian.itax.order.entity.vo.ContRegisterOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="company_name" property="companyName"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="company_type" property="companyType"/>
+		<result column="cont_type" property="contType"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="parent_member_account" property="accountFirst"/>
+		<result column="parent_member_level_no" property="levelFirst"/>
+		<result column="park_name" property="parkName"/>
+		<result column="up_diamond_account" property="upDiamondAccount"/>
+		<result column="city_providers" property="cityProviders"/>
+		<result column="city_partner" property="cityPartner"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+		<result column="super_diamond_account" property="superDiamondAccount"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="channel_push_state" property="channelPushState"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+	</resultMap>
+
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"></include>
+		FROM t_e_cont_register_order
+		where order_no = #{orderNo}
+	</select>
+
+	<select id="listContRegOrder" parameterType="com.yuqian.itax.order.entity.query.ContRegisterOrderQuery" resultMap="invOrderMap">
+		SELECT o.order_no, acc.member_phone, comp.company_name, comp.company_type, cro.cont_type,
+		case when  park.park_type = 2 and 3 = #{platformType}  then
+		NULL
+		ELSE convert(o.order_amount/100, decimal(60,2)) end order_amount,
+		case when  park.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE convert(o.discount_amount/100, decimal(60,2)) end discount_amount,
+		case when  park.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE convert(o.pay_amount/100, decimal(60,2)) end pay_amount,
+		o.add_time, cro.order_status, mo.parent_member_account,acc.parent_member_account as parentMemberAccount,acc.member_auth_type,
+		mo.parent_member_level_no,mo.member_level, park.park_name,mo.up_diamond_account, mo.city_providers_name city_providers,acc.parent_member_id,ch.channel_name,o.channel_push_state,
+		mo.city_partner_name city_partner, mo.attribution_employees_account, mo.super_diamond_account,oem.oem_name
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		LEFT JOIN t_e_channel_info ch ON acc.channel_code = ch.channel_code
+		INNER JOIN t_e_cont_register_order cro on o.order_no = cro.order_no
+		INNER JOIN t_e_park park on cro.park_id = park.id
+		INNER JOIN t_e_member_company comp on comp.id = cro.company_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="memberAuthType != null and memberAuthType.trim() != ''">
+				and acc.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and comp.company_name like concat('%',#{likeCompName},'%')
+			</if>
+		<!--	<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>-->
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+<!--			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>-->
+			<!--<if test="attributionEmployeesAccount != null and attributionEmployeesAccount.trim() != ''">
+				and mo.attribution_employees_account like concat('%',#{attributionEmployeesAccount},'%')
+			</if>
+			<if test="upDiamondAccount != null and upDiamondAccount.trim() != ''">
+				and mo.up_diamond_account like concat('%',#{upDiamondAccount},'%')
+			</if>
+			<if test="superDiamondAccount != null and superDiamondAccount.trim() != ''">
+				and mo.super_diamond_account like concat('%',#{superDiamondAccount},'%')
+			</if>-->
+			<if test="parkId != null">
+				and cro.park_id = #{parkId}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="orderStatus != null">
+				and cro.order_status = #{orderStatus}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and acc.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and o.channel_code = #{channelCode}
+			</if>
+			<if test="channelPushState != null ">
+				and o.channel_push_state = #{channelPushState}
+			</if>
+			<if test="companyType != null ">
+				and comp.company_type = #{companyType}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+</mapper>

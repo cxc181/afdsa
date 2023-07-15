@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.RegisterOrderGoodsDetailRelaMapper">
+    <resultMap type="com.yuqian.itax.order.entity.RegisterOrderGoodsDetailRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="goods_name" property="goodsName"/>
+			<result column="tax_classification_code" property="taxClassificationCode"/>
+			<result column="park_businessscope_id" property="parkBusinessscopeId"/>
+			<result column="businessscope_name" property="businessscopeName"/>
+			<result column="businessscope_base_id" property="businessscopeBaseId"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, goods_name, tax_classification_code, park_businessscope_id, businessscope_name, businessscope_base_id, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<insert id="batchAdd">
+		insert into t_r_register_order_goods_detail (order_no, goods_name, tax_classification_code, park_businessscope_id, businessscope_name, businessscope_base_id, add_time, add_user, update_time, update_user, remark)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.orderNo}, #{item.goodsName},#{item.taxClassificationCode},#{item.parkBusinessscopeId},#{item.businessscopeName},#{item.businessscopeBaseId},#{item.addTime},#{item.addUser},#{item.updateTime},#{item.updateUser},#{item.remark})
+		</foreach>
+	</insert>
+
+	<select id="getAddedBusinessScope" resultType="String">
+		select  DISTINCT(businessscope_name)
+		FROM t_r_register_order_goods_detail
+		where order_no = #{orderNo} and businessscope_name is not null
+		and DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s')  <![CDATA[ > ]]>  DATE_FORMAT(#{orderTime},'%Y-%m-%d %H:%i:%s')
+	</select>
+
+	<resultMap id="UnmatchedMap" type="com.yuqian.itax.system.entity.vo.UnmatchedBusinessScopeVO">
+		<result column="tax_classification_code" property="taxClassificationCode"/>
+		<result column="goods_name" property="goodsName"/>
+	</resultMap>
+
+	<select id="getUnmatchedBusinessScopeByOrderNo" resultMap="UnmatchedMap">
+		select goods_name,tax_classification_code
+		FROM t_r_register_order_goods_detail
+		where order_no = #{orderNo} and park_businessscope_id is null
+	</select>
+    <select id="queryByOrderNo" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_r_register_order_goods_detail
+		WHERE order_no = #{orderNo}
+	</select>
+</mapper>

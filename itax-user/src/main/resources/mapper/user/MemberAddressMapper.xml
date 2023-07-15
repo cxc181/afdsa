@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberAddressMapper">
+    <resultMap type="com.yuqian.itax.user.entity.MemberAddressEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="member_id" property="memberId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="status" property="status"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="is_default" property="isDefault"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, oem_code, recipient, recipient_phone, recipient_address, status, province_code, province_name, city_code, city_name, district_code, district_name, is_default, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberAddressVO" id="memberAddressVOMap">
+		<id column="id" property="id"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_code" property="districtCode"/>
+		<result column="district_name" property="districtName"/>
+		<result column="is_default" property="isDefault"/>
+	</resultMap>
+	<select id="listMemberAddress" parameterType="com.yuqian.itax.user.entity.query.MemberAddressQuery" resultMap="memberAddressVOMap">
+		select
+			<include refid="Base_Columns" />
+		from
+			t_e_member_address
+		<where>
+			<if test="memberId != null">
+				and member_id = #{memberId}
+			</if>
+			<if test="oemCode != null">
+				and oem_code = #{oemCode}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+		</where>
+		order by
+			is_default desc, add_time desc
+	</select>
+	<update id="updateDefault">
+		update
+			t_e_member_address
+		set
+			is_default = #{isDefault},
+			update_user = #{updateUser},
+     		update_time = #{updateTime}
+		where
+			member_id = #{memberId}
+			and oem_code = #{oemCode}
+			<if test="oriDefault != null">
+				and is_default = #{oriDefault}
+			</if>
+	</update>
+	<select id="queryDefaultAddress" resultMap="memberAddressVOMap">
+		select
+			<include refid="Base_Columns" />
+		from
+			t_e_member_address
+		where
+			member_id = #{memberId}
+			and oem_code = #{oemCode}
+			<if test="isDefault != null">
+				and is_default = #{isDefault}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+		limit 1
+	</select>
+
+</mapper>

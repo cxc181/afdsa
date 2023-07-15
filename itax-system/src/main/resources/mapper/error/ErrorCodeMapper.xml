@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.error.dao.ErrorCodeMapper">
+    <resultMap type="com.yuqian.itax.error.entity.ErrorCodeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="error_code" property="errorCode"/>
+			<result column="error_desc" property="errorDesc"/>
+			<result column="is_translation" property="isTranslation"/>
+			<result column="translation_content" property="translationContent"/>
+			<result column="error_type" property="errorType"/>
+			<result column="is_internal_error" property="isInternalError"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, error_code, error_desc, is_translation, translation_content, error_type, is_internal_error, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="listErrorCode" resultMap="baseEntityMap" parameterType="com.yuqian.itax.error.entity.query.ErrorCodeQuery" >
+		SELECT
+		<include refid="Base_Columns"/>
+		FROM
+		sys_e_error_code
+		<where>
+			<if test="errorCode != null and errorCode.trim() != ''">
+				and error_code = #{errorCode}
+			</if>
+			<if test="errorType != null and errorType > 0 ">
+				and error_type = #{errorType}
+			</if>
+			<if test="isTranslation != null and isTranslation > -1 ">
+				and is_translation = #{isTranslation}
+			</if>
+		</where>
+		order by add_time desc
+	</select>
+	<select id="selectByCode" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"/>
+		FROM
+		sys_e_error_code
+		where error_code = #{errorCode}
+		<if test="notId != null and notId > 0 ">
+			and id != #{notId}
+		</if>
+		limit 1
+	</select>
+</mapper>

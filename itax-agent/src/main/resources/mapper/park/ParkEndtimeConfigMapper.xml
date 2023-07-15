@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkEndtimeConfigMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkEndtimeConfigEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="oper_type" property="operType"/>
+			<result column="invoice_way" property="invoiceWay"/>
+			<result column="start_time" property="startTime"/>
+			<result column="end_time" property="endTime"/>
+			<result column="content" property="content"/>
+			<result column="year" property="year"/>
+			<result column="quarter" property="quarter"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, oper_type, invoice_way, start_time, end_time, content, year, quarter, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryEndtimeConfig" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_park_endtime_config c
+		WHERE
+			c.`park_id` = #{parkId}
+		AND
+			c.`oper_type` = #{operType}
+		AND
+			c.`invoice_way` = #{invoiceWay}
+	</select>
+
+	<select id="queryByOperTypeAndParkIdAndYearAndQuarter" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_park_endtime_config
+		<where>
+			<if test="parkId != null">
+				and park_id = #{parkId}
+			</if>
+			<if test="OperType != null">
+				and oper_type = #{OperType}
+			</if>
+			<if test="year != null">
+				and `year` = #{year}
+			</if>
+			<if test="quarter != null">
+				and quarter = #{quarter}
+			</if>
+			<if test="year == null">
+				order by `year` desc
+			</if>
+		</where>
+	</select>
+</mapper>

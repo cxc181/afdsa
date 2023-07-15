@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberCrowdLabelRelaMapper">
+    <resultMap type="com.yuqian.itax.user.entity.MemberCrowdLabelRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="crowd_label_id" property="crowdLabelId"/>
+			<result column="member_id" property="memberId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap id="accountVO" type="com.yuqian.itax.user.entity.vo.CrowdAccoutVO">
+		<result column="member_account" property="memberAccount"/>
+		<result column="real_name" property="realName"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, crowd_label_id, member_id, oem_code, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryCrowdAccountById" resultMap="accountVO">
+		select m.member_account,m.real_name
+		from t_r_member_crowd_label c
+		left join t_e_member_account m on c.member_id = m.id
+		where c.crowd_label_id = #{crowdLabelId}
+	</select>
+
+	<insert id="addBatch">
+		insert into t_r_member_crowd_label(crowd_label_id,member_id,oem_code,add_user,add_time)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{crowdLabelId},#{item.memberId},#{oemCode},#{updateUser},#{addTime})
+		</foreach>
+	</insert>
+
+	<insert id="addUserByH5Access">
+		insert into t_r_member_crowd_label(crowd_label_id,member_id,oem_code,add_user,add_time)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{crowdLabelId},#{item},#{oemCode},#{addUser},#{addTime})
+		</foreach>
+	</insert>
+
+	<delete id="deleteAccountByCrowdLabelId">
+		delete FROM t_r_member_crowd_label where crowd_label_id = #{crowdLabelId}
+	</delete>
+
+	<delete id="deleteAccountByMemberId">
+		delete FROM t_r_member_crowd_label where member_id in
+		(select id from t_e_member_account where member_account in
+		(
+		<foreach collection="list" item="item" separator=",">
+			#{item.phoneNumber}
+		</foreach>
+		) )
+	</delete>
+</mapper>

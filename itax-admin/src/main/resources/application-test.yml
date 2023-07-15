@@ -1,0 +1,22 @@
+spring:
+  #mysql
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.16.100.40:3306/itax
+    username: itax
+    password: itax_7890
+  #redis
+  redis:
+    database: 7
+    host: 172.16.100.40
+    port: 6379
+    password: redis_test123
+  rabbitmq:
+    host: 172.16.100.40
+    port: 5672
+    username: rabbit_itax_test
+    password: 123456
+    virtual-host: /itax_test
+permission-config:
+  perms:
+    isAuthc: false #是否进行权限认证

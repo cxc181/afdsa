@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.OperationLogMapper">
+    <resultMap type="com.yuqian.itax.system.entity.OperationLogEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="opr_time" property="oprTime"/>
+			<result column="opr_type" property="oprType"/>
+			<result column="opr_user_id" property="oprUserId"/>
+			<result column="ip_addr" property="ipAddr"/>
+			<result column="module" property="module"/>
+			<result column="opr_desc" property="oprDesc"/>
+			<result column="class_name" property="className"/>
+			<result column="method" property="method"/>
+			<result column="result" property="result"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, opr_time, opr_type, opr_user_id, ip_addr, module, opr_desc, class_name, method, result, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

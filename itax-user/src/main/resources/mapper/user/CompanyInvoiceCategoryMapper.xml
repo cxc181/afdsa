@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyInvoiceCategoryMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyInvoiceCategoryEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="company_id" property="companyId"/>
+			<result column="category_base_id" property="categoryBaseId"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="category_name" property="categoryName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, order_no, company_id, category_base_id,industry_id, category_name, add_time, add_user, update_time, update_user, remark
+    </sql>
+    <update id="updateCompanyIdByOrderNo">
+		update
+			t_e_company_invoice_category
+		set
+			company_id = #{companyId}
+		where
+			order_no = #{orderNo}
+			and oem_code = #{oemCode}
+	</update>
+
+    <insert id="addBatch">
+		insert into t_e_company_invoice_category
+		( oem_code, order_no, company_id, industry_id, category_name, add_time, add_user, remark)
+		values
+		<foreach collection ="categoryList" item="item" separator =",">
+			(
+			#{entity.oemCode},
+			#{entity.orderNo},
+			#{entity.companyId},
+			#{entity.industryId},
+			#{item},
+			#{entity.addTime},
+			#{entity.addUser},
+			#{entity.remark}
+			)
+		</foreach>
+	</insert>
+	<insert id="addBatchByInvoiceCategoryBaseStringVO">
+		insert into t_e_company_invoice_category
+		( oem_code, order_no, company_id, industry_id,category_base_id, category_name, add_time, add_user, remark)
+		values
+		<foreach collection ="categoryList" item="item" separator =",">
+			(
+			#{entity.oemCode},
+			#{entity.orderNo},
+			#{entity.companyId},
+			#{entity.industryId},
+			#{item.id},
+			concat(#{item.taxClassificationAbbreviation}, '*' , #{item.goodsName}),
+			#{entity.addTime},
+			#{entity.addUser},
+			#{entity.remark}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 根据行业id保存企业开票类目 -->
+	<insert id="addByIndustryId">
+		insert into t_e_company_invoice_category
+			select null id, #{oemCode} `oem_code`, #{orderNo}`order_no`, null `company_id`, #{industryId} `industry_id`, category_base_id, `category_name`,now() `add_time`, #{addUser} `add_user`, now() `update_time`, `update_user`, `remark`
+		from t_e_invoice_category
+			where industry_id = #{industryId}
+	</insert>
+
+	<delete id="deleteByOrderNo">
+		delete from
+			t_e_company_invoice_category
+		where
+			order_no = #{orderNo}
+			and oem_code = #{oemCode}
+	</delete>
+	<delete id="deleteByCompanyId">
+		delete from
+			t_e_company_invoice_category
+		where
+			company_id = #{companyId}
+	</delete>
+	<delete id="deleteByCategoryBaseId">
+		delete from
+			t_e_company_invoice_category
+		where
+			category_base_id = #{categoryBaseId}
+	</delete>
+	<select id="queryOemInvoiceCategory" resultMap="baseEntityMap">
+		SELECT
+			cic.category_base_id, cic.category_name
+		FROM
+			t_e_company_invoice_category cic
+		INNER JOIN
+			t_r_oem_invoice_category oic on oic.oem_code = cic.oem_code and cic.category_base_id = oic.category_base_id
+		WHERE
+			cic.company_id = #{companyId}
+		LIMIT 1
+	</select>
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyInvoiceCategoryJdVO" id="jdMap">
+
+		<result column="category_base_id" property="categoryBaseId"/>
+		<result column="category_name" property="categoryName"/>
+	</resultMap>
+	<select id="queryCompanyInvoiceCategoryJd" resultMap="jdMap">
+		SELECT
+			cic.category_base_id, cic.category_name
+		FROM
+			t_e_company_invoice_category cic
+		INNER JOIN
+			t_r_oem_invoice_category oic on oic.oem_code = cic.oem_code
+		WHERE
+			cic.company_id = #{companyId}
+	</select>
+	<update id="batchUpdateByCategoryBaseId" >
+		UPDATE t_e_company_invoice_category
+			SET category_name = (
+				SELECT
+					CONCAT(
+						tax_classification_abbreviation,
+						"*",
+						goods_name
+					)
+				FROM
+					t_e_invoice_category_base
+				WHERE
+					id = #{categoryBaseId}
+			)
+			WHERE
+				category_base_id = #{categoryBaseId}
+	</update>
+</mapper>

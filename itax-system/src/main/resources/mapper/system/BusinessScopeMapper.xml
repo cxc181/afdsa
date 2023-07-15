@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.BusinessScopeMapper">
+    <resultMap type="com.yuqian.itax.system.entity.BusinessScopeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="business_content" property="businessContent"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, industry_id, business_content, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!--根据行业ID查询经营范围列表 add by Kaven 2019-12-11 -->
+	<select id="listBusinessScope" parameterType="java.lang.Long" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_business_scope
+		where industry_id = #{industryId}
+	</select>
+
+	<select id="getScopeByBusinessContent" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_business_scope where CONCAT('@',REPLACE(business_content,';','@'),'@') like CONCAT('%@',#{content},'@%')
+		<if test="industryId != null">
+			and industry_id = #{industryId}
+		</if>
+	</select>
+
+	<select id="getScopeByBusinessByindustryIds" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_business_scope where CONCAT('@',REPLACE(business_content,';','@'),'@') like CONCAT('%@',#{content},'@%')
+		<if test="industryIds != null">
+			and industry_id in
+			<foreach collection="industryIds" open="(" close=")" item="industryId" separator=",">
+				#{industryId}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="getScopeByBusinessByParkId"  resultMap="baseEntityMap">
+		select s.business_content
+		from t_e_industry i
+		left join t_e_business_scope s on s.industry_id = i.id
+		where i.park_id = #{parkId} and  CONCAT('@',REPLACE(s.business_content,';','@'),'@') like CONCAT('%@',#{content},'@%')
+	</select>
+
+	<update id="deleteScopeBusinessByContentAndParkId">
+		update t_e_industry i,t_e_business_scope s
+		set s.business_content = SUBSTR(replace(CONCAT(';',REPLACE(s.business_content,';',';'),';'),CONCAT(';',#{content},';'),CONCAT(';','','')),
+		2,CHAR_LENGTH(replace(CONCAT(';',REPLACE(s.business_content,';',';'),';'),CONCAT(';',#{content},';'),CONCAT(';','','')))-2)
+		where i.park_id = #{parkId} and s.industry_id = i.id and  CONCAT(';',REPLACE(s.business_content,';',';'),';') like CONCAT('%;',#{content},';%')
+	</update>
+
+	<delete id="delByIndustryId">
+		delete from t_e_business_scope
+		where industry_id = #{industryId}
+	</delete>
+</mapper>

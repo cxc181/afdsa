@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.message.dao.WechatMessageTemplateMapper">
+    <resultMap type="com.yuqian.itax.message.entity.WechatMessageTemplateEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="template_type" property="templateType"/>
+			<result column="wechat_template_id" property="wechatTemplateId"/>
+			<result column="template_params" property="templateParams"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, template_type, wechat_template_id, template_params, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="getByTemplateType" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			t_e_wechat_message_template
+		where
+			template_type = #{templateType} AND status = '1'
+			<choose>
+				<when test="oemCode != null and oemCode.trim() != ''">
+					and oem_code = #{oemCode}
+				</when>
+				<otherwise>
+					and (oem_code is null or oem_code='')
+				</otherwise>
+			</choose>
+		limit 1
+	</select>
+
+	<resultMap type="com.yuqian.itax.message.entity.vo.WechatMessageTemplateSimpleVO" id="baseSimpleEntityMap">
+		<result column="wechat_template_id" property="wechatTemplateId"/>
+		<result column="template_type" property="templateType"/>
+	</resultMap>
+	<select id="getByTemplateTypes" resultMap="baseSimpleEntityMap">
+		SELECT
+			wechat_template_id, template_type
+		FROM
+			t_e_wechat_message_template
+		where
+			status = '1'
+			<if test="templateTypes != null">
+				and template_type in
+				<foreach collection="templateTypes" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<choose>
+				<when test="oemCode != null and oemCode.trim() != ''">
+					and oem_code = #{oemCode}
+				</when>
+				<otherwise>
+					and (oem_code is null or oem_code='')
+				</otherwise>
+			</choose>
+	</select>
+</mapper>

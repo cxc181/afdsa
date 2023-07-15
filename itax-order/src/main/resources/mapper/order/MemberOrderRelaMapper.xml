@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.MemberOrderRelaMapper">
+    <resultMap type="com.yuqian.itax.order.entity.MemberOrderRelaEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="member_id" property="memberId"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="account_first_id" property="accountFirstId"/>
+		<result column="account_first" property="accountFirst"/>
+		<result column="phone_first" property="phoneFirst"/>
+		<result column="name_first" property="nameFirst"/>
+		<result column="level_first" property="levelFirst"/>
+		<result column="level_first_profits_rate" property="levelFirstProfitsRate"/>
+		<result column="account_two_id" property="accountTwoId"/>
+		<result column="account_two" property="accountTwo"/>
+		<result column="phone_two" property="phoneTwo"/>
+		<result column="name_two" property="nameTwo"/>
+		<result column="level_two" property="levelTwo"/>
+		<result column="level_two_profits_rate" property="levelTwoProfitsRate"/>
+		<result column="account_three_id" property="accountThreeId"/>
+		<result column="account_three" property="accountThree"/>
+		<result column="phone_three" property="phoneThree"/>
+		<result column="name_three" property="nameThree"/>
+		<result column="level_three" property="levelThree"/>
+		<result column="level_three_profits_rate" property="levelThreeProfitsRate"/>
+		<result column="account_four_id" property="accountFourId"/>
+		<result column="account_four" property="accountFour"/>
+		<result column="phone_four" property="phoneFour"/>
+		<result column="name_four" property="nameFour"/>
+		<result column="level_four" property="levelFour"/>
+		<result column="level_four_profits_rate" property="levelFourProfitsRate"/>
+		<result column="city_providers_id" property="cityProvidersId"/>
+		<result column="city_providers" property="cityProviders"/>
+		<result column="city_providers_phone" property="cityProvidersPhone"/>
+		<result column="city_providers_name" property="cityProvidersName"/>
+		<result column="city_providers_profits_rate" property="cityProvidersProfitsRate"/>
+		<result column="city_partner_id" property="cityPartnerId"/>
+		<result column="city_partner" property="cityPartner"/>
+		<result column="city_partner_phone" property="cityPartnerPhone"/>
+		<result column="city_partner_name" property="cityPartnerName"/>
+		<result column="city_partner_profits_rate" property="cityPartnerProfitsRate"/>
+		<result column="platform_account_id" property="platformAccountId"/>
+		<result column="platform_account" property="platformAccount"/>
+		<result column="platform_account_profits_rate" property="platformAccountProfitsRate"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="attribution_employees_id" property="attributionEmployeesId"/>
+			<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+			<result column="up_diamond_id" property="upDiamondId"/>
+			<result column="up_diamond_account" property="upDiamondAccount"/>
+			<result column="super_diamond_id" property="superDiamondId"/>
+			<result column="super_diamond_account" property="superDiamondAccount"/>
+			<result column="super_employees_id" property="superEmployeesId"/>
+			<result column="super_employees_account" property="superEmployeesAccount"/>
+			<result column="parent_member_id" property="parentMemberId"/>
+			<result column="parent_member_account" property="parentMemberAccount"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, member_level, account_first_id, account_first, phone_first, name_first, level_first, level_first_profits_rate,
+		account_two_id, account_two, phone_two, name_two, level_two, level_two_profits_rate, account_three_id, account_three, phone_three,
+		name_three, level_three, level_three_profits_rate, account_four_id, account_four, phone_four, name_four, level_four, level_four_profits_rate,
+		city_providers_id, city_providers, city_providers_phone, city_providers_name, city_providers_profits_rate, city_partner_id, city_partner,
+		city_partner_phone, city_partner_name, city_partner_profits_rate, platform_account_id, platform_account, platform_account_profits_rate,
+		oem_code, oem_name, add_time, add_user, update_time, update_user, remark, attribution_employees_id, attribution_employees_account,
+		up_diamond_id, up_diamond_account, super_diamond_id, super_diamond_account, super_employees_id, super_employees_account, parent_member_id,
+		parent_member_account
+    </sql>
+
+	<!-- 根据用户ID查询会员订单关系 add by Kaven 2019-12-10 -->
+	<select id="findByMemberId" parameterType="java.lang.Long" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from t_r_member_order where member_id = #{userId}
+	</select>
+
+	<!-- 根据一级推广人修改会员一级推广人账号 -->
+	<update id="updateMemberAccountByFirstMemberId">
+		update t_r_member_order set account_first = #{memberAccount} ,phone_first =  #{memberAccount},remark= #{remark} where account_first_id =  #{memberId};
+	</update>
+
+	<!-- 根据二级推广人修改会员二级推广人账号 -->
+	<update id="updateMemberAccountByTwoMemberId">
+		update t_r_member_order set account_two = #{memberAccount} ,phone_two =  #{memberAccount},remark= #{remark} where account_two_id =  #{memberId};
+	</update>
+
+	<!-- 根据三级推广人修改会员三级推广人账号 -->
+	<update id="updateMemberAccountByThreeMemberId">
+		update t_r_member_order set account_three = #{memberAccount} ,phone_three =  #{memberAccount},remark= #{remark} where account_three_id =  #{memberId};
+	</update>
+
+	<!-- 根据四级推广人修改会员四级推广人账号 -->
+	<update id="updateMemberAccountByFourMemberId">
+		update t_r_member_order set account_four = #{memberAccount} ,phone_four =  #{memberAccount},remark= #{remark} where account_four_id =  #{memberId};
+	</update>
+
+	<!-- 根据上级钻石id修改上级钻石账号 -->
+	<update id="updateOrderRelaUpDiamondAccountByUpDiamondAccountId">
+		update t_r_member_order set up_diamond_account = #{memberAccount},remark= #{remark},update_time = now() where up_diamond_id =  #{memberId};
+	</update>
+
+	<!-- 根据上上级钻石id修改上上级钻石账号 -->
+	<update id="updateOrderRelaSuperDiamondAccountBySuperDiamondId">
+		update t_r_member_order set super_diamond_account = #{memberAccount},remark= #{remark},update_time = now() where super_diamond_id =  #{memberId};
+	</update>
+
+	<!-- 根据所属员工id修改所属员工账号 -->
+	<update id="updateOrderRelaEmployeesAccountByEmployeesId">
+		update t_r_member_order set attribution_employees_account = #{memberAccount},remark= #{remark},update_time = now() where attribution_employees_id =  #{memberId};
+	</update>
+
+	<!-- 根据上上级员工id修改上上级员工账号 -->
+	<update id="updateOrderRelaSuperEmployeesAccountBySuperDiamondId">
+		update t_r_member_order set super_employees_account = #{memberAccount},remark= #{remark},update_time = now() where super_employees_id =  #{memberId};
+	</update>
+
+	<!-- 根据邀请人id修改邀请人账号 -->
+	<update id="updateOrderRelaParentMemberAccountByParentMemberId">
+		update t_r_member_order set parent_member_account = #{memberAccount},remark= #{remark},update_time = now() where parent_member_id =  #{memberId};
+	</update>
+</mapper>

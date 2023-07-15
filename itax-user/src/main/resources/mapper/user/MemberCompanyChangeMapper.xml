@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberCompanyChangeMapper">
+    <resultMap type="com.yuqian.itax.user.entity.MemberCompanyChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="member_id" property="memberId"/>
+			<result column="company_name" property="companyName"/>
+			<result column="ein" property="ein"/>
+			<result column="business_scope" property="businessScope"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="industry" property="industry"/>
+			<result column="business_address" property="businessAddress"/>
+			<result column="business_license" property="businessLicense"/>
+			<result column="business_license_copy" property="businessLicenseCopy"/>
+			<result column="end_time" property="endTime"/>
+			<result column="status" property="status"/>
+			<result column="annual_fee" property="annualFee"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="park_id" property="parkId"/>
+			<result column="is_top_up" property="isTopUp"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="operator_name" property="operatorName"/>
+			<result column="company_type" property="companyType"/>
+			<result column="operator_tel" property="operatorTel"/>
+			<result column="operator_email" property="operatorEmail"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="id_card_number" property="idCardNumber"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_reverse" property="idCardReverse"/>
+			<result column="is_other" property="isOther"/>
+			<result column="commission_invoice_default" property="commissionInvoiceDefault"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="overdue_status" property="overdueStatus"/>
+			<result column="is_send_notice" property="isSendNotice"/>
+			<result column="cancel_credentials" property="cancelCredentials"/>
+			<result column="tax_reg_date" property="taxRegDate"/>
+			<result column="registered_capital" property="approvedTurnover"/>
+			<result column="approved_turnover" property="approvedTurnover"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, member_id, company_name, ein, business_scope, industry_id, industry, business_address, business_license, business_license_copy, end_time, status, annual_fee, oem_code, park_id, is_top_up, add_time, add_user, update_time, update_user, remark, operator_name, company_type, operator_tel, operator_email, agent_account, id_card_number, id_card_front, id_card_reverse, is_other, commission_invoice_default, order_no, overdue_status, is_send_notice, cancel_credentials
+    </sql>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyChangeVo" id="historyEntityMap">
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+
+	<select id="queryMemberCompanyChangeByCompanyId" resultMap="historyEntityMap">
+		SELECT
+			status,add_time,add_user,remark
+		FROM
+			t_e_member_company_change
+		WHERE
+			company_id = #{companyId} order by add_time desc
+	</select>
+</mapper>

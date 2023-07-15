@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.coupons.dao.CouponsIssueRecordMapper">
+    <resultMap type="com.yuqian.itax.coupons.entity.CouponsIssueRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="coupons_id" property="couponsId"/>
+			<result column="coupons_code" property="couponsCode"/>
+			<result column="member_id" property="memberId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="issue_time" property="issueTime"/>
+			<result column="use_time" property="useTime"/>
+			<result column="oper_user" property="operUser"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, coupons_id, coupons_code, member_id, oem_code, issue_time, use_time, oper_user, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.coupons.entity.vo.CouponsIssueVO" id="CouponsMap">
+		<result column="coupons_name" property="couponsName"/>
+		<result column="face_amount" property="faceAmount"/>
+		<result column="start_date" property="startDate"/>
+		<result column="end_date" property="endDate"/>
+		<result column="status" property="status"/>
+		<result column="usable_range" property="usableRange"/>
+	</resultMap>
+	<select id="listByMemberId" resultMap="CouponsMap">
+		SELECT cir.`id`, c.`coupons_name`, c.`face_amount`, c.`start_date`, c.`end_date`, cir.`status`, c.usable_range
+		FROM `t_e_coupons` c
+		INNER JOIN `t_e_coupons_issue_record` cir ON c.`id` = cir.`coupons_id`
+		WHERE cir.`member_id` = #{memberId} AND cir.`oem_code` = #{oemCode}
+			AND NOW() <![CDATA[ >= ]]> cir.`issue_time` AND cir.`status` != 3
+			AND	(CASE WHEN #{type} = 1 THEN DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ >= ]]> c.`start_date` AND cir.`status` = 0 AND LOCATE(#{usableRange},c.`usable_range`) > 0
+					WHEN #{type} = 2 THEN cir.`status` = 0
+					WHEN #{type} = 3 THEN cir.`status` IN(1,2) END)
+			<if test="usableRange != null and usableRange.trim() != ''">
+				AND c.usable_range = #{usableRange}
+			</if>
+		<if test="type != null and type == 1">
+			ORDER BY IF(DATE_FORMAT(NOW(),'%Y-%m-%d') >= c.`start_date`,0,1),c.`end_date` ASC, c.`face_amount` DESC, cir.`id` ASC
+		</if>
+		<if test="type != null and type == 2">
+			ORDER BY cir.`issue_type` DESC, IF(DATE_FORMAT(NOW(),'%Y-%m-%d') >= c.`start_date`,0,1),c.`end_date` ASC, c.`face_amount` DESC, cir.`id` ASC
+		</if>
+		<if test="type != null and type == 3">
+			ORDER BY IFNULL(cir.`use_time`,DATE_FORMAT(c.`end_date`,'%Y-%m-%d 23:59:59')) DESC, cir.`id` DESC
+		</if>
+	</select>
+
+	<select id="countUsable" resultType="integer">
+		SELECT COUNT(cir.`id`)
+		FROM `t_e_coupons` c
+		INNER JOIN `t_e_coupons_issue_record` cir ON c.`id` = cir.`coupons_id`
+		WHERE cir.`member_id` = #{memberId} AND cir.`oem_code` = #{oemCode} AND c.`status` = 1
+			AND NOW() <![CDATA[ >= ]]> cir.`issue_time` AND cir.`status` != 3 AND DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ >= ]]> c.`start_date`
+			AND cir.`status` = 0
+		<if test="usableRange != null and usableRange.trim() != ''">
+			AND c.usable_range = #{usableRange}
+		</if>
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.coupons.entity.vo.CouponsIssueVOAdmin" id="issueVOAdminMap">
+
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="real_name" property="realName"/>
+		<result column="coupons_name" property="couponsName"/>
+		<result column="coupons_code" property="couponsCode"/>
+		<result column="status" property="status"/>
+		<result column="issue_time" property="issueTime"/>
+		<result column="oper_user" property="operUser"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="issue_type" property="issueType"/>
+	</resultMap>
+	<select id="queryCouponIssueRecordList" resultMap="issueVOAdminMap">
+		SELECT
+			cir.id,
+			ma.member_account,
+			IFNULL(ma.real_name,ma.member_name) real_name,
+			c.coupons_name,
+			c.coupons_code,
+			cir.issue_type,
+			cir.`status`,
+			o.oem_name,
+			cir.issue_time,
+			cir.oper_user
+		FROM
+			t_e_coupons_issue_record cir
+		LEFT JOIN t_e_coupons c ON c.id = cir.coupons_id
+		LEFT JOIN t_e_member_account ma ON ma.id = cir.member_id
+		LEFT JOIN t_e_oem o ON o.oem_code = ma.oem_code
+		<where>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="realName != null and realName != ''">
+				and case when
+				ma.real_name is null or ma.real_name = ''
+				then
+				ma.member_name like concat('%',#{realName},'%')
+				else
+				ma.real_name like concat('%',#{realName},'%')
+				end
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and o.oem_code =#{oemCode}
+			</if>
+			<if test="couponsName != null and couponsName != ''">
+				and c.coupons_name like concat('%',#{couponsName},'%')
+			</if>
+			<if test="couponsCode != null and couponsCode != ''">
+				and c.coupons_code like concat('%',#{couponsCode},'%')
+			</if>
+			<if test="status != null">
+				and cir.status =#{status}
+			</if>
+			<if test="issueType != null">
+				and cir.issue_type =#{issueType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and cir.issue_time between #{startDate} and #{endDate}
+			</if>
+		</where>
+		order by cir.add_time desc
+	</select>
+	<select id="queryOverTimeCouponsIssueRecordEntity" resultMap="baseEntityMap">
+		SELECT
+			cir.*
+		FROM
+		t_e_coupons_issue_record cir
+		INNER JOIN t_e_coupons c ON c.id= cir.coupons_id
+		where
+			date_format(c.end_date,'%Y%m%d')  <![CDATA[<]]> date_format(now(),'%Y%m%d') and cir.status = 0
+	</select>
+
+
+	<select id="queryExchangeNumber" resultType="int">
+		SELECT
+		  IFNULL(COUNT(cir.`id`),0)
+		FROM
+		  `t_e_coupons_issue_record` cir
+		WHERE
+		  cir.`coupons_id` = #{couponsId}
+		AND
+		  cir.`coupons_exchange_id` = #{exchangeCodeId}
+		AND
+		  cir.`member_id` = #{currUserId}
+		AND
+		  cir.`oem_code` = #{oemCode}
+	</select>
+</mapper>

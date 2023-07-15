@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkCorporateAccountConfigMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkCorporateAccountConfigEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+			<result column="channel_account" property="channelAccount"/>
+			<result column="sec_key" property="secKey"/>
+			<result column="url" property="url"/>
+			<result column="params_values" property="paramsValues"/>
+			<result column="public_key" property="publicKey"/>
+			<result column="private_key" property="privateKey"/>
+			<result column="status" property="status"/>
+			<result column="bank_activation_fee" property="bankActivationFee"/>
+			<result column="bank_other_fee" property="bankOtherFee"/>
+			<result column="bank_withdrawal_fee" property="bankWithdrawalFee"/>
+			<result column="single_withdrawal_limit" property="singleWithdrawalLimit" />
+			<result column="daily_withdrawal_limit" property="dailyWithdrawalLimit" />
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="headquarters_name" property="headquartersName"/>
+		    <result column="headquarters_no" property="headquartersNo"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, corporate_account_bank_name, channel_account, sec_key, url, params_values, public_key, private_key, status, bank_activation_fee, bank_other_fee, bank_withdrawal_fee,single_withdrawal_limit,daily_withdrawal_limit,
+		 add_time, add_user, update_time, update_user, remark, headquarters_name, headquarters_no
+    </sql>
+
+	<!-- 根据用户ID查询支持对公户园区列表 add by Kaven 2020-09-07 -->
+	<select id="selectByMemberId" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			t_e_park_corporate_account_config
+		<where>
+			park_id IN (SELECT DISTINCT(t.park_id) FROM t_e_member_company t WHERE t.member_id = #{userId} and t.status != 4)
+		</where>
+	</select>
+
+	<!--根据园区id查询配置-->
+	<select id="queryConfigByParkId" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			`t_e_park_corporate_account_config` c
+		WHERE
+			c.`status` = 1
+		AND
+			c.`park_id` = #{parkId}
+		GROUP BY
+			c.`headquarters_no`
+	</select>
+</mapper>

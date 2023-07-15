@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyResourcesUseRecordMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyResourcesUseRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="resources_type" property="resourcesType"/>
+			<result column="status" property="status"/>
+			<result column="is_notice" property="isNotice" />
+			<result column="audit_status" property="auditStatus"/>
+			<result column="audit_user" property="auditUser"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="use_desc" property="useDesc"/>
+			<result column="imgs_addr" property="imgsAddr"/>
+			<result column="audit_desc" property="auditDesc"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyResourcesUseRecordVO" id="recordVo">
+		<id column="id" property="id"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="resources_type" property="resourcesType"/>
+		<result column="status" property="status"/>
+		<result column="is_notice" property="isNotice" />
+		<result column="audit_status" property="auditStatus"/>
+		<result column="audit_status_name" property="auditStatusName"/>
+		<result column="audit_user" property="auditUser"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="use_desc" property="useDesc"/>
+		<result column="imgs_addr" property="imgsAddr"/>
+		<result column="audit_desc" property="auditDesc"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.ComRscTimeoutRecordVO" id="noticeMap">
+		<result column="deal_count" property="dealCount"/>
+		<result column="audit_user" property="auditUser"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, resources_type, status,is_notice, audit_status, audit_user, add_time, add_user, update_time, update_user, remark,use_desc,imgs_addr,audit_desc
+    </sql>
+
+	<!--分页查询用章审批记录 add by Kaven 2019-12-14 -->
+	<select id="listRecordPage" parameterType="com.yuqian.itax.user.entity.query.CompanyResourcesUseRecordQuery" resultMap="recordVo">
+		select
+			t.id,
+			t.company_id,
+			t.audit_status,
+			(case audit_status when 0 then '待审核' when 1 then '已审核' when 2 then '审核未通过' end) as audit_status_name,
+			c.company_name,
+			t.use_desc,
+			t.resources_type,
+			t.add_time
+		from
+			t_e_company_resources_use_record t
+			left join t_e_member_company c on t.company_id = c.id
+		<where>
+			t.status = 1 and c.member_id = #{userId} and t.audit_status != 3
+		</where>
+		order by t.add_time desc
+	</select>
+
+	<!--查询超过24/72小时未处理的用章申请数 add by Kaven 2020-03-04 -->
+	<select id="selectTimeOutList" parameterType="java.lang.Integer" resultMap="noticeMap">
+        select
+        a.deal_count,
+        a.audit_user,
+        b.is_notice
+        from
+        (select count(1) deal_count, t.audit_user from t_e_company_resources_use_record t
+        <where>
+            t.status = 1 and t.audit_status = 0
+            <if test="queryType == 1">
+                and t.add_time &lt; ( now() - interval 24 hour)
+            </if>
+            <if test="queryType == 2">
+                and t.add_time &lt; (now() - interval 72 hour)
+            </if>
+        </where>
+        group by t.audit_user ) a
+
+        left join
+        (select t.audit_user, t.is_notice from t_e_company_resources_use_record t
+        <where>
+            t.status = 1 and t.audit_status = 0
+            <if test="queryType == 1">
+                and t.add_time &lt; ( now() - interval 24 hour)
+            </if>
+            <if test="queryType == 2">
+                and t.add_time &lt; (now() - interval 72 hour)
+            </if>
+        </where>
+        ) b
+        on a.audit_user = b.audit_user
+	</select>
+
+	<update id="updateResourcesNoticeStatusByAccount">
+		update t_e_company_resources_use_record
+		<set>
+			<if test="queryType == 1">
+				is_notice = 1 ,
+			</if>
+			<if test="queryType == 2">
+				is_notice = 2 ,
+			</if>
+			update_time = now(),
+			update_user = 'admin'
+		</set>
+		<where>
+			audit_user = #{auditUser}
+			and status = 1 and audit_status = 0
+			<if test="queryType == 1">
+				and (is_notice = 0 or is_notice is null)
+				and add_time &lt; (now() - interval 24 hour)
+			</if>
+			<if test="queryType == 2">
+				and is_notice = 1
+				and add_time &lt; (now() - interval 72 hour)
+			</if>
+		</where>
+	</update>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyResourcesUseRecordAdminVO" id="recordAdminVo">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="park_name" property="parkName"/>
+		<result column="resources_type" property="resourcesType"/>
+		<result column="use_desc" property="useDesc"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="audit_status" property="auditStatus"/>
+		<result column="audit_desc" property="auditDesc"/>
+		<result column="add_user" property="addUser"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+	<select id="getCompanyResourcesUseRecordList" resultMap="recordAdminVo">
+		SELECT ma.member_account,
+		mc.company_name,
+		mc.company_type,
+		p.park_name,
+		crur.id,
+		crur.resources_type,
+		crur.use_desc,
+		crur.add_time,
+		crur.update_time,
+		crur.audit_status,
+		crur.audit_desc,
+		crur.add_user,
+		o.oem_name
+
+		from
+		t_e_company_resources_use_record crur
+		LEFT JOIN t_e_member_company mc on mc.id=crur.company_id
+		LEFT JOIN t_e_member_account ma ON ma.id=mc.member_id
+		LEFT JOIN t_e_park p ON p.id=mc.park_id
+		LEFT JOIN t_e_oem o ON o.oem_code=mc.oem_code
+
+		<where>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and mc.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="parkId != null ">
+				and mc.park_id =#{parkId}
+			</if>
+			<if test="companyType != null and companyType != ''">
+				and mc.company_type=#{companyType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and crur.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="parkName != null and parkName != ''">
+				and p.park_name like concat('%',#{parkName},'%')
+			</if>
+			<if test="resourcesType != null and resourcesType != ''">
+				and crur.resources_type=#{resourcesType}
+			</if>
+			<if test="auditStatus != null ">
+				and crur.audit_status=#{auditStatus}
+			</if>
+		</where>
+		order by crur.add_time desc
+	</select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.MemberCostItemMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.MemberCostItemEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="member_id" property="memberId"/>
+			<result column="cost_item_name" property="costItemName"/>
+			<result column="cost_item_rate" property="costItemRate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, cost_item_name, cost_item_rate, add_time, add_user, update_time, update_user, remark
+    </sql>
+    <select id="queryCommonCostItem" resultType="com.yuqian.itax.tax.entity.vo.CommonCostItemVO">
+		(SELECT id, cost_item_name,1 AS `type`
+		FROM t_e_member_cost_item m
+		WHERE member_id = #{memberId}
+		ORDER BY add_time DESC,id DESC
+		LIMIT 100)
+		UNION
+		(SELECT id, cost_item_name, 2 AS `type`
+		FROM t_e_cost_item_base)
+	</select>
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.ParkTaxBillMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.TParkTaxBillEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="tax_bill_year" property="taxBillYear"/>
+			<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+			<result column="park_id" property="parkId"/>
+			<result column="invoice_company_number" property="invoiceCompanyNumber"/>
+			<result column="uploading_company_number" property="uploadingCompanyNumber"/>
+			<result column="already_tax_money" property="alreadyTaxMoney"/>
+			<result column="should_tax_money" property="shouldTaxMoney"/>
+			<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+			<result column="supplement_tax_money" property="supplementTaxMoney"/>
+			<result column="tax_bill_status" property="taxBillStatus"/>
+			<result column="cur_file_url" property="curFileUrl"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="should_upload_vat_vouchers_company_number" property="shouldUploadVatVouchersCompanyNumber"/>
+			<result column="should_upload_iit_vouchers_company_number" property="shouldUploadIitVouchersCompanyNumber"/>
+			<result column="already_upload_vat_vouchers_company_number" property="alreadyUploadVatVouchersCompanyNumber"/>
+			<result column="already_upload_iit_vouchers_company_number" property="alreadyUploadIitVouchersCompanyNumber"/>
+			<result column="vouchers_status" property="vouchersStatus"/>
+			<result column="cancellation_company" property="cancellationCompany"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, tax_bill_year, tax_bill_seasonal, park_id, invoice_company_number, uploading_company_number, already_tax_money, should_tax_money, recoverable_tax_money, supplement_tax_money, tax_bill_status, cur_file_url, add_time, add_user, update_time, update_user, remark  ,    should_upload_vat_vouchers_company_number,should_upload_iit_vouchers_company_number,already_upload_vat_vouchers_company_number,already_upload_iit_vouchers_company_number,vouchers_status,cancellation_company
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.ParkTaxBillXXJOBVO" id="parkMap">
+
+		<result column="park_id" property="parkId"/>
+		<result column="company_number" property="companyNumber"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="company_number" property="companyNumber"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="cancellation_company" property="cancellationCompany"/>
+	</resultMap>
+
+	<select id="queryParkTaxBillByTime" resultMap="parkMap">
+		SELECT id park_id,COUNT(ein) company_number  ,sum(invoice_amount) invoice_amount,sum(already_tax_money) already_tax_money from (
+			SELECT
+			p.id,
+			mc.ein,
+			sum(io.invoice_amount) invoice_amount,
+			sum(IFNULL(io.VAT_fee, 0))+sum(IFNULL(io.VAT_payment, 0)) + sum(IFNULL(io.surcharge, 0))+ sum(IFNULL(io.surcharge_payment, 0)) + sum(IFNULL(io.personal_income_tax, 0)) + sum(IFNULL(io.income_tax_payment, 0))-sum(IFNULL(io.refund_tax_fee, 0)) already_tax_money,
+			sum(IFNULL(io.VAT_fee, 0))+sum(IFNULL(io.VAT_payment, 0)) vat_fee,
+			sum(IFNULL(io.surcharge, 0))+ sum(IFNULL(io.surcharge_payment, 0)) surcharge,
+			sum(IFNULL(io.personal_income_tax, 0))+ sum(IFNULL(io.income_tax_payment, 0))-sum(IFNULL(io.refund_tax_fee, 0)) personal_income_tax
+			FROM
+			t_e_park p
+			INNER JOIN t_e_order o ON o.park_id = p.id AND o.order_type = '6'
+			LEFT JOIN t_e_invoice_order io ON io.order_no = o.order_no
+			LEFT  JOIN t_e_member_company mc on mc.id =io.company_id
+
+		<where>
+ 			AND	io.tax_year=#{taxBillYear} and io.tax_seasonal=#{taxBillSeasonal }
+		</where>
+			GROUP BY
+			p.id,
+			mc.ein
+		) a
+		GROUP BY a.id
+	</select>
+
+	<select id="queryParkTaxBillByCompanyTaxBill" resultMap="parkMap">
+		SELECT
+			tb.park_id park_id,
+			sum(case when tb.invoice_money>0 then 1 else 0 end) company_number,
+			sum(tb.invoice_money) invoice_amount,
+			sum(IFNULL(tb.already_tax_money, 0)) already_tax_money,
+			sum(IFNULL(tb.should_tax_money, 0)) should_tax_money,
+			sum(IF(tb.`cancellation_amount` > 0, 1, 0)) cancellation_company
+			FROM
+			t_e_company_tax_bill tb
+		<where>
+			AND	tb.tax_bill_year=#{taxBillYear} and tb.tax_bill_seasonal=#{taxBillSeasonal }
+			<if test="parkId != null">
+				and tb.park_id = #{parkId}
+			</if>
+			AND tb.tax_bill_status <![CDATA[ != ]]> 9
+		</where>
+		GROUP BY tb.park_id
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.ParkTaxBillVO" id="pageInfoMap">
+
+		<id column="id" property="id"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_id" property="parkId"/>
+		<result column="invoice_company_number" property="invoiceCompanyNumber"/>
+		<result column="uploading_company_number" property="uploadingCompanyNumber"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+		<result column="supplement_tax_money" property="supplementTaxMoney"/>
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="vouchers_status" property="vouchersStatus"/>
+		<result column="should_upload_vat_vouchers_company_number" property="shouldUploadVatVouchersCompanyNumber"/>
+		<result column="should_upload_iit_vouchers_company_number" property="shouldUploadIitVouchersCompanyNumber"/>
+		<result column="already_upload_vat_vouchers_company_number" property="alreadyUploadVatVouchersCompanyNumber"/>
+		<result column="already_upload_iit_vouchers_company_number" property="alreadyUploadIitVouchersCompanyNumber"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="cancellation_company" property="cancellationCompany"/>
+		<result column="un_cost" property="unCost"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+	</resultMap>
+
+	<select id="queryParkTaxBillPageInfo" resultMap="pageInfoMap">
+		SELECT
+			ptb.id,
+			p.park_name,
+			p.id park_id,
+			p.income_levy_type,
+			ptb.tax_bill_year,
+			ptb.tax_bill_seasonal,
+			ptb.cancellation_company,
+			IFNULL(ptb.invoice_company_number,0) invoice_company_number,
+			IFNULL(ptb.uploading_company_number,0) uploading_company_number,
+			IFNULL(ptb.already_tax_money,0) already_tax_money,
+			IFNULL(ptb.should_tax_money,0) should_tax_money,
+			IFNULL(ptb.recoverable_tax_money,0) recoverable_tax_money,
+			IFNULL(ptb.supplement_tax_money,0) supplement_tax_money,
+			ptb.tax_bill_status,
+			ptb.vouchers_status,
+			ptb.should_upload_vat_vouchers_company_number,
+			ptb.should_upload_iit_vouchers_company_number,
+			ptb.already_upload_vat_vouchers_company_number,
+			ptb.already_upload_iit_vouchers_company_number,
+			ptb.add_time,
+			(select count(cb.id) FROM t_e_company_tax_bill cb where cb.tax_bill_status = 7 and cb.park_tax_bill_id = ptb.id) as un_cost,
+			CASE WHEN ptb.tax_bill_status = 6 THEN	ptb.update_time END complete_time
+		FROM
+			t_park_tax_bill ptb
+		INNER JOIN t_e_park p ON ptb.park_id = p.id
+		<where>
+			<if test="taxBillYear != null ">
+				and ptb.tax_bill_year = #{taxBillYear}
+			</if>
+			<if test="taxBillSeasonal != null ">
+				and ptb.tax_bill_seasonal = #{taxBillSeasonal}
+			</if>
+			<if test="parkId != null ">
+				and p.id = #{parkId}
+			</if>
+			<if test="taxBillStatus != null ">
+				and ptb.tax_bill_status = #{taxBillStatus}
+			</if>
+			<if test="vouchersStatus != null ">
+				and ptb.vouchers_status = #{vouchersStatus}
+			</if>
+		</where>
+		ORDER BY
+			ptb.add_time DESC,ptb.park_id
+	</select>
+</mapper>

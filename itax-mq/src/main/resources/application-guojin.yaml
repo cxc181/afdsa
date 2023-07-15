@@ -1,0 +1,19 @@
+#默认使用配置
+spring:
+  redis:
+    database: 12
+    host: 172.16.100.40
+    port: 6379
+    password: redis_test123
+  rabbitmq:
+    host: 172.16.100.40
+    port: 5672
+    username: rabbit_itax_guojin
+    password: 123456
+    virtual-host: /itax_guojin
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.16.100.40:3306/itax_pre #数据同步
+    username: itax_pre
+    password: Itax_pre_7890
+

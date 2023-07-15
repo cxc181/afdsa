@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.ReceiveOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.ReceiveOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="receive_order_num" property="receiveOrderNum"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.ReceiveOrderVO" id="minReceiveMap">
+
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"/>
+		<result column="min_num" property="minNum"/>
+		<result column="cnt_num" property="minCustomerNum"/>
+		<result column="total_recv" property="totalRecv"/>
+		<result column="customer_num" property="customerNum"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id, receive_order_num, oem_code, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<sql id="Base_Columns_Alias">
+		t.id, t.user_id, t.receive_order_num, t.oem_code, t.status, t.add_time, t.add_user, t.update_time, t.update_user, t.remark
+    </sql>
+
+	<select id="queryByUserId" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"></include>
+		from
+		t_e_receive_order
+		where user_id  = #{userId}
+	</select>
+
+	<!-- 查询最小接单数的客服数量  add by Kaven 2019-12-24-->
+	<select id="getMinReceiveNum" parameterType="java.lang.String" resultMap="minReceiveMap">
+		select
+			t.user_id,
+			min( t.receive_order_num ) min_num,
+			count( t.receive_order_num ) cnt_num
+		from
+			t_e_receive_order t left join sys_e_user u on t.user_id = u.id
+		where
+			t.oem_code = #{oemCode}
+			and t.status = 1 and u.status = 1
+		group by
+			t.receive_order_num
+			limit 1
+	</select>
+
+	<!-- 查询接单客服列表  add by Kaven 2020-01-07-->
+	<select id="getReceiveList" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select <include refid="Base_Columns_Alias"/>
+		from
+			t_e_receive_order t
+			left join sys_e_user u on t.user_id = u.id
+			left join t_e_customer_service_work_number c on c.`user_id` = u.`id`
+		<where>
+			t.status = 1 and u.status = 1 and c.`status` = 1
+			<if test="oemCode != null and oemCode != ''">
+				and t.oem_code =#{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode == ''">
+				and t.oem_code is null
+			</if>
+		</where>
+		order by t.id
+	</select>
+
+	<!-- 查询总客服坐席数和总接单数 add by Kaven 2020-01-07-->
+	<select id="getTotalNums" parameterType="java.lang.String" resultMap="minReceiveMap">
+		select
+			sum( t.receive_order_num ) as total_recv,
+			count( t.user_id ) as customer_num
+		from
+			t_e_receive_order t
+			left join sys_e_user u on t.user_id = u.id
+			left join t_e_customer_service_work_number c on c.`user_id` = u.`id`
+		<where>
+			t.status = 1 and u.status = 1 and c.`status` = 1
+			<if test="oemCode != null and oemCode != ''">
+				and t.oem_code =#{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode == ''">
+				and t.oem_code is null
+			</if>
+		</where>
+	</select>
+</mapper>

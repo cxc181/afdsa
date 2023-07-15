@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.InvoiceOrderSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.InvoiceOrderSnapshotEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="user_id" property="userId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="company_id" property="companyId"/>
+			<result column="user_type" property="userType"/>
+			<result column="invoice_amount" property="invoiceAmount"/>
+			<result column="invoice_type" property="invoiceType"/>
+			<result column="invoice_way" property="invoiceWay"/>
+			<result column="total_tax_fee" property="totalTaxFee"/>
+			<result column="vat_fee" property="vatFee"/>
+			<result column="vat_payment" property="vatPayment"/>
+			<result column="income_tax_payment" property="incomeTaxPayment"/>
+			<result column="surcharge" property="surcharge"/>
+			<result column="surcharge_payment" property="surchargePayment"/>
+			<result column="refund_tax_fee" property="refundTaxFee"/>
+			<result column="postage_fees" property="postageFees"/>
+			<result column="service_fee" property="serviceFee"/>
+			<result column="personal_income_tax" property="personalIncomeTax"/>
+			<result column="profit_amount" property="profitAmount"/>
+			<result column="oem_profits" property="oemProfits"/>
+			<result column="snapshot_time" property="snapshotTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, user_id, park_id, oem_code, company_id, user_type, invoice_amount, invoice_type, invoice_way, total_tax_fee, vat_fee, vat_payment, income_tax_payment, surcharge, surcharge_payment, refund_tax_fee, postage_fees, service_fee, personal_income_tax, profit_amount, oem_profits, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.snapshot.entity.vo.InvoiceOrderSnapshotParkVO" id="parkMap">
+
+		<result column="park_name" property="parkName"/>
+		<result column="company_number" property="companyNumber"/>
+		<result column="cannel_company_number" property="cannelCompanyNumber"/>
+		<result column="add_company_number" property="addCompanyNumber"/>
+		<result column="add_cannel_company_number" property="addCannelCompanyNumber"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="zp_invoice_money" property="zpInvoiceMoney"/>
+		<result column="pp_invoice_money" property="ppInvoiceMoney"/>
+		<result column="add_total_invoice_amount" property="addTotalInvoiceAmount"/>
+		<result column="add_zp_invoice_money" property="addZpInvoiceMoney"/>
+		<result column="add_pp_invoice_money" property="addPpInvoiceMoney"/>
+		<result column="add_total_invoice_number" property="addTotalInvoiceNumber"/>
+	</resultMap>
+	<select id="queryInvoiceOrderSnapshotPark" resultMap="parkMap">
+		select
+			p.park_name,
+			(select COUNT(mc.id) from t_e_member_company mc where mc.add_time <![CDATA[<=]]>#{endDate} and mc.park_id=p.id and case when mc.update_time is not null and mc.update_time <![CDATA[<=]]>#{endDate} then   mc.status!=4 else 1=1 END ) company_number,
+			(select COUNT(mc.id) from t_e_member_company mc where mc.update_time <![CDATA[<=]]>#{endDate}	and mc.park_id=p.id and   mc.status=4  ) cannel_company_number,
+			(select COUNT(mc.id) from t_e_member_company mc where mc.add_time <![CDATA[<=]]>#{endDate}  and mc.add_time <![CDATA[>=]]>#{startDate} and  mc.park_id=p.id and case when mc.update_time is not null and mc.update_time <![CDATA[<=]]>#{endDate} then   mc.status!=4 else 1=1 END   )  add_company_number,
+			(select COUNT(mc.id) from t_e_member_company mc where mc.update_time <![CDATA[<=]]>#{endDate} and mc.update_time <![CDATA[>=]]>#{startDate} 	and mc.park_id=p.id and   mc.status=4  )  add_cannel_company_number,
+			ROUND(IFNULL(sum(os.invoice_amount),0)/100,2) total_invoice_amount,
+			ROUND(IFNULL(sum( case when os.invoice_type=2 then os.invoice_amount else 0 end ),0)/100 ,2) zp_invoice_money,
+			ROUND(IFNULL(sum( case when os.invoice_type=1 then os.invoice_amount else 0 end ),0)/100 ,2) pp_invoice_money,
+		   (select ROUND(IFNULL(sum(invoice_amount),0)/100,2) from t_e_invoice_order_snapshot where park_id =p.id and snapshot_time <![CDATA[>=]]>#{startDate} and snapshot_time <![CDATA[<=]]>#{endDate}) add_total_invoice_amount,
+		   (select ROUND(IFNULL(sum(invoice_amount),0)/100,2) from t_e_invoice_order_snapshot where park_id =p.id and invoice_type = 1 and snapshot_time <![CDATA[>=]]>#{startDate} and snapshot_time <![CDATA[<=]]>#{endDate}) add_zp_invoice_money,
+		   (select ROUND(IFNULL(sum(invoice_amount),0)/100,2) from t_e_invoice_order_snapshot where park_id =p.id and invoice_type = 2 and snapshot_time <![CDATA[>=]]>#{startDate} and snapshot_time <![CDATA[<=]]>#{endDate}) add_pp_invoice_money,
+		   (select count(1) from t_e_invoice_order_snapshot where park_id =p.id and snapshot_time <![CDATA[>=]]>#{startDate} and snapshot_time <![CDATA[<=]]>#{endDate})  add_total_invoice_number
+		from
+		t_e_park p
+		LEFT JOIN t_e_invoice_order_snapshot os ON p.id=os.park_id
+		and os.snapshot_time <![CDATA[<=]]>#{endDate}
+		<where>
+			<if test="parkId!=null">
+				and p.id=#{parkId}
+			</if>
+		</where>
+		GROUP BY p.id
+	</select>
+
+	<resultMap type="com.yuqian.itax.snapshot.entity.vo.InvoiceSnapshotVO" id="invoiceCountMap">
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="add_total_amt" property="addTotalAmt"/>
+		<result column="add_pp_amt" property="addPpAmt"/>
+		<result column="add_zp_amt" property="addZpAmt"/>
+		<result column="user_num" property="userNum"/>
+		<result column="company_num" property="companyNum"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="total_amt" property="totalAmt"/>
+		<result column="pp_amt" property="ppAmt"/>
+		<result column="zp_amt" property="zpAmt"/>
+	</resultMap>
+	<select id="invoiceCount" resultMap="invoiceCountMap" parameterType="com.yuqian.itax.snapshot.entity.query.InvoiceSnapshotQuery">
+		select oem.oem_name, oem.oem_code, convert(sum(case when invoice.snapshot_time >= #{startDate} then invoice_amount else 0 end)/100, decimal(65,2)) add_total_amt,
+			convert(sum(case when invoice.snapshot_time >= #{startDate} and invoice_type = 1 THEN invoice_amount else 0 end)/100, decimal(65,2)) add_pp_amt,
+			convert(sum(case when invoice.snapshot_time >= #{startDate} and invoice_type = 2 THEN invoice_amount else 0 end)/100, decimal(65,2)) add_zp_amt,
+			count(DISTINCT (case when invoice.snapshot_time >= #{startDate} then user_id else null end)) user_num,
+			count(DISTINCT (case when invoice.snapshot_time >= #{startDate} then company_id else null end)) company_num,
+			count((case when invoice.snapshot_time >= #{startDate} then 1 else null end)) order_num,
+			convert(sum(invoice_amount)/100, decimal(65,2)) total_amt,
+			convert(sum(case when invoice_type = 1 THEN invoice_amount else 0 end)/100, decimal(65,2)) pp_amt,
+			convert(sum(case when invoice_type = 2 THEN invoice_amount else 0 end)/100, decimal(65,2)) zp_amt
+		from
+			t_e_invoice_order_snapshot invoice
+		right join
+			t_e_oem oem on oem.oem_code = invoice.oem_code
+		<if test="endDate != null and endDate.trim() != ''">
+			and invoice.snapshot_time &lt;= #{endDate}
+		</if>
+		<where>
+			oem.oem_status != 0
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+		</where>
+		GROUP BY
+		oem.oem_code
+	</select>
+
+	<insert id="updateOrInsertInvoiceOrderSnapshot">
+		INSERT INTO T_E_INVOICE_ORDER_SNAPSHOT (ORDER_NO, USER_ID, PARK_ID, OEM_CODE, COMPANY_ID, USER_TYPE, INVOICE_AMOUNT, INVOICE_TYPE, INVOICE_WAY,TOTAL_TAX_FEE, VAT_FEE, VAT_PAYMENT, INCOME_TAX_PAYMENT, SURCHARGE, SURCHARGE_PAYMENT, REFUND_TAX_FEE, POSTAGE_FEES, SERVICE_FEE, PERSONAL_INCOME_TAX,PROFIT_AMOUNT, OEM_PROFITS, SNAPSHOT_TIME, ADD_TIME, ADD_USER, UPDATE_TIME, UPDATE_USER, REMARK)
+		SELECT O.ORDER_NO, O.USER_ID, O.PARK_ID, O.OEM_CODE, I.COMPANY_ID, O.USER_TYPE, I.INVOICE_AMOUNT, I.INVOICE_TYPE,I.INVOICE_WAY, (I.VAT_FEE+I.VAT_PAYMENT+I.PERSONAL_INCOME_TAX+I.INCOME_TAX_PAYMENT+I.SURCHARGE+I.SURCHARGE_PAYMENT - IFNULL(I.REFUND_TAX_FEE,0)) TOTAL_TAX_FEE, I.VAT_FEE, I.VAT_PAYMENT, I.INCOME_TAX_PAYMENT, I.SURCHARGE, I.SURCHARGE_PAYMENT,IFNULL(I.REFUND_TAX_FEE,0) REFUND_TAX_FEE, CASE WHEN I.IS_REFUND_POSTAGE_FEE = 1 THEN 0 ELSE I.POSTAGE_FEES END POSTAGE_FEES,(I.SERVICE_FEE - I.SERVICE_FEE_DISCOUNT ) SERVICE_FEE, I.PERSONAL_INCOME_TAX, O.PROFIT_AMOUNT, (SELECT AVAILABLE_PROFITS_AMOUNT - SUM(PROFITS_AMOUNT) - CASE WHEN I.IS_REFUND_POSTAGE_FEE = 0 THEN 0 ELSE I.POSTAGE_FEES END    FROM T_E_PROFITS_DETAIL WHERE ORDER_NO = O.ORDER_NO AND PROFITS_STATUS IN (2,3)) OEM_PROFITS, I.COMPLETE_TIME SNAPSHOT_TIME, NOW() ADD_TIME, NULL ADD_USER, NULL UPDATE_TIME, NULL UPDATE_USER, '历史数据处理' REMARK
+		FROM T_E_ORDER O,T_E_INVOICE_ORDER I
+		<where>
+		 	O.ORDER_NO = I.ORDER_NO
+		 	AND O.ORDER_STATUS = 7
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(I.COMPLETE_TIME,'%Y-%m-%d')  <![CDATA[>=]]>  DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(I.COMPLETE_TIME,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="userId != null ">
+				AND O.USER_ID=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND O.oem_code=#{oemCode}
+			</if>
+		</where>
+	</insert>
+
+	<delete id="deleteInvoiceOrderSnapshotByDate">
+		DELETE from t_e_invoice_order_snapshot
+		<where>
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="userId != null ">
+				AND USER_ID=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND O.oem_code=#{oemCode}
+			</if>
+		</where>
+	</delete>
+</mapper>

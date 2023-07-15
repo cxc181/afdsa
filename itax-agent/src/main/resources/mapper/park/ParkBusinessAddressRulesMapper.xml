@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkBusinessAddressRulesMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkBusinessAddressRulesEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="regist_prefix" property="registPrefix"/>
+			<result column="current_regist_area" property="currentRegistArea"/>
+			<result column="regist_unit" property="registUnit"/>
+			<result column="current_regist_num" property="currentRegistNum"/>
+			<result column="regist_area_min" property="registAreaMin"/>
+			<result column="regist_area_max" property="registAreaMax"/>
+			<result column="area_regist_num_min" property="areaRegistNumMin"/>
+			<result column="area_regist_num_max" property="areaRegistNumMax"/>
+			<result column="area_regist_num_len" property="areaRegistNumLen"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap id="detialMap" type="com.yuqian.itax.park.entity.ParkBusinessAddressVO">
+		<id column="id" property="id"/>
+		<id column="park_id" property="parkId"/>
+		<id column="regist_prefix" property="registPrefix"/>
+		<id column="regist_unit" property="registUnit"/>
+		<id column="current_regist_num" property="currentRegistNum"/>
+		<id column="regist_area_min" property="registAreaMin"/>
+		<id column="regist_area_max" property="registAreaMax"/>
+		<id column="area_regist_num_min" property="areaRegistNumMin"/>
+		<id column="area_regist_num_max" property="areaRegistNumMax"/>
+		<id column="address_type" property="addressType"/>
+		<id column="regist_postfix" property="registPostfix"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, regist_prefix, current_regist_area, regist_unit, current_regist_num, regist_area_min, regist_area_max, area_regist_num_min, area_regist_num_max, area_regist_num_len, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryByParkId" resultMap="detialMap">
+		select id,park_id,regist_prefix,regist_unit,current_regist_num,regist_area_min,regist_area_max,area_regist_num_min,area_regist_num_max,address_type,regist_postfix
+		from t_e_park_business_address_rules where park_id = #{parkId}
+	</select>
+
+</mapper>

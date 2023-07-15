@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.MemberSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.MemberSnapshotEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="member_id" property="memberId"/>
+			<result column="member_account" property="memberAccount"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="parent_member_id" property="parentMemberId"/>
+			<result column="up_diamond_id" property="upDiamondId"/>
+			<result column="attribution_employees_id" property="attributionEmployeesId"/>
+			<result column="super_diamond_id" property="superDiamondId"/>
+			<result column="super_employees_id" property="superEmployeesId"/>
+			<result column="level_no" property="levelNo"/>
+			<result column="status" property="status"/>
+			<result column="regist_time" property="registTime"/>
+			<result column="snapshot_time" property="snapshotTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, member_account, oem_code, parent_member_id, up_diamond_id, attribution_employees_id, super_diamond_id, super_employees_id, level_no, status, regist_time, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.snapshot.entity.vo.MemberSnapshotVO" id="memberVOMap">
+
+		<result column="oem_name" property="oemName"/>
+		<result column="total_member" property="totalMember"/>
+		<result column="total_pt_member" property="totalPtMember"/>
+		<result column="total_vip_member" property="totalVipMember"/>
+		<result column="total_swgw_member" property="totalSwgwMember"/>
+		<result column="total_csfws_member" property="totalCsfwsMember"/>
+		<result column="total_emp_member" property="totalEmpMember"/>
+		<result column="total_hhr" property="totalHhr"/>
+		<result column="total_gjhhr" property="totalGjhhr"/>
+		<result column="add_member" property="addMember"/>
+		<result column="add_vip_member" property="addVipMember"/>
+		<result column="add_swgw_member" property="addSwgwMember"/>
+		<result column="add_csfws_member" property="addCsfwsMember"/>
+		<result column="add_emp_member" property="addEmpMember"/>
+		<result column="add_hhr" property="addHhr"/>
+		<result column="add_gjhhr" property="addGjhhr"/>
+	</resultMap>
+	<select id="queryMemberSnapshotUser" resultMap="memberVOMap">
+		select
+		o.oem_name,
+		count( ma.member_id) total_member,
+		sum(case when  ma.level_no=0 then 1 ELSE 0 end) total_pt_member,
+		sum(case when  ma.level_no=1 then 1 ELSE 0 end) total_vip_member,
+		sum(case when  ma.level_no=3 then 1 ELSE 0 end)	total_swgw_member,
+		sum(case when  ma.level_no=5 then 1 ELSE 0 end)	total_csfws_member,
+		(SELECT	count(1)FROM	t_e_employees_snapshot s where id in
+		(SELECT max(id) FROM	t_e_employees_snapshot s	WHERE	snapshot_time <![CDATA[<=]]> #{endDate} GROUP BY member_id) and s.`status` != 2 and s.oem_code=o.oem_code)	total_emp_member,
+		(SELECT	count(u.id) FROM	sys_e_user_snapshot u where id in (SELECT	max(id)  FROM sys_e_user_snapshot WHERE user_type = 5 AND regist_time <![CDATA[<=]]>#{endDate} GROUP BY user_id)
+			and u.`status`!=2 AND	u.oem_code = o.oem_code ) total_hhr,
+		(SELECT	 count(u.id) FROM	sys_e_user_snapshot u where id in (SELECT	max(id) max_id FROM sys_e_user_snapshot WHERE user_type = 4 AND regist_time <![CDATA[<=]]> #{endDate}  GROUP BY user_id)
+			and u.`status`!=2 AND u.oem_code = o.oem_code)	total_gjhhr,
+		(SELECT	COUNT(DISTINCT s.member_id) FROM	t_e_member_snapshot s WHERE	s.regist_time <![CDATA[<=]]> #{endDate} and s.regist_time <![CDATA[>=]]> #{startDate}and s.oem_code=o.oem_code)  add_member,
+		(select count(1) from t_e_order where ((update_time <![CDATA[<=]]> #{endDate} and update_time <![CDATA[>=]]> #{startDate}) or (update_time is null and add_time <![CDATA[<=]]> #{endDate} and add_time <![CDATA[>=]]> #{startDate}))
+		and oem_code = o.oem_code and order_type=7 and order_status=3 and product_id = (select id from t_e_member_level where oem_code = o.oem_code and level_no = 1) ) add_vip_member,
+		(select count(1) from t_e_order where ((update_time <![CDATA[<=]]> #{endDate} and update_time <![CDATA[>=]]> #{startDate}) or (update_time is null and add_time <![CDATA[<=]]> #{endDate} and add_time <![CDATA[>=]]> #{startDate}))
+		and oem_code = o.oem_code and order_type=7 and order_status=3 and product_id = (select id from t_e_member_level where oem_code = o.oem_code and level_no = 3) ) add_swgw_member,
+		(select count(1) from t_e_order where ((update_time <![CDATA[<=]]> #{endDate} and update_time <![CDATA[>=]]> #{startDate}) or (update_time is null and add_time <![CDATA[<=]]> #{endDate} and add_time <![CDATA[>=]]> #{startDate}))
+		and oem_code = o.oem_code and order_type=7 and order_status=3 and product_id = (select id from t_e_member_level where oem_code = o.oem_code and level_no = 5) ) add_csfws_member,
+		(SELECT	count(s.member_id)FROM	t_e_employees_snapshot s where id in (SELECT	max(id) FROM	t_e_employees_snapshot WHERE regist_time <![CDATA[<=]]> #{endDate} and regist_time <![CDATA[>=]]> #{startDate} GROUP BY member_id)
+		and	s.`status` != 2 and s.oem_code=o.oem_code) add_emp_member,
+		(SELECT	 count(u.id) FROM	sys_e_user_snapshot u where id in (SELECT	max(id) FROM sys_e_user_snapshot WHERE user_type = 5 and regist_time <![CDATA[>=]]> #{startDate} AND regist_time <![CDATA[<=]]> #{endDate} GROUP BY u.user_id)
+		and u.`status`!=2 AND  u.oem_code = o.oem_code) add_hhr,
+		(SELECT	 count(u.id) FROM	sys_e_user_snapshot u  where id in (SELECT	max(u.id) FROM  sys_e_user_snapshot WHERE user_type = 4 and regist_time <![CDATA[>=]]> #{startDate} AND u.regist_time <![CDATA[<=]]> #{endDate} GROUP BY u.user_id)
+		and u.`status`!=2 AND  	u.oem_code = o.oem_code ) add_gjhhr
+		from t_e_oem o
+		LEFT JOIN
+		(SELECT	member_id,oem_code,	add_time, `status`, snapshot_time, level_no FROM t_e_member_snapshot
+		where id in (SELECT max(id) FROM t_e_member_snapshot WHERE	snapshot_time <![CDATA[<=]]> #{endDate} GROUP BY member_id)
+		and `status` != 2
+		) ma on ma.oem_code = o.oem_code
+		LEFT JOIN t_e_member_level ml ON  ml.oem_code=o.oem_code and ml.level_no = ma.level_no
+		<where>
+			o.oem_status != 0
+			<if test="oemCode!=null and oemCode!=''">
+				and o.oem_code=#{oemCode}
+			</if>
+		</where>
+		GROUP BY o.oem_code
+	</select>
+
+	<insert id="updateOrMemberSnapshot">
+		INSERT INTO t_e_member_snapshot (member_id, member_account, oem_code, parent_member_id, up_diamond_id, attribution_employees_id, super_diamond_id,
+			super_employees_id, level_no, status, regist_time, snapshot_time, add_time, add_user, update_time, update_user, remark)
+			select m.id member_id, m.member_account, m.oem_code, m.parent_member_id, m.up_diamond_id, m.attribution_employees_id, m.super_diamond_id,
+			m.super_employees_id, (select level_no from t_e_member_level where id = m.member_level) level_no, m.status, m.add_time regist_time, m.add_time snapshot_time,
+			now() add_time, null add_user, null update_time, null update_user, '历史数据处理' remark
+			from t_e_member_account m
+			<where>
+				member_type = 1
+				<if test="startDate != null and startDate != ''  ">
+					AND   DATE_FORMAT(m.add_time,'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+				</if>
+				<if test="endDate != '' and endDate != null  ">
+					AND   DATE_FORMAT(m.add_time,'%Y-%m-%d')    <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+				</if>
+				<if test="oemCode != '' and oemCode != null ">
+					AND m.oem_code=#{oemCode}
+				</if>
+			</where>
+			union all
+			select m.id member_id, m.member_account, m.oem_code, m.parent_member_id, m.up_diamond_id, m.attribution_employees_id, m.super_diamond_id,
+			m.super_employees_id, (select level_no from t_e_member_level where id = m.member_level) level_no, m.status, m.add_time regist_time,
+		    m.update_time  snapshot_time,now() add_time, null add_user, null update_time, null update_user, '历史数据处理' remark
+			from t_e_member_account m
+			<where>
+				member_type = 1 and update_time is not null
+				<if test="startDate != null and startDate != ''  ">
+					AND DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+				</if>
+				<if test="endDate != '' and endDate != null  ">
+					AND   DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+				</if>
+				<if test="oemCode != '' and oemCode != null ">
+					AND m.oem_code=#{oemCode}
+				</if>
+			</where>
+			union all
+			select m.id member_id, m.member_account, m.oem_code, m.parent_member_id, m.up_diamond_id, m.attribution_employees_id, m.super_diamond_id,
+			m.super_employees_id, (select level_no from t_e_member_level where id = m.member_level) level_no, m.status, m.add_time regist_time,
+			#{endDate} snapshot_time, now() add_time, null add_user, null update_time, null update_user, '历史数据处理' remark
+			from t_e_member_account m
+			<where>
+				member_type = 1 and ((update_time is not null
+				and (DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')  or DATE_FORMAT(m.update_time,'%Y-%m-%d') <![CDATA[>]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')))
+				or update_time is null)
+				AND m.status != 2 and m.id not in (select member_id from t_e_member_snapshot where DATE_FORMAT(snapshot_time,'%Y-%m-%d') = DATE_FORMAT(#{endDate},'%Y-%m-%d'))
+				<if test="oemCode != '' and oemCode != null ">
+					AND m.oem_code=#{oemCode}
+				</if>
+			</where>
+	</insert>
+	<delete id="deleteMemberSnapshotByDate">
+		DELETE from t_e_member_snapshot
+		<where>
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(snapshot_time,'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="oemCode != '' and oemCode != null ">
+				AND oem_code=#{oemCode}
+			</if>
+		</where>
+	</delete>
+	<update id="updateMemberAccountByMemberId">
+		update t_e_member_snapshot set member_account = #{memberAccount},update_time=now(),remark=#{remark} where member_id =#{memberId};
+	</update>
+</mapper>

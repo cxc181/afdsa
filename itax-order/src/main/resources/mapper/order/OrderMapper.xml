@@ -1,0 +1,2795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.OrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.OrderEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="external_order_no" property="externalOrderNo"/>
+			<result column="rela_id" property="relaId"/>
+			<result column="user_id" property="userId"/>
+			<result column="user_type" property="userType"/>
+			<result column="order_type" property="orderType"/>
+			<result column="order_status" property="orderStatus"/>
+			<result column="product_id" property="productId"/>
+			<result column="product_name" property="productName"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="park_id" property="parkId"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="discount_amount" property="discountAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="profit_amount" property="profitAmount"/>
+			<result column="is_share_profit" property="isShareProfit"/>
+			<result column="profit_status" property="profitStatus"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="pay_water_imgs" property="payWaterImgs"/>
+			<result column="audit_user_id" property="auditUserId"/>
+			<result column="audit_remark" property="auditRemark"/>
+			<result column="audit_user_account" property="auditUserAccount"/>
+			<result column="audit_status" property="auditStatus"/>
+			<result column="audit_remark" property="auditRemark"/>
+			<result column="wallet_type" property="walletType"/>
+			<result column="service_fee" property="serviceFee"/>
+			<result column="service_fee_rate" property="serviceFeeRate"/>
+			<result column="commission_invoice_order_no" property="commissionInvoiceOrderNo"/>
+			<result column="source_type" property="sourceType"/>
+			<result column="is_submit_performance_voucher" property="isSubmitPerformanceVoucher"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.BillDetailVO" id="billDetailMap">
+		<result column="order_type" property="orderType"/>
+		<result column="order_type_name" property="orderTypeName"/>
+		<result column="calc_type" property="calcType"/>
+		<result column="amount" property="amount"/>
+		<result column="pay_status" property="payStatus"/>
+		<result column="pay_status_name" property="payStatusName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="pay_way" property="payWay"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.OrderVoidInfo" id="voidInfoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="confirm_invoice_time" property="confirmInvoiceTime"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="VAT_fee_rate" property="VATFeeRate"/>
+		<result column="invoice_remark" property="invoiceRemark"/>
+		<result column="cancellation_voucher" property="cancellationVoucher"/>
+		<result column="cancellation_remark" property="cancellationRemark"/>
+		<result column="company_id" property="companyId"/>
+		<result column="head_company_name" property="headCompanyName"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="ein" property="ein"/>
+		<result column="phone" property="phone"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+	</resultMap>
+
+	<!--推广明细订单列表结果集 -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendMemberVO" id="extendOrderMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="register_time" property="registTime"/>
+		<result column="member_fee" property="memberFee"/>
+		<result column="finish_time" property="finishTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_service_fee" property="invoiceServiceFee"/>
+		<result column="cancel_fee" property="cancelFee"/>
+		<result column="create_time" property="createTime"/>
+		<result column="regist_fee" property="registFee"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_status_name" property="orderStatusName"/>
+	</resultMap>
+
+	<sql id="Base_Columns">
+		id, order_no, external_order_no, rela_id, user_id, user_type, order_type, order_status, product_id, product_name, oem_code, park_id,
+		order_amount, discount_amount, pay_amount, profit_amount, is_share_profit, profit_status, add_time, add_user, update_time, update_user,
+		remark, pay_water_imgs, wallet_type, audit_status, audit_user_id, audit_user_account, audit_remark, service_fee, service_fee_rate,
+		commission_invoice_order_no,source_type,is_submit_performance_voucher
+    </sql>
+
+	<select id="queryByOrderNo" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select * from t_e_order
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</select>
+
+	<!-- 查询用户当天已提现额度 -->
+	<select id="queryCurrentDayWithdrawalAmountByUserId" resultType="java.lang.Long">
+		select sum(order_amount - service_fee) from t_e_order where user_id = #{userId} and user_type = #{userType}
+			and order_type = 3 and order_status in (0,1,2) and wallet_type = #{withdrawType}
+			<if test="statisticType !=null and statisticType==1 ">
+				and DATE_FORMAT(add_time,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+			</if>
+			<if test="statisticType !=null and statisticType==2 ">
+				and DATE_FORMAT(add_time,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m')
+			</if>
+	</select>
+
+	<resultMap id="registerOrderMap" type="com.yuqian.itax.order.entity.vo.RegisterOrderVO">
+		<result column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="customer_service_phone" property="customerServicePhone"/>
+		<result column="contact_phone" property="contactPhone"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="registered_name" property="registeredName"/>
+		<result column="industry_id" property="industryId"/>
+		<result column="industry_name" property="industryName"/>
+		<result column="park_id" property="parkId"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="affiliating_area" property="affiliatingArea"/>
+		<result column="process_mark" property="processMark"/>
+		<result column="company_type" property="companyType"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_status_name" property="orderStatusName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="product_id" property="productId"/>
+		<result column="prod_name" property="prodName"/>
+		<result column="is_open_authentication" property="isOpenAuthentication"/>
+		<result column="remark" property="remark"/>
+		<result column="rejected_item" property="rejectedItem"/>
+		<result column="coupons_issue_id" property="couponsIssueId"/>
+		<result column="is_hide_cancel" property="isHideCancel"/>
+	</resultMap>
+
+	<resultMap id="memberLvUpOrderMap" type="com.yuqian.itax.order.entity.vo.MemberUpgradeOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="regPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="buy_level_no" property="buyLevelNo"/>
+		<result column="parent_member_account" property="inviteCode"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="createTime"/>
+		<result column="order_status" property="orderStatus"/>
+	</resultMap>
+
+	<!-- 会员升级订单查询-拓展宝 add by Kaven 2020-03-25-->
+	<select id="queryMemberLvUpOrderList" parameterType="com.yuqian.itax.order.entity.query.TZBOrderQuery" resultMap="memberLvUpOrderMap">
+		SELECT
+			t.order_no,
+			m.member_account,
+			m.real_name,
+			CASE p.prod_type WHEN 9 THEN 1 WHEN 10 THEN 2 END AS buy_level_no,
+			m.parent_member_account,
+			t.pay_amount,
+			t.add_time,
+			t.order_status
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_member_account m ON t.user_id = m.id
+			LEFT JOIN t_e_product p ON t.product_id = p.id
+		<where>
+			t.oem_code = #{oemCode} AND t.order_type = 7
+			<if test="createTimeStart != null">
+				and t.add_time >= #{createTimeStart,jdbcType=TIMESTAMP}
+			</if>
+			<if test="createTimeEnd != null">
+				and t.add_time <![CDATA[<=]]> #{createTimeEnd,jdbcType=TIMESTAMP}
+			</if>
+			<if test="regPhone != null and regPhone != ''">
+				and m.member_account = #{regPhone}
+			</if>
+			<if test="inviteCode != null and inviteCode != ''">
+				and m.parent_member_account = #{inviteCode}
+			</if>
+			<if test="orderStatus != null">
+				and t.order_status = #{orderStatus}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!--分页查询开户订单列表（小程序端） add by Kaven 2019-12-23 -->
+	<select id="listPages" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="registerOrderMap">
+		select
+			t.id,
+			t.industry_id,
+			i.industry_name,
+			o.park_id,
+			park.park_code,
+			park.affiliating_area,
+			pp.process_mark,
+			t.company_type,
+			t.oem_code,
+			t.order_no,
+			t.contact_phone,
+			o.order_amount,
+			o.pay_amount,
+			o.order_status,
+			(case o.order_status
+				when 0 then '待电子签字'
+				when 1 then '待视频认证'
+				when 2 then '审核中'
+				when 3 then '待付款'
+				when 4 then '待领证'
+				when 5 then '已完成'
+				when 6 then '已取消'
+				when 13 then '待创建'
+			end) as order_status_name,
+			t.customer_service_phone,
+			t.operator_name,
+			t.registered_name,
+			t.is_open_authentication,
+			p.id as product_id,
+			p.prod_name,
+			o.add_time,
+			t.remark,
+			t.`rejected_item`,
+			t.`coupons_issue_id`,
+			(CASE WHEN (t.`payment_voucher` IS NULL OR t.`payment_voucher` = '') THEN 0 ELSE 1 END ) is_hide_cancel
+		from
+			t_e_register_order t
+			left join t_e_order o on t.order_no = o.order_no and t.oem_code = o.oem_code
+			left join t_e_park park on park.id = o.park_id
+			left join t_e_product p on p.id = o.product_id and p.oem_code = o.oem_code
+			left join t_r_product_park pp on pp.park_id= park.id and p.id = pp.product_id
+			left join t_e_industry i on i.id = t.industry_id
+		<where>
+			o.user_id = #{userId} and t.oem_code = #{oemCode}
+		</where>
+		order by o.add_time desc
+	</select>
+
+
+	<resultMap id="openOrderMap" type="com.yuqian.itax.order.entity.vo.OpenOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="company_type" property="companyType"/>
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="parent_member_account" property="accountFirst"/>
+		<result column="parent_member_level_no" property="levelFirst"/>
+		<result column="account_two" property="accountTwo"/>
+		<result column="level_two" property="levelTwo"/>
+		<result column="city_providers" property="cityProviders"/>
+		<result column="city_partner" property="cityPartner"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="registered_name" property="companyName"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="order_audit_time" property="orderAuditTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="contact_phone" property="operatorTel"/>
+		<result column="real_name" property="realName"/>
+		<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+		<result column="super_diamond_account" property="superDiamondAccount"/>
+		<result column="up_diamond_account" property="upDiamondAccount"/>
+		<result column="is_open_authentication" property="isOpenAuthentication"/>
+		<result column="process_mark" property="processMark"/>
+		<result column="name_first" property="nameFirst"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="channel_push_state" property="channelPushState"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="id" property="id"/>
+		<result column="order_type" property="orderType"/>
+		<result column="parentMemberAccount" property="parentMemberAccount"/>
+		<result column="face_amount" property="faceAmount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="access_party_name" property="accessPartyName"/>
+		<result column="pay_type" property="payType"/>
+		<result column="access_party_id" property="accessPartyId"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+	<select id="listOpenOrder" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="openOrderMap">
+		SELECT
+			o.order_no,
+			acc.member_phone,
+			acc.real_name,
+		    acc.id,
+			acc.member_name,
+			reg.operator_name,
+			reg.contact_phone,
+			mo.member_level,
+			park.park_name,
+			case when  park.park_type = 2 and 3 = #{platformType}  then
+			NULL
+			ELSE CONVERT (cop.face_amount / 100,DECIMAL (12, 2)) end face_amount,
+			case when  park.park_type = 2 and 3 = #{platformType} then
+			NULL
+			ELSE
+			CONVERT (o.order_amount / 100,DECIMAL (12, 2)) end order_amount,
+			case when  park.park_type = 2 and 3 = #{platformType} then
+			NULL
+			ELSE
+			CONVERT (o.pay_amount / 100,		DECIMAL (12, 2)	) end pay_amount,
+			case when  park.park_type = 2 and 3 = #{platformType} then
+			NULL
+			ELSE
+			CONVERT (o.discount_amount / 100,		DECIMAL (12, 2)	) end discount_amount,
+			o.add_time,
+			o.order_status,
+			mo.parent_member_account,
+			mo.name_first,
+			mo.parent_member_level_no,
+			mo.account_two,
+			mo.level_two,
+			mo.city_providers_name city_providers,
+			mo.city_partner_name city_partner,
+			oem.oem_name,
+			reg.agent_account,
+			reg.company_type,
+			reg.registered_name,
+		    reg.pay_type,
+		    reg.taxpayer_type,
+			o.park_id,
+			o.channel_push_state,
+			acc.parent_member_id,
+			acc.parent_member_account as parentMemberAccount,
+			acc.member_auth_type,
+			access.access_party_name,
+			access.id as access_party_id,
+			ch.channel_name,
+			wo.update_time order_audit_time,
+			CASE o.order_status WHEN 5 THEN	o.update_time ELSE	NULL END complete_time,
+			mo.attribution_employees_account,
+			mo.super_diamond_account,
+			mo.up_diamond_account,
+			reg.is_open_authentication,
+			park.process_mark
+		FROM
+			t_e_order o
+		INNER JOIN t_e_oem oem ON o.oem_code = oem.oem_code
+		LEFT JOIN t_r_member_order mo ON o.rela_id = mo.id
+		INNER JOIN t_e_member_account acc ON acc.id = o.user_id
+		LEFT JOIN t_e_oem_access_party access ON access.id = acc.access_party_id
+		LEFT JOIN t_e_channel_info ch ON acc.channel_code = ch.channel_code
+		INNER JOIN t_e_park park ON o.park_id = park.id
+		INNER JOIN t_e_register_order reg ON o.order_no = reg.order_no
+
+		LEFT JOIN t_e_coupons_issue_record cor ON reg.coupons_issue_id = cor.id
+		LEFT JOIN t_e_coupons cop ON cor.coupons_id = cop.id
+		LEFT JOIN t_e_work_order wo ON o.order_no = wo.order_no		AND wo.work_order_status = 2	LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id		AND ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and reg.registered_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="payType != null and payType.trim() != ''">
+				and reg.pay_type =  #{payType}
+			</if>
+			<if test="taxpayerType != null">
+				and reg.taxpayer_type = #{taxpayerType}
+			</if>
+			<if test="accessPartyName != null and accessPartyName.trim() != ''">
+				and access.access_party_name like concat('%',#{accessPartyName},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="operatorName != null and operatorName.trim() != ''">
+				and reg.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="memberAuthType != null and memberAuthType.trim() != ''">
+				and acc.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="companyType != null">
+				and reg.company_type = #{companyType}
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="orderAmtBeg != null">
+				and o.order_amount >= #{orderAmtBeg}
+			</if>
+			<if test="orderAmtEnd != null">
+				and o.order_amount &lt;= #{orderAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatuss != null and orderStatuss.trim() != ''" >
+				and o.order_status in (${orderStatuss})
+			</if>
+			<!--<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>-->
+			<!--<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>-->
+<!--			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>-->
+<!--			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>-->
+			<!--<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>-->
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and reg.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			<if test="startCompleteTimeDate != null and startCompleteTimeDate != '' and endCompleteTimeDate != '' and endCompleteTimeDate != null  ">
+				and o.update_time between #{startCompleteTimeDate} and #{endCompleteTimeDate} and o.order_status=5
+			</if>
+			<if test="startAuditDate != null and startAuditDate != '' and endAuditDate != '' and endAuditDate != null  ">
+				and wo.update_time between #{startAuditDate} and #{endAuditDate}
+			</if>
+		<!--	<if test="attributionEmployeesAccount != null and attributionEmployeesAccount.trim() != ''">
+				and mo.attribution_employees_account like concat('%',#{attributionEmployeesAccount},'%')
+			</if>-->
+			<!--<if test="upDiamondAccount != null and upDiamondAccount.trim() != ''">
+				and mo.up_diamond_account like concat('%',#{upDiamondAccount},'%')
+			</if>-->
+			<!--<if test="superDiamondAccount != null and superDiamondAccount.trim() != ''">
+				and mo.super_diamond_account like concat('%',#{superDiamondAccount},'%')
+			</if>-->
+			<if test="isOpenAuthentication != null">
+				and reg.is_open_authentication = #{isOpenAuthentication}
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and acc.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and o.channel_code = #{channelCode}
+			</if>
+			<if test="channelPushState != null ">
+				and o.channel_push_state = #{channelPushState}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+
+
+	<select id="listPushOrder" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="openOrderMap">
+		SELECT
+		o.order_no,acc.oem_code,o.order_type,
+		acc.id
+		FROM
+		t_e_order o
+		INNER JOIN t_e_member_account acc ON acc.id = o.user_id
+		<where>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="channelPushStates != null ">
+				and o.channel_push_state in (${channelPushStates})
+			</if>
+<!--			<choose>
+				<when test="channelPushState != null ">
+					and o.channel_push_state = #{channelPushState}
+				</when>
+				<otherwise>
+					and o.channel_push_state in (${channelPushState})
+				</otherwise>
+			</choose>-->
+		</where>
+		order by o.add_time desc
+	</select>
+
+
+	<resultMap id="openOrderExportMap" type="com.yuqian.itax.order.entity.vo.OpenOrderExportVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="contact_phone" property="contactPhone"/>
+		<result column="shop_name" property="shopName"/>
+		<result column="shop_name_one" property="shopNameOne"/>
+		<result column="shop_name_two" property="shopNameTwo"/>
+		<result column="name_one" property="nameOne"/>
+		<result column="name_two" property="nameTwo"/>
+		<result column="id_card_number" property="idCardNumber"/>
+		<result column="id_card_addr" property="idCardAddr"/>
+		<result column="business_address" property="businessAddress"/>
+		<result column="park_name" property="parkName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="registered_name" property="registeredName"/>
+		<result column="register_capital" property="registerCapital"/>
+		<result column="business_scope" property="businessScope"/>
+		<result column="order_audit_time" property="orderAuditTime"/>
+		<result column="remark" property="remark"/>
+		<result column="park_id" property="parkId"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+		<result column="appointPartyName" property="appointPartyName" />
+	</resultMap>
+
+	<select id="getopenOrderExportList" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="openOrderExportMap">
+		SELECT
+		o.order_no,
+		reg.operator_name,
+		reg.contact_phone,
+		reg.shop_name,
+		reg.shop_name_one,
+		reg.shop_name_two,
+		reg.id_card_number,
+		reg.id_card_addr,
+		reg.business_address,
+		park.park_name,
+		reg.company_type,
+		reg.registered_name,
+		reg.taxpayer_type,
+		case when
+		        reg.company_type = 1 then '20万'
+		        else concat(cast(reg.registered_capital as decimal(18,2)),'万') end register_capital,
+		reg.business_scope,
+		case wo.work_order_status when 2 then
+		wo.update_time
+		else
+		NULL
+		end  order_audit_time,
+		wo.remark remark,
+		park.id park_id,
+		case  when   reg.shop_name_one = '' or reg.shop_name_one is null
+		then ''
+		ELSE
+		concat(park.park_city,reg.shop_name_one,REPLACE (IFNULL(reg.example_name,''),'*',''))
+		end name_one,
+		case  when reg.shop_name_two =''  or reg.shop_name_two is null
+		then ''
+		ELSE
+		concat(park.park_city,reg.shop_name_two,REPLACE (IFNULL(reg.example_name,''),'*',''))
+		end name_two,
+		(select (select  personnel_name from t_e_company_core_personnel where id = p.appoint_party_id)
+				from t_e_company_core_personnel p where p.company_type = 3 and p.order_no = o.order_no and p.is_legal_person = 1 ) as appointPartyName
+		FROM
+		t_e_order o
+		INNER JOIN t_e_oem oem ON o.oem_code = oem.oem_code
+		LEFT JOIN t_r_member_order mo ON o.rela_id = mo.id
+		INNER JOIN t_e_member_account acc ON acc.id = o.user_id
+		INNER JOIN t_e_park park ON o.park_id = park.id
+		INNER JOIN t_e_register_order reg ON o.order_no = reg.order_no
+		LEFT JOIN  t_e_work_order wo on o.order_no=wo.order_no and wo.work_order_status=2
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id
+		AND ur.user_class = 5
+		<where>
+			o.order_status in (4, 10)
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and reg.registered_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="companyType != null">
+				and reg.company_type = #{companyType}
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="orderAmtBeg != null">
+				and o.order_amount >= #{orderAmtBeg}
+			</if>
+			<if test="orderAmtEnd != null">
+				and o.order_amount &lt;= #{orderAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>
+			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>
+			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and reg.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			<if test="startCompleteTimeDate != null and startCompleteTimeDate != '' and endCompleteTimeDate != '' and endCompleteTimeDate != null  ">
+				and o.update_time between #{startCompleteTimeDate} and #{endCompleteTimeDate} and o.order_status=5
+			</if>
+			<if test="startAuditDate != null and startAuditDate != '' and endAuditDate != '' and endAuditDate != null  ">
+				and wo.update_time between #{startAuditDate} and #{endAuditDate}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+	<resultMap id="invOrderMap" type="com.yuqian.itax.order.entity.vo.InvOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="park_name" property="parkName"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="parent_member_name" property="nameFirst"/>
+		<result column="parent_member_account" property="accountFirst"/>
+		<result column="parent_member_level_no" property="levelFirst"/>
+		<result column="account_two" property="accountTwo"/>
+		<result column="level_two" property="levelTwo"/>
+		<result column="city_providers" property="cityProviders"/>
+		<result column="city_partner" property="cityPartner"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="service_fee_discount" property="serviceFeeDiscount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="order_audit_time" property="orderAuditTime"/>
+		<result column="order_flow_time" property="orderFlowTime"/>
+		<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+		<result column="super_diamond_account" property="superDiamondAccount"/>
+		<result column="up_diamond_account" property="upDiamondAccount"/>
+		<result column="refund_tax_fee" property="refundTaxFee"/>
+		<result column="is_refund_postage_fee" property="isRefundPostageFee"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="channel_push_state" property="channelPushState"/>
+		<result column="parentMemberAccount" property="parentMemberAccount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="achievement_status" property="achievementStatus"/>
+		<result column="pay_type" property="payType"/>
+		<result column="cancellation_time" property="cancellationTime"/>
+		<result column="risk_commitment" property="riskCommitment"/>
+		<result column="cancellation_voucher" property="cancellationVoucher"/>
+		<result column="company_type" property="companyType"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+	<select id="listInvOrder" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="invOrderMap">
+		SELECT
+		o.order_no,
+		acc.member_phone,
+		acc.member_name,
+		acc.real_name,
+		acc.parent_member_id,
+		acc.parent_member_account as parentMemberAccount,
+		acc.member_auth_type,
+		ch.channel_name,
+		mo.member_level,
+		park.park_name,
+		o.add_time,
+		o.order_status,
+		o.channel_push_state,
+		(select IFNULL(real_name,member_name) from t_e_member_account where id =mo.parent_member_id) parent_member_name,
+		oem.oem_name,
+		mo.parent_member_account ,
+		mo.parent_member_level_no,
+		mo.account_two,
+		mo.level_two,
+		mo.city_providers_name city_providers,
+		mo.city_partner_name city_partner,
+		inv.invoice_type,
+		inv.invoice_way,
+		inv.taxpayer_type,
+		CONVERT (inv.invoice_amount / 100,DECIMAL (12, 2)) invoice_amount,
+		CONVERT (inv.VAT_fee_rate * 100,DECIMAL (4, 2)) VAT_fee_rate,
+		CONVERT (inv.VAT_fee / 100,DECIMAL (12, 2)) VAT_fee,
+		CONVERT (inv.personal_income_tax / 100,DECIMAL (12, 2)) personal_income_tax,
+		CONVERT (inv.postage_fees / 100,DECIMAL (12, 2)) postage_fees,
+		case when park.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE CONVERT (inv.service_fee / 100,DECIMAL (12, 2)) end service_fee,
+		case  when park.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE CONVERT (o.pay_amount / 100,DECIMAL (12, 2)) end pay_amount,
+		case when  park.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE CONVERT (inv.service_fee_discount / 100,DECIMAL (12, 2)	) end service_fee_discount,
+		mo.attribution_employees_account,
+		mo.super_diamond_account,
+		mo.up_diamond_account,
+		comp.company_name,
+		comp.operator_name,
+		comp.operator_tel,
+		inv.group_order_no,
+		inv.cancellation_time,
+		comp.agent_account,
+		comp.company_type,
+		CONVERT (inv.VAT_payment / 100,DECIMAL (12, 2)) VAT_payment,
+		CONVERT (inv.surcharge / 100,DECIMAL (12, 2)) surcharge,
+		CONVERT (inv.surcharge_payment / 100,DECIMAL (12, 2)) surcharge_payment,
+		CONVERT (inv.income_tax_payment / 100,DECIMAL (12, 2)) income_tax_payment,
+		inv.bank_water_status,
+		inv.complete_time,
+		wo.update_time order_audit_time,
+		flow.update_time order_flow_time,
+		inv.create_way,
+		inv.recipient,
+		inv.recipient_phone,
+		inv.province_name,
+		inv.city_name,
+		inv.district_name,
+		inv.recipient_address,
+		inv.invoice_remark,
+		inv.achievement_status,
+		inv.pay_type,
+		inv.invoice_mark,
+		inv.cancellation_voucher,
+		inv.risk_commitment,
+		CONVERT (inv.refund_tax_fee / 100,DECIMAL (12, 2)) refund_tax_fee,
+		is_refund_postage_fee
+		FROM
+		t_e_order o
+		LEFT JOIN t_r_member_order mo ON o.rela_id = mo.id
+		INNER JOIN t_e_oem oem ON o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc ON acc.id = o.user_id
+		LEFT JOIN t_e_channel_info ch ON acc.channel_code = ch.channel_code
+		INNER JOIN t_e_park park ON o.park_id = park.id
+		INNER JOIN t_e_invoice_order inv ON o.order_no = inv.order_no
+		INNER JOIN t_e_member_company comp ON comp.id = inv.company_id
+		LEFT JOIN t_e_work_order wo ON wo.order_no = o.order_no AND wo.work_order_status = 2 AND wo.work_order_type = 2
+		LEFT JOIN t_e_work_order flow ON flow.order_no = o.order_no AND flow.work_order_status = 2 AND flow.work_order_type = 3
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id AND ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and comp.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="operatorName != null and operatorName.trim() != ''">
+				and comp.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="realName != null and realName.trim() != ''">
+				and acc.real_name like concat('%',#{realName},'%')
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="invoiceType != null">
+				and inv.invoice_type = #{invoiceType}
+			</if>
+			<if test="achievementStatus != null and achievementStatus.trim() != ''">
+				and inv.achievement_status = #{achievementStatus}
+			</if>
+			<if test="categoryName != null and categoryName.trim() != ''">
+				and inv.category_name like concat('%',#{categoryName},'%')
+			</if>
+			<if test="payType != null and payType.trim() != ''">
+				and inv.pay_type = #{payType}
+			</if>
+			<if test="taxpayerType != null">
+				and inv.taxpayer_type = #{taxpayerType}
+			</if>
+			<if test="invoiceWay != null">
+				and inv.invoice_way = #{invoiceWay}
+			</if>
+			<if test="invoiceMark != null">
+				and inv.invoice_mark = #{invoiceMark}
+			</if>
+			<if test="memberAuthType != null and memberAuthType.trim() != ''">
+				and acc.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="invoiceAmtBeg != null">
+				and inv.invoice_amount >= #{invoiceAmtBeg}
+			</if>
+			<if test="invoiceAmtEnd != null">
+				and inv.invoice_amount &lt;= #{invoiceAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatuss != null and orderStatuss != ''">
+				and o.order_status in  (${orderStatuss})
+			</if>
+			<!--<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>-->
+			<!--<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>-->
+<!--			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>-->
+<!--			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>-->
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and comp.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			<if test="companyType != null">
+				and comp.company_type = #{companyType}
+			</if>
+			<if test="bankWaterStatus != null ">
+				and inv.bank_water_status = #{bankWaterStatus}
+			</if>
+			<if test="groupOrderNo != null and groupOrderNo.trim() != ''">
+				and inv.group_order_no like concat('%',#{groupOrderNo},'%')
+			</if>
+			<if test="startCompleteTimeDate != null and startCompleteTimeDate != '' and endCompleteTimeDate != '' and endCompleteTimeDate != null  ">
+				and inv.complete_time between #{startCompleteTimeDate} and #{endCompleteTimeDate}
+			</if>
+			<if test="cancellationTimeStart != null and cancellationTimeStart != '' and cancellationTimeEnd != '' and cancellationTimeEnd != null  ">
+				and inv.cancellation_time between #{cancellationTimeStart} and #{cancellationTimeEnd}
+			</if>
+			<if test="startAuditDate != null and startAuditDate != '' and endAuditDate != '' and endAuditDate != null  ">
+				and wo.update_time between #{startAuditDate} and #{endAuditDate}
+			</if>
+			<if test="flowTimeStart != null and flowTimeStart != '' and flowTimeEnd != '' and flowTimeEnd != null  ">
+				and flow.update_time between #{flowTimeStart} and #{flowTimeEnd}
+			</if>
+			<!--<if test="attributionEmployeesAccount != null and attributionEmployeesAccount.trim() != ''">
+				and mo.attribution_employees_account like concat('%',#{attributionEmployeesAccount},'%')
+			</if>
+			<if test="upDiamondAccount != null and upDiamondAccount.trim() != ''">
+				and mo.up_diamond_account like concat('%',#{upDiamondAccount},'%')
+			</if>
+			<if test="superDiamondAccount != null and superDiamondAccount.trim() != ''">
+				and mo.super_diamond_account like concat('%',#{superDiamondAccount},'%')
+			</if>-->
+			<if test="createWay != null ">
+				and inv.create_way = #{createWay}
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and acc.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and o.channel_code = #{channelCode}
+			</if>
+			<if test="channelPushState != null ">
+				and o.channel_push_state = #{channelPushState}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+	<resultMap id="invBatchExportOrderMap" type="com.yuqian.itax.order.entity.vo.BatchInvOrderExportVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="business_address" property="businessAddress"/>
+		<result column="member_company_name" property="memberCompanyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="inv_company_name" property="invCompanyName"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="ein" property="ein"/>
+		<result column="phone" property="phone"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="park_id" property="parkId"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="invoice_remark" property="invoiceRemark"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="create_way" property="createWay"/>
+		<result column="supplement_explain" property="supplementExplain"/>
+	</resultMap>
+	<!--<select id="invBatchExportOrderList" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="invBatchExportOrderMap">
+		SELECT
+			o.order_no,
+			ir.invoice_record_no,
+			comp.business_address,
+			comp.company_name member_company_name,
+			comp.operator_name,
+			comp.operator_tel,
+			inv.company_name inv_company_name,
+			inv.company_address,
+			inv.ein,
+			inv.phone,
+			inv.bank_name,
+			inv.bank_number,
+			inv.invoice_type_name,
+			case when ir.invoice_amount is null then convert(inv.invoice_amount/100, decimal(12,2)) 	else  convert(ir.invoice_amount/100, decimal(12,2))   end invoice_amount,
+			convert(inv.VAT_fee_rate*100, decimal(4,2)) VAT_fee_rate,
+			inv.category_name,
+			inv.recipient,
+			inv.recipient_phone,
+			inv.province_name,
+			inv.city_name,
+			inv.district_name,
+			inv.recipient_address,
+			inv.invoice_remark,
+			inv.invoice_way,
+			inv.corporate_account,
+			inv.corporate_account_bank_name,
+			comp.park_id,
+			inv.create_way
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		INNER JOIN t_e_park park on o.park_id = park.id
+		INNER JOIN t_e_invoice_order inv on o.order_no = inv.order_no
+		INNER JOIN t_e_member_company comp on comp.id = inv.company_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		LEFT JOIN t_e_invoice_record ir ON ir.order_no=o.order_no
+		<where>
+			<if test="createWay != null">
+				and inv.create_way = #{createWay}
+			</if>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and comp.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="invoiceType != null">
+				and inv.invoice_type = #{invoiceType}
+			</if>
+			<if test="invoiceAmtBeg != null">
+				and inv.invoice_amount >= #{invoiceAmtBeg}
+			</if>
+			<if test="invoiceAmtEnd != null">
+				and inv.invoice_amount &lt;= #{invoiceAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>
+			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>
+			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and comp.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			<if test="bankWaterStatus != null ">
+				and inv.bank_water_status =#{bankWaterStatus}
+			</if>
+			<if test="headCompanyName != null and headCompanyName != ''">
+				and inv.company_name like CONCAT('%',#{headCompanyName},'%')
+			</if>
+			<if test="invoiceRecordNo != null and invoiceRecordNo != ''">
+				and ir.invoice_record_no like CONCAT('%',#{invoiceRecordNo},'%')
+			</if>
+			<if test="invoiceWay != null">
+				and inv.invoice_way = #{invoiceWay}
+			</if>
+			<if test="handlingWay != null">
+				and ir.handling_way = #{handlingWay}
+			</if>
+			<if test="statuss != null and statuss != ''">
+				and ir.status in ( ${statuss})
+			</if>
+			<if test="groupOrderNo != null and groupOrderNo != ''">
+				and inv.group_order_no like CONCAT('%',#{groupOrderNo},'%')
+			</if>
+			<if test="startCompleteTimeDate != null and startCompleteTimeDate != '' and endCompleteTimeDate != '' and endCompleteTimeDate != null  ">
+				and inv.complete_time between #{startCompleteTimeDate} and #{endCompleteTimeDate}
+			</if>
+			<if test="ticketTimeStart != null and ticketTimeStart != '' and ticketTimeEnd != '' and ticketTimeEnd != null  ">
+				and ir.ticket_time between #{ticketTimeStart} and #{ticketTimeEnd}
+			</if>
+			<if test="startAuditDate != null and startAuditDate != '' and endAuditDate != '' and endAuditDate != null  ">
+				and ir.add_time between #{startAuditDate} and #{endAuditDate}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+-->
+	<select id="invBatchExportOrderList" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="invBatchExportOrderMap">
+		select
+		      r.id,
+		      r.order_no,
+		      r.company_id,
+		      i.company_name,
+		      IFNULL(a.real_name,a.member_name) user_name ,
+		      a.member_account reg_phone,
+		      r.invoice_record_no,
+		      r.ticket_time,
+		      comp.business_address,
+		      comp.company_name member_company_name,
+		      comp.operator_name,
+		      comp.operator_tel,
+		      inv.company_name inv_company_name,
+		      inv.company_address,
+		      inv.ein,
+		      inv.phone,
+		      inv.bank_name,
+		      inv.bank_number,
+		      inv.invoice_type_name,
+		      inv.category_name,
+		      inv.recipient_phone,
+		      inv.recipient,
+		      inv.province_name,
+		      inv.city_name,
+		      inv.recipient_address,
+		      inv.invoice_remark,
+		      inv.corporate_account,
+		      inv.corporate_account_bank_name,
+		      comp.park_id,
+		      inv.supplement_explain,
+		      r.`status`,
+		      r.handling_way,
+		      i.invHeadCompanyName,
+		      i.invoice_type,
+		      inv.invoice_way,
+		      inv.create_way,
+		      p.park_name,
+		      r.invoice_desc,
+		      i.group_order_no,
+		      inv.district_name,
+		      convert(inv.VAT_fee_rate*100, decimal(4,2)) VAT_fee_rate,
+		      convert(r.invoice_amount/100, decimal(12,2)) invoice_amount,
+		      r.add_time,
+		      r.complete_time
+		from t_e_invoice_record r
+		INNER JOIN (select io.order_no,io.company_name invHeadCompanyName,io.invoice_type,io.invoice_way,io.create_way,io.group_order_no,(select company_name from t_e_member_company where id = io.company_id) company_name from t_e_invoice_order io
+		union all
+		select cio.order_no,cio.company_name invHeadCompanyName,cio.invoice_type,cio.invoice_way, '4' create_way,'' group_order_no,(select company_name from t_e_invoice_info_by_oem where oem_code = cio.oem_code) company_name from t_e_consumption_invoice_order cio) i on  r.order_no = i.order_no
+		INNER JOIN t_e_order o on r.order_no = o.order_no
+
+		INNER JOIN t_e_invoice_order inv on o.order_no = inv.order_no
+		INNER JOIN t_e_member_company comp on comp.id = inv.company_id
+
+		INNER JOIN t_e_member_account a on a.id = o.user_id and o.user_type = 1
+		LEFT JOIN t_e_park p on r.park_id = p.id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo != ''">
+				and r.order_no like CONCAT('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeCompName != null and likeCompName != ''">
+				and i.company_name like CONCAT('%',#{likeCompName},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName != ''">
+				and (a.real_name like CONCAT('%',#{likeMemberName},'%') or a.member_name like CONCAT('%',#{likeMemberName},'%'))
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone != ''">
+				and a.member_account like CONCAT('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="status != null">
+				and r.status = ${status}
+			</if>
+			<if test="statuss != null and statuss != ''">
+				and r.status in ( ${statuss})
+			</if>
+			<if test="parkName != null and parkName != ''">
+				and p.park_name like CONCAT('%',${parkName},'%')
+			</if>
+			<if test="parkId != null">
+				and p.id = #{parkId}
+			</if>
+			<if test="headCompanyName != null and headCompanyName != ''">
+				and i.invHeadCompanyName like CONCAT('%',#{headCompanyName},'%')
+			</if>
+			<if test="invoiceRecordNo != null and invoiceRecordNo != ''">
+				and r.invoice_record_no like CONCAT('%',#{invoiceRecordNo},'%')
+			</if>
+			<if test="invoiceMountMin != null">
+				and r.invoice_amount >= #{invoiceMountMin}
+			</if>
+			<if test="invoiceMountMax != null">
+				and r.invoice_amount  <![CDATA[ <=]]> #{invoiceMountMax}
+			</if>
+			<if test="invoiceWay != null">
+				and i.invoice_way = #{invoiceWay}
+			</if>
+			<if test="invoiceType != null">
+				and i.invoice_type = #{invoiceType}
+			</if>
+			<if test="createWay != null">
+				and i.create_way = #{createWay}
+			</if>
+			<if test="handlingWay != null">
+				and r.handling_way = #{handlingWay}
+			</if>
+			<if test="groupOrderNo != null and groupOrderNo != ''">
+				and i.group_order_no like CONCAT('%',#{groupOrderNo},'%')
+			</if>
+			<if test="startAuditDate != null and startAuditDate != '' and endAuditDate != '' and endAuditDate != null  ">
+				and r.add_time between #{startAuditDate} and #{endAuditDate}
+			</if>
+			<if test="ticketTimeStart != null and ticketTimeStart != '' and ticketTimeEnd != '' and ticketTimeEnd != null  ">
+				and r.ticket_time between #{ticketTimeStart} and #{ticketTimeEnd}
+			</if>
+		</where>
+	order by o.add_time desc
+</select>
+
+	<resultMap id="memOrderMap" type="com.yuqian.itax.order.entity.vo.MemberLvUpOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_level" property="memberLevel"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="parent_member_account" property="accountFirst"/>
+		<result column="parent_member_level_no" property="levelFirst"/>
+		<result column="account_two" property="accountTwo"/>
+		<result column="level_two" property="levelTwo"/>
+		<result column="city_providers" property="cityProviders"/>
+		<result column="city_partner" property="cityPartner"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="prod_name" property="prodName"/>
+		<!--<result column="prod_type" property="prodType"/>-->
+		<result column="extend_type" property="extendType"/>
+		<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+		<result column="super_diamond_account" property="superDiamondAccount"/>
+		<result column="up_diamond_account" property="upDiamondAccount"/>
+		<result column="level_no" property="buyMemberLevel"/>
+		<result column="level_name" property="buyMemberLevelName"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="channel_push_state" property="channelPushState"/>
+		<result column="parentMemberAccount" property="parentMemberAccount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+	</resultMap>
+	<select id="listMemberLvUpOrder" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="memOrderMap">
+		SELECT o.order_no,acc.member_phone,acc.member_auth_type,acc.member_name,mo.member_level,acc.parent_member_account as parentMemberAccount,
+		convert(o.order_amount/100, decimal(12,2)) order_amount,convert(o.discount_amount/100, decimal(12,2)) discount_amount,convert(o.pay_amount/100, decimal(12,2)) pay_amount,o.add_time,o.order_status,
+		mo.parent_member_account,mo.parent_member_level_no,mo.account_two,mo.level_two,
+		mo.city_providers_name city_providers, mo.city_partner_name city_partner,oem.oem_name
+		,lv.level_no,lv.level_name, acc.extend_type,mo.attribution_employees_account, mo.super_diamond_account, mo.up_diamond_account,acc.parent_member_id,ch.channel_name,o.channel_push_state
+		<!--
+		,product.prod_name, product.prod_type
+		-->
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		LEFT JOIN t_e_channel_info ch ON acc.channel_code = ch.channel_code
+		LEFT join t_e_member_level lv on lv.id = o.product_id
+		<!--
+		INNER JOIN t_e_product product on o.product_id = product.id
+		-->
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="memberAuthType != null and memberAuthType.trim() != ''">
+				and acc.member_auth_type = #{memberAuthType}
+			</if>
+			<!--
+			<choose>
+				<when test="prodType != null">
+					and product.prod_type = #{prodType}
+				</when>
+				<otherwise>
+					and product.prod_type in (9, 10)
+				</otherwise>
+			</choose>
+			-->
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<!--<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>-->
+			<!--<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>-->
+<!--			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>-->
+			<!--<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>-->
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<!--<if test="attributionEmployeesAccount != null and attributionEmployeesAccount.trim() != ''">
+				and mo.attribution_employees_account like concat('%',#{attributionEmployeesAccount},'%')
+			</if>
+			<if test="upDiamondAccount != null and upDiamondAccount.trim() != ''">
+				and mo.up_diamond_account like concat('%',#{upDiamondAccount},'%')
+			</if>
+			<if test="superDiamondAccount != null and superDiamondAccount.trim() != ''">
+				and mo.super_diamond_account like concat('%',#{superDiamondAccount},'%')
+			</if>-->
+			<if test="buyMemberLevel != null">
+				and lv.level_no = #{buyMemberLevel}
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and acc.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and o.channel_code = #{channelCode}
+			</if>
+			<if test="channelPushState != null ">
+				and o.channel_push_state = #{channelPushState}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+
+	<update id="updateOrderStatus">
+		update t_e_order
+		<trim prefix="set" suffixOverrides=",">
+			<if test="updateUser != '' and updateUser != null">
+				update_user = #{updateUser},
+			</if>
+			order_status = #{orderStatus},
+			update_time = #{updateTime}
+		</trim>
+		where order_no = #{orderNo}
+	</update>
+
+	<update id="updateOrderChannelPushState">
+		update t_e_order set
+			channel_push_state = #{channelPushState}
+		where order_no = #{orderNo}
+	</update>
+
+	<update id="batchUpdateOrderChannelPushState">
+		update t_e_order
+		<trim prefix="set" suffixOverrides=",">
+			channel_push_state = 4
+		</trim>
+		where  (order_type = 5 and order_status in(6,7) and channel_push_state != 4)
+		or (order_type = 6 and order_status in(8,10) and channel_push_state != 4)
+		or (order_type = 7 and order_status in(4) and channel_push_state != 4)
+		or (order_type = 8 and order_status in(3) and channel_push_state != 4)
+		or (order_type = 15 and order_status in(3) and channel_push_state != 4)
+	</update>
+
+	<update id="batchUpdateOrderChannelPushStateByOrderNo">
+		update t_e_order
+		<trim prefix="set" suffixOverrides=",">
+			channel_push_state = #{channelPushState}
+		</trim>
+		where order_no  in
+		<foreach collection="listToBePush" item="item" separator="," open="(" close=")">
+			#{item.orderNo}
+		</foreach>
+	</update>
+
+	<select id="sumInvOrder" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultType="map">
+		SELECT sum(case when order_status = 4 then 1 else 0 end) countsending,
+		sum(case when order_status = 5 then 1 else 0 end) countsendingonway
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		INNER JOIN t_e_park park on o.park_id = park.id
+		INNER JOIN t_e_invoice_order inv on o.order_no = inv.order_no
+		INNER JOIN t_e_member_company comp on comp.id = inv.company_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and comp.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="invoiceType != null">
+				and inv.invoice_type = #{invoiceType}
+			</if>
+			<if test="invoiceAmtBeg != null">
+				and inv.invoice_amount >= #{invoiceAmtBeg}
+			</if>
+			<if test="invoiceAmtEnd != null">
+				and inv.invoice_amount &lt;= #{invoiceAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>
+			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>
+			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="orderStatuses != null">
+				and o.order_status in (${orderStatuses})
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and comp.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			and inv.group_order_no is null
+		</where>
+	</select>
+
+	<resultMap id="invStockOrderMap" type="com.yuqian.itax.order.entity.vo.InvOrderBatchShipmentsVO">
+		<result column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="park_name" property="parkName"/>
+		<result column="company_name" property="companyName"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+	</resultMap>
+	<select id="listInvBatchStock" parameterType="com.yuqian.itax.order.entity.query.OrderQuery" resultMap="invStockOrderMap">
+		SELECT
+			inv.id,
+			o.order_no,
+			o.order_status,
+			convert(o.order_amount/100, decimal(12,2)) order_amount,
+			park.park_name,
+			comp.company_name,
+			inv.recipient,
+			inv.recipient_phone,
+			inv.province_name,
+			inv.city_name,
+			inv.district_name,
+			inv.recipient_address,
+			inv.courier_number,
+			inv.courier_company_name
+		FROM
+			t_e_order o
+		LEFT JOIN t_r_member_order mo ON o.rela_id = mo.id
+		INNER JOIN t_e_oem oem ON o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc ON acc.id = o.user_id
+		INNER JOIN t_e_park park ON o.park_id = park.id
+		INNER JOIN t_e_invoice_order inv ON o.order_no = inv.order_no
+		INNER JOIN t_e_member_company comp ON comp.id = inv.company_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id AND ur.user_class = 5
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and comp.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="invoiceType != null">
+				and inv.invoice_type = #{invoiceType}
+			</if>
+			<if test="invoiceAmtBeg != null">
+				and inv.invoice_amount >= #{invoiceAmtBeg}
+			</if>
+			<if test="invoiceAmtEnd != null">
+				and inv.invoice_amount &lt;= #{invoiceAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>
+			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>
+			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="orderStatuses != null">
+				and o.order_status in (${orderStatuses})
+			</if>
+			<if test="likeAgentAccount != null and likeAgentAccount.trim() != ''">
+				and comp.agent_account like concat('%',#{likeAgentAccount},'%')
+			</if>
+			and group_order_no is null
+		</where>
+		order by o.add_time desc
+	</select>
+	<update id="updateBatchOrderStatus">
+		update t_e_order
+		set
+			order_status = #{orderStatus},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			order_no in
+		<foreach collection="orders" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!--更新订单状态和外部订单号 add by Kaven 2020-09-09 -->
+	<update id="updateOrderStatusAndExternalOrderNo">
+		update t_e_order
+		set
+			order_status = #{orderStatus},
+			update_time = #{updateTime},
+			external_order_no = #{externalOrderNo}
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</update>
+
+	<select id="queryMemberLvUpOrder" resultMap="baseEntityMap">
+		SELECT o.order_no, o.order_type, o.order_status, o.product_id, o.product_name,
+		o.oem_code, o.order_amount, o.discount_amount, o.pay_amount ,o.audit_status
+		FROM t_e_order o
+		<!-- INNER JOIN t_e_product product on o.product_id = product.id -->
+		<where>
+			<if test="auditStatus != null">
+				and audit_status = #{auditStatus}
+			</if>
+			<if test="orderStatus != null">
+				and order_status = #{orderStatus}
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="memberId != null">
+				and o.user_id = #{memberId}
+			</if>
+			<!--
+			<if test="productType != null">
+				and product.prod_type = #{productType}
+			</if>
+			-->
+			<if test="userType != null">
+				and o.user_type = #{userType}
+			</if>
+		</where>
+		order by o.add_time desc
+</select>
+
+	<!--查询消费钱包账单明细列表（小程序端）-->
+	<select id="listConsumerBillDetail" resultMap="billDetailMap">
+		SELECT
+		b.order_type,
+		b.order_type_name,
+		b.calc_type,
+		b.amount,
+		b.pay_status,
+		b.pay_status_name,
+		b.add_time,
+		b.pay_way
+		FROM
+		(
+		SELECT
+		order_type,
+		CASE order_type
+		WHEN 1 THEN '充值'
+		WHEN 2 THEN '代理充值'
+		WHEN 3 THEN '提现'
+		WHEN 4 THEN '代提现'
+		WHEN 5 THEN '托管费'
+		WHEN 6 THEN '企业开票费'
+		WHEN 7 THEN '会员升级费'
+		WHEN 8 THEN '注销服务费'
+		WHEN 9 THEN '证件领用快递费'
+		WHEN 10 THEN '对公户办理费'
+		WHEN 13 THEN '企业补税'
+		WHEN 15 THEN '托管费续费'
+		WHEN 16 THEN '对公户年费续费'
+		END order_type_name,
+		CASE WHEN order_type BETWEEN 5 AND 10 or order_type = 13 or order_type = 15 OR order_type = 16 THEN '-' END calc_type,
+		pay_amount amount,
+		CASE pay_status
+		WHEN 0 THEN '0'
+		WHEN 1 THEN '0'
+		WHEN 2 THEN '1'
+		WHEN 3 THEN '-1'
+		END pay_status,
+		CASE pay_status
+		WHEN 0 THEN '待支付'
+		WHEN 1 THEN '支付中'
+		WHEN 2 THEN '支付成功'
+		WHEN 3 THEN '支付失败'
+		END pay_status_name,
+		add_time,
+		pay_way
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and pay_water_type != 5 and order_type != 2
+		<if test="type != null">
+				<choose>
+					<when test="type == 1">
+						AND (order_type between 1 and 10 or order_type = 13 or order_type = 15 OR order_type = 16 )
+					</when>
+					<when test="type == 2">
+						AND order_type between 1 and 2
+					</when>
+					<when test="type == 3">
+						AND order_type between 3 and 4
+					</when>
+					<when test="type == 5">
+						AND order_type = 5
+					</when>
+					<when test="type == 6">
+						AND order_type = 6
+					</when>
+					<when test="type == 7">
+						AND order_type = 7
+					</when>
+					<when test="type == 8">
+						AND order_type = 8
+					</when>
+					<when test="type == 9">
+						AND order_type = 9
+					</when>
+					<when test="type == 10">
+						AND order_type = 10
+					</when>
+					<when test="type == 13">
+						AND order_type = 13
+					</when>
+					<when test="type == 15">
+						AND (order_type = 15 OR order_type = 16)
+					</when>
+					<otherwise>
+						AND order_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+			<if test="status != null">
+				and pay_status = 2
+			</if>
+		UNION ALL
+		SELECT
+		order_type,
+		CASE order_type
+		WHEN 1 THEN '充值'
+		WHEN 2 THEN '代理充值'
+		WHEN 3 THEN '提现'
+		WHEN 4 THEN '代提现'
+		WHEN 5 THEN '托管费'
+		WHEN 6 THEN '企业开票费'
+		WHEN 7 THEN '会员升级费'
+		WHEN 8 THEN '注销服务费'
+		WHEN 9 THEN '证件领用快递费'
+		WHEN 10 THEN '对公户办理费'
+		WHEN 13 THEN '企业补税'
+		WHEN 15 THEN '托管费续费'
+		WHEN 16 THEN '对公户年费续费'
+		END order_type_name,
+		CASE WHEN order_type BETWEEN 5 AND 10 or order_type = 13 or order_type = 15 OR order_type = 16 THEN '-' END calc_type,
+		pay_amount amount,
+		CASE pay_status
+		WHEN 0 THEN '0'
+		WHEN 1 THEN '0'
+		WHEN 2 THEN '1'
+		WHEN 3 THEN '-1'
+		END pay_status,
+		CASE pay_status
+		WHEN 0 THEN '待支付'
+		WHEN 1 THEN '支付中'
+		WHEN 2 THEN '支付成功'
+		WHEN 3 THEN '支付失败'
+		END pay_status_name,
+		add_time,
+		pay_way
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and pay_water_type != 5 and order_type = 2 and pay_status = 2
+		<if test="type != null">
+				<choose>
+					<when test="type == 1 or type == 2">
+						AND order_type = 2
+					</when>
+					<otherwise>
+						AND order_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+			<if test="status != null">
+				and pay_status = 2
+			</if>
+		UNION ALL
+		SELECT
+		19 order_type,
+		CASE WHEN profits_type BETWEEN 1 AND 6 THEN '推广分润' END order_type_name,
+		CASE WHEN profits_type BETWEEN 1 AND 6 THEN '+' END calc_type,
+		profits_amount amount,
+		CASE
+		WHEN profits_status = 0 THEN '0'
+		WHEN profits_status = 1 or profits_status = 2 THEN '0'
+		WHEN profits_status = 3 THEN '1'
+		WHEN profits_status = 4 THEN '-1'
+		END pay_status,
+		CASE
+		WHEN profits_status = 0 THEN '待分润'
+		WHEN profits_status = 1 or profits_status = 2 THEN '已分润待结算'
+		WHEN profits_status = 3 THEN '已分润已结算'
+		WHEN profits_status = 4 THEN '分润失败'
+		END pay_status_name,
+		add_time,
+		'' pay_way
+		FROM t_e_profits_detail
+		where user_id = #{memberId} and oem_code = #{oemCode} and user_type = 1
+		<if test="type != null">
+				<choose>
+					<when test="type == 1">
+						AND profits_type between 1 and 5
+					</when>
+					<when test="type == 4">
+						AND profits_type between 1 and 5
+					</when>
+					<otherwise>
+						AND profits_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+			<if test="status != null">
+				and profits_status between 2 and 3
+			</if>
+		UNION ALL
+		SELECT
+		case when order_type = 14 then 14 else 20 end order_type,
+		CASE order_type
+		WHEN 5 THEN '企业注册退款'
+		WHEN 6 THEN '企业开票退款'
+		WHEN 7 THEN '会员升级退款'
+		WHEN 8 THEN '企业注销退款'
+		WHEN 9 THEN '证件领用申请-快递费退款'
+		WHEN 10 THEN '对公户申请退款'
+		WHEN 14 THEN '企业退税'
+		END order_type_name,
+		CASE WHEN order_type BETWEEN 5 AND 10 or order_type = 14 THEN '+' END calc_type,
+		pay_amount amount,
+		CASE pay_status
+		WHEN 0 THEN '0'
+		WHEN 1 THEN '0'
+		WHEN 2 THEN '1'
+		WHEN 3 THEN '-1'
+		END pay_status,
+		CASE WHEN pay_water_type != 7 THEN
+			CASE pay_status
+			WHEN 0 THEN '待支付'
+			WHEN 1 THEN '支付中'
+			WHEN 2 THEN '退款成功'
+			WHEN 3 THEN '退款失败'
+			END
+		ELSE
+			CASE pay_status
+			WHEN 0 THEN '待支付'
+			WHEN 1 THEN '支付中'
+			WHEN 2 THEN '支付成功'
+			WHEN 3 THEN '支付失败'
+			END
+		END pay_status_name,
+		add_time,
+		pay_way
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and (pay_water_type = 5 or pay_water_type = 7)
+		<if test="type != null">
+				<choose>
+					<when test="type == 1">
+						AND (order_type between 5 and 10 or order_type = 14)
+					</when>
+					<when test="type == 5 and status == null">
+						AND order_type = 5
+					</when>
+					<when test="type == 6 and status == null">
+						AND order_type = 6
+					</when>
+					<when test="type == 7 and status == null">
+						AND order_type = 7
+					</when>
+					<when test="type == 8 and status == null">
+						AND order_type = 8
+					</when>
+					<when test="type == 9 and status == null">
+						AND order_type = 9
+					</when>
+					<when test="type == 10 and status == null">
+						AND order_type = 10
+					</when>
+					<when test="type == 14 and status == null">
+						AND order_type = 14
+					</when>
+					<otherwise>
+						AND order_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+		)b ORDER BY b.add_time DESC
+	</select>
+
+	<!--查询佣金钱包账单明细列表（小程序端）-->
+	<select id="listCommissionBillDetail" resultMap="billDetailMap">
+		SELECT
+		b.order_type,
+		b.order_type_name,
+		b.calc_type,
+		b.amount,
+		b.pay_status,
+		b.pay_status_name,
+		b.add_time,
+		b.pay_way
+		FROM
+		(
+		SELECT
+		order_type,
+		CASE order_type
+		WHEN 3 THEN '提现'
+		WHEN 4 THEN '代理提现'
+		END order_type_name,
+		'' calc_type,
+		pay_amount amount,
+				CASE pay_status
+					WHEN 0 THEN '0'
+		WHEN 1 THEN '0'
+		WHEN 2 THEN '1'
+		WHEN 3 THEN '-1'
+		END pay_status,
+		CASE pay_status
+		WHEN 0 THEN '待支付'
+		WHEN 1 THEN '支付中'
+		WHEN 2 THEN '支付成功'
+		WHEN 3 THEN '支付失败'
+		END pay_status_name,
+		add_time,
+		pay_way
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and pay_water_type != 5
+		<if test="type != null">
+				<choose>
+					<when test="type == 1">
+						AND order_type between 1 and 10
+					</when>
+					<when test="type == 3">
+						AND order_type between 3 and 4
+					</when>
+					<otherwise>
+						AND order_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+			<if test="status != null">
+				and pay_status = 2
+			</if>
+		UNION ALL
+		SELECT
+		19 order_type,
+		CASE WHEN profits_type BETWEEN 1 AND 6 THEN '推广分润' END order_type_name,
+		CASE WHEN profits_type BETWEEN 1 AND 6 THEN '+' END calc_type,
+		profits_amount amount,
+		CASE
+		WHEN profits_status = 0 THEN '0'
+		WHEN profits_status = 1 or profits_status = 2 THEN '0'
+		WHEN profits_status = 3 THEN '1'
+		WHEN profits_status = 4 THEN '-1'
+		END pay_status,
+		CASE
+		WHEN profits_status = 0 THEN '待分润'
+		WHEN profits_status = 1 or profits_status = 2 THEN '已分润待结算'
+		WHEN profits_status = 3 THEN '已分润已结算'
+		WHEN profits_status = 4 THEN '分润失败'
+		END pay_status_name,
+		add_time,
+		'' pay_way
+		FROM t_e_profits_detail
+		where user_id = #{memberId} and oem_code = #{oemCode} and user_type = 1
+		<if test="type != null">
+				<choose>
+					<when test="type == 1">
+						AND profits_type between 1 and 6
+					</when>
+					<when test="type == 4">
+						AND profits_type between 1 and 6
+					</when>
+					<otherwise>
+						AND profits_type = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="walletType != null">
+				and wallet_type = #{walletType}
+			</if>
+			<if test="status != null">
+				and profits_status between 2 and 3
+			</if>
+		)b ORDER BY b.add_time DESC
+	</select>
+
+	<select id="billRefundAmount" resultType="long">
+		SELECT IFNULL(sum(pay_amount),0) pay_amount
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and pay_water_type = 5 and pay_status = 2
+		<if test="type != null">
+			AND order_type = #{type}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(add_time,'%Y-%m') = #{month}
+		</if>
+		<if test="walletType != null">
+			and wallet_type = #{walletType}
+		</if>
+	</select>
+
+	<select id="queryComCancelOrder" resultMap="baseEntityMap">
+		SELECT
+		t.*
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_company_cancel_order o ON t.order_no = o.order_no
+		WHERE
+		t.user_id = #{userId}
+		AND o.company_id = #{companyId}
+		AND t.oem_code = #{oemCode}
+		AND t.order_type = 8
+		<if test="orderStatus != null">
+			AND t.order_status = #{orderStatus}
+		</if>
+		<if test="orderStatus == null">
+			AND t.order_status IN ( 0, 1 , 4)
+		</if>
+	</select>
+
+	<select id="invOrderListByType" resultMap="baseEntityMap">
+		SELECT o.order_no,CASE WHEN o.update_time IS NOT NULL THEN o.update_time ELSE o.add_time END add_time
+		FROM t_e_order o
+		INNER JOIN t_e_member_account a ON o.user_id = a.id
+		INNER JOIN t_e_invoice_order io ON io.order_no = o.order_no
+		INNER JOIN t_e_member_company c ON c.id = io.company_id AND c.company_type = 1
+		WHERE o.order_type = 6 AND o.order_status IN(0,1) AND a.access_party_id IS NULL AND io.invoice_mark <![CDATA[ != ]]> 2
+	</select>
+
+	<!--查询指定用户下所有不是已取消状态的企业注销订单 add by Kaven 2020-02-19 -->
+	<select id="invOrderListByOrderType" resultMap="baseEntityMap">
+		SELECT a.id
+		FROM t_e_order o
+		LEFT JOIN t_e_corporate_account_apply_order a
+		on o.order_no = a.order_no
+		where o.order_type = 10 and o.order_status in(0) and  TO_DAYS(NOW()) - TO_DAYS(o.`add_time`) >=1
+	</select>
+
+	<resultMap id="companyCancelOrderMap" type="com.yuqian.itax.order.entity.vo.CompanyCancelOrderVO" extends="openOrderMap">
+		<result column="company_name" property="companyName"/>
+		<result column="parent_member_id" property="parentMemberId"/>
+		<result column="channel_name" property="channelName"/>
+		<result column="channel_push_state" property="channelPushState"/>
+		<result column="parentMemberAccount" property="parentMemberAccount"/>
+		<result column="member_auth_type" property="memberAuthType"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="real_name" property="realName"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+	<select id="listCancelOrder" resultMap="companyCancelOrderMap">
+		SELECT
+		      o.order_no,
+		      acc.member_phone,
+		      acc.member_name,
+		      mo.member_level,
+		      park.park_name,
+		      case  when park.park_type = 2 and 3 = #{platformType} then
+		            NULL
+		            ELSE convert(o.order_amount/100, decimal(12,2)) end order_amount,
+		      case when  park.park_type = 2 and 3 = #{platformType} then
+		            NULL
+		            ELSE convert(o.discount_amount/100, decimal(12,2)) end discount_amount,
+		      case when  park.park_type = 2 and 3 = #{platformType}  then
+		            NULL
+		            ELSE convert(o.pay_amount/100, decimal(12,2)) end pay_amount,
+		      acc.parent_member_account as parentMemberAccount,
+		      acc.member_auth_type,
+		      o.add_time,
+		      o.order_status,
+		      mo.parent_member_account,
+		      mo.parent_member_level_no,
+		      mo.account_two,
+		      mo.level_two,
+		      acc.parent_member_id,
+		      ch.channel_name,
+		      o.channel_push_state,
+		      mo.city_providers_name city_providers,
+		      mo.city_partner_name city_partner,
+		      oem.oem_name,
+		      cancel.agent_account,
+		      cancel.company_type,
+		      cancel.company_name,
+		      acc.real_name,
+		      com.operator_name,
+		      com.taxpayer_type,
+		      mo.attribution_employees_account,
+		      mo.super_diamond_account,
+		      mo.up_diamond_account,
+		      case when o.order_status=2  then o.update_time end complete_time
+		FROM t_e_order o
+		LEFT JOIN t_r_member_order mo on o.rela_id = mo.id
+		INNER JOIN t_e_oem oem on o.oem_code = oem.oem_code
+		INNER JOIN t_e_member_account acc on acc.id = o.user_id
+		LEFT JOIN t_e_channel_info ch ON acc.channel_code = ch.channel_code
+		INNER JOIN t_e_park park on o.park_id = park.id
+		INNER JOIN t_e_company_cancel_order cancel on cancel.order_no = o.order_no
+		LEFT JOIN t_e_member_company com on com.id = cancel.company_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id = o.user_id and ur.user_class = 5
+
+		<where>
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and cancel.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="likeOrderNo != null and likeOrderNo.trim() != ''">
+				and o.order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and acc.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="operatorName != null and operatorName.trim() != ''">
+				and com.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="taxpayerType != null ">
+				and com.taxpayer_type = #{taxpayerType}
+			</if>
+			<if test="realName != null and realName.trim() != ''">
+				and acc.real_name like concat('%',#{realName},'%')
+			</if>
+			<if test="likeMemberName != null and likeMemberName.trim() != ''">
+				and acc.member_name like concat('%',#{likeMemberName},'%')
+			</if>
+			<if test="memberAuthType != null and memberAuthType.trim() != ''">
+				and acc.member_auth_type = #{memberAuthType}
+			</if>
+			<if test="memberLevel != null">
+				and mo.member_level = #{memberLevel}
+			</if>
+			<if test="companyType != null">
+				and cancel.company_type = #{companyType}
+			</if>
+			<if test="parkId != null">
+				and o.park_id = #{parkId}
+			</if>
+			<if test="payAmtBeg != null">
+				and o.pay_amount >= #{payAmtBeg}
+			</if>
+			<if test="payAmtEnd != null">
+				and o.pay_amount &lt;= #{payAmtEnd}
+			</if>
+			<if test="addTimeBeg != null">
+				and o.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and o.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="startCompleteTimeDate != null and startCompleteTimeDate!=''">
+				and o.order_status=2  and o.update_time >= #{startCompleteTimeDate}
+			</if>
+			<if test="endCompleteTimeDate != null and endCompleteTimeDate!=''">
+				and o.order_status=2  and o.update_time &lt;= #{endCompleteTimeDate}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+<!--			<if test="likeAccountFirst != null and likeAccountFirst.trim() != ''">
+				and mo.parent_member_account like concat('%',#{likeAccountFirst},'%')
+			</if>
+			<if test="levelFirst != null">
+				and mo.parent_member_level_no = #{levelFirst}
+			</if>
+			<if test="likeAccountTwo != null and likeAccountTwo.trim() != ''">
+				and mo.account_two like concat('%',#{likeAccountTwo},'%')
+			</if>
+			<if test="levelTwo != null">
+				and mo.level_two = #{levelTwo}
+			</if>-->
+<!--			<if test="likeCityProviders != null and likeCityProviders.trim() != ''">
+				and mo.city_providers_name like concat('%',#{likeCityProviders},'%')
+			</if>
+			<if test="likeCityPartner != null and likeCityPartner.trim() != ''">
+				and mo.city_partner_name like concat('%',#{likeCityPartner},'%')
+			</if>-->
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="parentMemberAccount != null and parentMemberAccount != ''">
+				and acc.parent_member_account like concat('%',#{parentMemberAccount},'%')
+			</if>
+			<if test="channelCode != null and channelCode != ''">
+				and o.channel_code = #{channelCode}
+			</if>
+			<if test="channelPushState != null ">
+				and o.channel_push_state = #{channelPushState}
+			</if>
+<!--			<if test="attributionEmployeesAccount != null and attributionEmployeesAccount.trim() != ''">
+				and mo.attribution_employees_account like concat('%',#{attributionEmployeesAccount},'%')
+			</if>
+			<if test="upDiamondAccount != null and upDiamondAccount.trim() != ''">
+				and mo.up_diamond_account like concat('%',#{upDiamondAccount},'%')
+			</if>
+			<if test="superDiamondAccount != null and superDiamondAccount.trim() != ''">
+				and mo.super_diamond_account like concat('%',#{superDiamondAccount},'%')
+			</if>-->
+		</where>
+		order by o.add_time desc
+	</select>
+	<select id="queryByMemberId" resultMap="baseEntityMap">
+		SELECT o.order_type FROM t_e_order o
+		WHERE o.user_id = #{memberId}
+			and o.oem_code = #{oemCode}
+			and o.order_type = #{orderType}
+			and o.order_status &lt; #{orderStatus}
+		LIMIT 1
+	</select>
+
+	<!-- 查询会员升级订单列表（推广明细） add by Kaven 2020-06-08 -->
+	<select id="queryMemberUpgradeOrderList" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+		t.id,
+		t.member_name,
+		t.real_name,
+		t.member_account,
+		l.level_name,
+		o.update_time AS finish_time,
+		o.pay_amount AS member_fee,
+		o.order_status,
+		'已完成' as order_status_name
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_level l ON t.member_level = l.id
+		<where>
+            o.oem_code = #{oemCode} AND o.order_type = 7 AND o.order_status = #{orderStatus}
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+                AND (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+                member_type = 2)
+                or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3))
+                and t.member_type != 2
+            </if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and t.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and t.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+            <if test="startDate != null and startDate.trim() != '' ">
+                and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+            </if>
+            <if test=" endDate != null and endDate.trim() != ''">
+                and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+            </if>
+		</where>
+		ORDER BY finish_time DESC
+	</select>
+	<select id="queryMemberUpgradeOrderListByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			t.id,
+			t.member_name,
+			t.real_name,
+			t.member_account,
+			t.member_phone,
+			l.level_name,
+			o.update_time AS finish_time,
+			o.pay_amount AS member_fee,
+			o.order_status,
+			'已完成' as order_status_name
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id and o.oem_code = t.oem_code
+		LEFT JOIN t_e_member_level l ON o.order_type = 7 and o.product_id = l.id
+		<where>
+			o.oem_code = #{oemCode} AND o.order_type = 7 AND o.order_status = #{orderStatus}
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		ORDER BY o.update_time DESC
+	</select>
+
+	<select id="queryContComRegExtendDetailByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			t.id,
+			t.member_name,
+			IFNULL(t.real_name,t.member_name) real_name,
+			t.member_account,
+			t.member_phone,
+			l.level_name,
+			c.company_name,
+			o.update_time AS finish_time,
+			o.pay_amount AS member_fee,
+			o.order_status,
+			'已完成' as order_status_name
+		FROM
+			t_e_order o
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_level l ON t.member_level = l.id
+		LEFT JOIN t_e_cont_register_order ro ON ro.order_no = o.order_no
+		LEFT JOIN t_e_member_company c ON c.id = ro.company_id
+
+		<where>
+			o.oem_code = #{oemCode} AND o.order_type = 15 AND o.order_status = #{orderStatus}
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		ORDER BY finish_time DESC
+	</select>
+	<!-- 根据订单状态查询总会费（新推广中心） add by Kaven 2020-06-08 -->
+	<select id="queryTotalMemberFee" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+		SUM( CASE WHEN o.pay_amount > 0 THEN o.pay_amount ELSE 0 END) AS total_member_fee
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_level l ON t.member_level = l.id
+		<where>
+            o.order_status = #{orderStatus} and o.oem_code = #{oemCode} and o.order_type = 7
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+                AND (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+                member_type = 2)
+                or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3)) and t.member_type != 2
+            </if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and t.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and t.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+	<select id="queryTotalMemberFeeByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+	SELECT
+	SUM( CASE WHEN o.pay_amount > 0 THEN o.pay_amount ELSE 0 END) AS total_member_fee
+	FROM
+	t_e_order o
+	LEFT JOIN t_e_member_account t ON o.user_id = t.id
+	LEFT JOIN t_e_member_level l ON t.member_level = l.id
+	<where>
+		o.order_status = #{orderStatus} and o.oem_code = #{oemCode} and o.order_type = 7
+		<if test="userId != null ">
+			and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+		</if>
+		<if test="channelUserIds != null ">
+			and o.channel_user_id  in
+			<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="day != null and day.trim() != '' ">
+			and date_format(o.update_time,'%Y-%m-%d') = #{day}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(o.update_time,'%Y-%m') = #{month}
+		</if>
+		<if test="startDate != null and startDate.trim() != '' ">
+			and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+		</if>
+		<if test=" endDate != null and endDate.trim() != ''">
+			and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+		</if>
+		<if test="memberName != null and memberName.trim() != ''  ">
+			and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+		</if>
+		<if test="memberId != null ">
+			and t.id=#{memberId}
+		</if>
+	</where>
+	</select>
+	<select id="queryTotalContRegFeeByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+		SUM( CASE WHEN o.pay_amount > 0 THEN o.pay_amount ELSE 0 END) AS total_member_fee
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_level l ON t.member_level = l.id
+		<where>
+			o.order_status = #{orderStatus} and o.oem_code = #{oemCode} and o.order_type = 15
+
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+	</select>
+	<update id="updateStatusByGroupOrderNo">
+		update
+			t_e_order
+		set
+			order_status = #{orderStatus},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			order_no in (select order_no from t_e_invoice_order WHERE group_order_no = #{groupOrderNo})
+			and oem_code = #{oemCode}
+	</update>
+
+	<select id="queryUpgradeOrder" resultMap="baseEntityMap">
+		SELECT * FROM t_e_order
+		WHERE user_id = #{memberId} AND oem_code = #{oemCode}
+		AND order_type = 7 AND pay_amount > 0
+		ORDER BY add_time DESC
+		LIMIT 1
+	</select>
+
+	<!-- 查询指定时间前的待提交对公户提现订单列表 add by Kaven 2020-10-16 -->
+    <select id="selectToSubmitWithdrawOrder" parameterType="java.lang.Integer" resultMap="baseEntityMap">
+        SELECT
+        t.*
+        FROM
+        t_e_order t
+        <where>
+            t.order_type = 11 AND t.order_status = 0
+            AND t.add_time <![CDATA[<=]]> CONCAT(date_format(DATE_SUB(NOW(), INTERVAL #{minutes} MINUTE ),
+            '%Y%m%d%H%i%S'), '000')
+        </where>
+    </select>
+
+    <!--查询账单明细列表API（gateway对外提供接口）-->
+    <select id="listBillDetailApi" resultMap="billDetailMap">
+        SELECT
+        b.order_type,
+        b.order_type_name,
+        b.calc_type,
+        b.amount,
+        b.pay_status,
+        b.pay_status_name,
+        b.add_time,
+        b.pay_way
+		FROM
+		(
+		SELECT
+		order_type,
+		CASE order_type
+		WHEN 3 THEN '提现'
+		WHEN 4 THEN '代理提现'
+		END order_type_name,
+		'' calc_type,
+		pay_amount amount,
+		CASE
+		WHEN pay_status = 0 THEN '0'
+		WHEN pay_status = 1 OR pay_status = 4 THEN '0'
+		WHEN pay_status = 2 THEN '1'
+		WHEN pay_status = 3 OR pay_status = 5 THEN '-1'
+		END pay_status,
+		CASE
+		WHEN pay_status = 0 THEN '待支付'
+		WHEN pay_status = 1 OR pay_status = 4 THEN '支付中'
+		WHEN pay_status = 2 THEN '支付成功'
+		WHEN pay_status = 3 OR pay_status = 5 THEN '支付失败'
+		END pay_status_name,
+		add_time,
+		pay_way
+		FROM t_e_pay_water
+		where member_id = #{memberId} and oem_code = #{oemCode} and pay_water_type != 5
+		<if test="type != null">
+            <choose>
+                <when test="type == 1">
+                    AND order_type between 3 and 4
+                </when>
+                <when test="type == 3">
+                    AND order_type between 3 and 4
+                </when>
+                <otherwise>
+                    AND order_type = 0
+                </otherwise>
+            </choose>
+        </if>
+        <if test="month != null and month.trim() != '' ">
+            and date_format(add_time,'%Y-%m') = #{month}
+        </if>
+        <if test="walletType != null">
+            and wallet_type = #{walletType}
+        </if>
+        <if test="status != null">
+            and pay_status = 2
+        </if>
+        UNION ALL
+        SELECT
+        19 order_type,
+        CASE WHEN profits_type BETWEEN 1 AND 5 THEN '推广分润' END order_type_name,
+        CASE WHEN profits_type BETWEEN 1 AND 5 THEN '+' END calc_type,
+        profits_amount amount,
+        CASE
+        WHEN profits_status = 0 THEN '0'
+        WHEN profits_status = 1 or profits_status = 2 THEN '0'
+        WHEN profits_status = 3 THEN '1'
+        WHEN profits_status = 4 THEN '-1'
+		END pay_status,
+		CASE
+		WHEN profits_status = 0 THEN '待分润'
+		WHEN profits_status = 1 or profits_status = 2 THEN '已分润待结算'
+		WHEN profits_status = 3 THEN '已分润已结算'
+		WHEN profits_status = 4 THEN '分润失败'
+		END pay_status_name,
+		add_time,
+		'' pay_way
+		FROM t_e_profits_detail
+		where user_id = #{memberId} and oem_code = #{oemCode}
+		<if test="type != null">
+            <choose>
+                <when test="type == 1">
+                    AND profits_type between 1 and 5
+                </when>
+                <when test="type == 4">
+					AND profits_type between 1 and 5
+				</when>
+				<otherwise>
+					AND profits_type = 0
+				</otherwise>
+			</choose>
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			AND date_format(add_time,'%Y-%m') = #{month}
+		</if>
+		<if test="walletType != null and walletType == 1">
+			AND wallet_type = #{walletType} AND user_type != 1
+		</if>
+		<if test="walletType != null and walletType == 2">
+			AND wallet_type = #{walletType} AND user_type = 1
+		</if>
+		<if test="status != null">
+			AND profits_status between 2 and 3
+		</if>
+		)b ORDER BY b.add_time DESC
+	</select>
+    <select id="queryByProductId" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+		from
+			t_e_order
+		<where>
+			<if test="productId != null ">
+				and product_id = #{productId}
+			</if>
+			<if test="orderStatus != null">
+				and order_status = #{orderStatus}
+			</if>
+			<if test="oemCode != null">
+				and oem_code = #{oemCode}
+			</if>
+			<if test="orderType != null">
+				and order_type = #{orderType}
+			</if>
+		</where>
+	</select>
+    <select id="corporateAmoutRepeatCheck" resultType="java.lang.Integer">
+		select
+			count(1)
+		from
+			t_e_order o
+		inner join
+			t_e_corporate_account_withdrawal_order c on c.order_no = o.order_no
+		<where>
+			<if test="orderType != null">
+				and o.order_type = #{orderType}
+			</if>
+			<if test="exceptOrderStatus != null ">
+				and o.order_status != #{exceptOrderStatus}
+			</if>
+			<if test="payAmount != null">
+				and o.pay_amount = #{payAmount}
+			</if>
+			<if test="repeatTime != null">
+				and o.update_time >= date_sub(now(), interval #{repeatTime} hour)
+			</if>
+			<if test="corporateAccountId != null">
+				and c.corporate_account_id = #{corporateAccountId}
+			</if>
+		</where>
+	</select>
+
+	<select id="getToVoidInfo" resultMap="voidInfoMap">
+		select o.order_no,c.company_name,
+		CONVERT (o.invoice_amount / 100,DECIMAL (12, 2)) invoice_amount,
+		o.invoice_way,o.confirm_invoice_time,o.category_name,o.company_name head_company_name, o.company_address, o.ein, o.phone, o.bank_name, o.bank_number,
+		o.invoice_type,o.VAT_fee_rate,o.invoice_remark,o.cancellation_voucher,o.company_id,o.category_id
+		from t_e_invoice_order o
+		left join t_e_member_company c on o.company_id = c.id
+		where o.order_no = #{orderNo}
+	</select>
+
+	<select id="getOderNoByCompanyAndOrderStatus" resultType="String">
+		select c.order_no
+		from t_e_company_cancel_order c
+		left join t_e_order o on c.order_no = o.order_no
+		where c.company_id = #{companyId} and o.order_type = 8 and o.order_status in(0,4)
+	</select>
+
+	<select id="getOderNoByCompany" resultType="String">
+		select c.order_no
+		from t_e_company_cancel_order c
+		left join t_e_order o on c.order_no = o.order_no
+		left join t_e_park p on o.park_id = p.id
+		where c.company_id = #{companyId} and o.order_type = 8 and ((o.order_status != 3 and p.income_levy_type = 1) or (o.order_status in (1,2) and p.income_levy_type != 1))
+	</select>
+    <select id="monthlyWithdrawalAmount" resultType="java.lang.Long">
+		SELECT ifnull(sum(order_amount),0) FROM t_e_order
+		WHERE user_id = #{memberId} AND order_type = 3 AND user_type = 1
+		AND order_status in(0,1,2) AND DATE_FORMAT(add_time, '%Y-%m') = concat(#{year},'-',#{month});
+	</select>
+    <select id="queryRechargeAmountOfDays" resultType="java.lang.Long">
+		SELECT ifnull(SUM(o.`order_amount`), 0)
+		FROM t_e_order o
+		WHERE o.`user_id` = #{userId}
+		AND o.`order_type` IN(1,2)
+		AND o.`order_status` = 2
+		AND DATE_SUB(DATE_FORMAT(NOW(), "%Y-%m-%d"), INTERVAL #{rechargeDays} DAY) <![CDATA[ < ]]> DATE_FORMAT(o.`add_time`, "%Y-%m-%d")
+	</select>
+</mapper>

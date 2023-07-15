@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.CompanyIncomeRuleMapper">
+    <resultMap type="com.yuqian.itax.system.entity.CompanyIncomeRuleEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="level" property="level"/>
+			<result column="min_amount" property="minAmount"/>
+			<result column="max_amount" property="maxAmount"/>
+			<result column="rate" property="rate"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, level, min_amount, max_amount, rate, add_time, add_user, update_time, update_user, remark
+    </sql>
+    <select id="queryCompanyIncomeRuleByAmount" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_company_income_rule
+		where #{amount} <![CDATA[ > ]]> min_amount and #{amount}<![CDATA[<=]]>max_amount
+	</select>
+</mapper>

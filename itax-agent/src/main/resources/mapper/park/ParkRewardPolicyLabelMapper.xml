@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkRewardPolicyLabelMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkRewardPolicyLabelEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="reward_label" property="rewardLabel"/>
+			<result column="reward_desc" property="rewardDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, reward_label, reward_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkRewardPolicyLabelVO" id="voMap">
+		<id column="id" property="id"/>
+		<result column="reward_label" property="rewardLabel"/>
+		<result column="reward_desc" property="rewardDesc"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+	</resultMap>
+	<select id="queryList" resultMap="voMap">
+             select
+                   id,
+                   reward_label,
+                   reward_desc,
+                   update_time,
+                   update_user
+             from t_e_park_reward_policy_label
+             <where>
+				  park_id = #{query.parkId}
+				 <if test="query.rewardLabel !=null and query.rewardLabel !=''">
+					 and reward_label like concat('%',#{query.rewardLabel},'%')
+				 </if>
+				 <if test="query.rewardDesc !=null and query.rewardDesc !=''">
+					 and reward_desc like concat('%',#{query.rewardDesc},'%')
+				 </if>
+			 </where>
+			 order by add_time desc
+	</select>
+	<select id="queryLabelByOemCode" resultType="java.lang.String">
+		select distinct l.`reward_label`
+		from t_e_park_reward_policy_label l
+		inner join t_r_oem_park op on op.`park_id` = l.`park_id`
+		inner join t_e_park p on p.`id` = l.`park_id`
+		where op.`oem_code` = #{oemCode} and p.`status` in(1,3)
+		order by l.`reward_label_base_id` desc
+	</select>
+
+	<!--验证园区里奖励标签唯一-->
+	<select id="verifyRewardLabelPark" resultType="java.lang.Integer">
+		select count(1) from t_e_park_reward_policy_label
+		where park_id = #{parkId} and reward_label = #{rewardLabel}
+	</select>
+
+</mapper>

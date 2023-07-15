@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.DistrictMapper">
+    <resultMap type="com.yuqian.itax.system.entity.DistrictEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="code" property="code"/>
+			<result column="name" property="name"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.DistrictVO" id="districtMap">
+		<id column="id" property="id"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="code" property="code"/>
+		<result column="name" property="name"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, city_code, code, name, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!-- 根据城市编码查询区信息 -->
+	<select id="getDistrictList" parameterType="java.lang.String" resultType="list" resultMap="districtMap">
+		SELECT * FROM sys_e_district WHERE city_code = #{cityCode} ORDER BY CODE ASC
+	</select>
+
+	<!-- 根据编码查询区信息 -->
+	<select id="getByCode" parameterType="java.lang.String" resultMap="baseEntityMap">
+		SELECT * FROM sys_e_district WHERE code = #{code}
+	</select>
+
+	<!-- 根据编码查询区信息 -->
+	<select id="getByName" parameterType="java.lang.String" resultMap="baseEntityMap">
+		SELECT * FROM sys_e_district WHERE name = #{name} AND city_code = #{cityCode}
+	</select>
+</mapper>

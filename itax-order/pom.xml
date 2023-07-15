@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>itax_v1.0</artifactId>
+        <groupId>com.itax</groupId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>itax-order</artifactId>
+
+    <packaging>jar</packaging>
+    <properties>
+        <itax.version>0.1-SNAPSHOT</itax.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.itax</groupId>
+            <artifactId>itax-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.itax</groupId>
+            <artifactId>itax-user</artifactId>
+            <version>${itax.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.itax</groupId>
+            <artifactId>itax-system</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.itax</groupId>
+            <artifactId>itax-agent</artifactId>
+            <version>${itax.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--引入apache职责链jar包start  add by Kaven 2019-08-14-->
+        <dependency>
+            <groupId>commons-chain</groupId>
+            <artifactId>commons-chain</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!--引入apache职责链jar包end-->
+
+        <!--引入渠道依赖jar包服务start -->
+        <dependency>
+            <groupId>com.duob</groupId>
+            <artifactId>duob-base</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jeecg</groupId>
+            <artifactId>easypoi-annotation</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>com.duob</groupId>
+            <artifactId>duob-trade-facade</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>-->
+        <!--引入渠道依赖jar包服务end -->
+
+        <!-- 引入dubbo和curator的依赖 start -->
+        <!-- dubbo -->
+        <!--<dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+        &lt;!&ndash; zookeeper &ndash;&gt;
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.101tec</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.spring</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>2.8.0</version>
+        </dependency>-->
+        <!-- 引入dubbo和curator的依赖 end-->
+
+        <!--rabbitmq -->
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+        </dependency>
+
+
+        <!-- 建行代发通道 -->
+        <dependency>
+            <groupId>cn.duobeila.channel</groupId>
+            <artifactId>yinqnc-ccb</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

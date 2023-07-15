@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.DictionaryMapper">
+    <resultMap type="com.yuqian.itax.system.entity.DictionaryEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="dict_code" property="dictCode"/>
+			<result column="dict_value" property="dictValue"/>
+			<result column="parent_dict_id" property="parentDictId"/>
+			<result column="dict_desc" property="dictDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, dict_code, dict_value, parent_dict_id, dict_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="getDictByCode" resultMap="baseEntityMap">
+		select * from sys_e_dictionary
+		<where>
+			dict_code=#{dictCode}
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.DictionaryVO" id="dictionaryMap">
+
+		<id column="id" property="id"/>
+		<result column="dict_code" property="dictCode"/>
+		<result column="dict_value" property="dictValue"/>
+		<result column="parent_dict_code" property="parentDictCode"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+	<select id="querySysDictionaryList" resultMap="dictionaryMap">
+		select
+		d.id,
+		d.dict_code,
+		d.dict_value,
+		pd.dict_code parent_dict_code,
+		d.add_time,
+		d.update_time
+		from sys_e_dictionary d
+		LEFT JOIN sys_e_dictionary pd ON d.parent_dict_id=pd.id
+		<where>
+			<if test="id != null ">
+				and d.id = #{id}
+			</if>
+			<if test="dictCode != null and dictCode != ''">
+				and d.dict_code = #{dictCode}
+			</if>
+			<if test="parentDictCode != null and parentDictCode != ''">
+				and pd.dict_code = #{parentDictCode}
+			</if>
+		</where>
+	</select>
+</mapper>

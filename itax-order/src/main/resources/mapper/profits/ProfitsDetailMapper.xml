@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.profits.dao.ProfitsDetailMapper">
+    <resultMap type="com.yuqian.itax.profits.entity.ProfitsDetailEntity" id="baseEntityMap">
+
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="available_profits_amount" property="availableProfitsAmount"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_level" property="userLevel"/>
+        <result column="user_type" property="userType"/>
+        <result column="profits_rate" property="profitsRate"/>
+        <result column="profits_amount" property="profitsAmount"/>
+        <result column="profits_status" property="profitsStatus"/>
+        <result column="profits_time" property="profitsTime"/>
+        <result column="add_time" property="addTime"/>
+        <result column="add_user" property="addUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remark" property="remark"/>
+        <result column="oem_code" property="oemCode"/>
+        <result column="oem_name" property="oemName"/>
+        <result column="order_type" property="orderType"/>
+        <result column="profits_no" property="profitsNo"/>
+        <result column="attribution_employees_id" property="attributionEmployeesId"/>
+        <result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+        <result column="wallet_type" property="walletType"/>
+        <result column="profits_type" property="profitsType"/>
+        <result column="withdraw_order_no" property="withdrawOrderNo"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, order_amount, order_type,pay_amount, available_profits_amount, user_id, user_account, user_level, user_type, profits_rate, profits_amount, profits_status,
+		    profits_time, add_time, add_user, update_time, update_user, remark,
+		    oem_code,oem_name,order_type,profits_no,attribution_employees_id,attribution_employees_account,wallet_type,profits_type,withdraw_order_no
+    </sql>
+
+    <resultMap type="com.yuqian.itax.profits.entity.vo.ProfitsDetailVO" id="profitsDetailMap">
+
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_type" property="orderType"/>
+        <result column="profits_no" property="profitsNo"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="profits_rate" property="profitsRate"/>
+        <result column="profits_amount" property="profitsAmount"/>
+        <result column="profits_status" property="profitsStatus"/>
+        <result column="add_time" property="addTime"/>
+        <result column="oem_name" property="oemName"/>
+        <result column="name" property="name"/>
+        <result column="account" property="account"/>
+        <result column="wallet_type" property="walletType"/>
+        <result column="profits_type" property="profitsType"/>
+    </resultMap>
+
+    <resultMap type="com.yuqian.itax.profits.entity.vo.MemberProfitsVO" id="memberProfitsMap">
+        <result column="order_type" property="orderType"/>
+        <result column="profits_name" property="profitsName"/>
+        <result column="level" property="level"/>
+        <result column="real_name" property="realName"/>
+        <result column="staff_name" property="staffName"/>
+        <result column="profits_rate" property="profitsRate"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="profits_time" property="profitsTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <select id="profitsDetailList" resultMap="profitsDetailMap" parameterType="com.yuqian.itax.profits.entity.query.ProfitsDetailQuery">
+        select pd.id,pd.order_no,pd.order_type,pd.profits_no,convert(pd.available_profits_amount/100, decimal(12,2))  order_amount,convert(pd.profits_rate/100, decimal(12,4)) profits_rate,convert(pd.profits_amount/100, decimal(12,2))  profits_amount,
+        pd.profits_status,pd.add_time,pd.oem_name,u.nickname name,u.username account,pd.wallet_type, pd.profits_type
+        from t_e_profits_detail pd
+        inner join sys_e_user u on pd.user_id=u.id
+        inner join t_e_user_rela ur  on ur.user_id=pd.user_id
+
+        <where>
+            pd.user_type!=1
+            <if test="tree != null and tree != ''">
+                and ur.user_tree like  concat(#{tree},'%')
+            </if>
+            <if test="userId != null and userId != ''">
+                and pd.user_id=#{userId}
+            </if>
+            <if test="oemCode != null and oemCode != ''">
+                and pd.oem_code =#{oemCode}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and pd.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="orderType != null and orderType != ''">
+                and pd.order_type =#{orderType}
+            </if>
+            <if test="profitsType != null and profitsType.trim() != ''">
+                and  pd.profits_type = #{profitsType}
+            </if>
+            <if test="profitsNo != null and profitsNo != ''">
+                and pd.profits_no like concat('%',#{profitsNo},'%')
+            </if>
+            <if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+                and pd.add_time between #{startDate} and #{endDate}
+            </if>
+            <if test="oemName != null and oemName != ''">
+                and pd.oem_name like concat('%',#{oemName},'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and u.nickname like concat('%',#{userName},'%')
+            </if>
+            <if test="userAcount != null and userAcount != ''">
+                and u.username like concat('%',#{userAcount},'%')
+            </if>
+            <if test="profitsStatus != null and profitsStatus != ''">
+                and pd.profits_status =#{profitsStatus}
+            </if>
+        </where>
+        union
+        select pd.id,pd.order_no,pd.order_type,pd.profits_no,convert(pd.available_profits_amount/100, decimal(12,2)) order_amount,convert(pd.profits_rate/100, decimal(12,4)) profits_rate,
+          convert(pd.profits_amount/100, decimal(12,2)) profits_amount,pd.profits_status,pd.add_time,pd.oem_name,m.member_name name,m.member_account account,pd.wallet_type, pd.profits_type
+        from t_e_profits_detail pd
+        LEFT JOIN t_e_member_account m on pd.user_id=m.id
+        LEFT join t_e_user_rela ur  on ur.user_id=pd.user_id
+
+        <where>
+            pd.user_type=1
+            <if test="userType != null ">
+                and pd.user_type =#{userType}
+            </if>
+            <if test="tree != null and tree != ''">
+                and ur.user_tree like  concat(#{tree},'%')
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                and pd.order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="orderType != null and orderType != ''">
+                and pd.order_type =#{orderType}
+            </if>
+            <if test="profitsType != null and profitsType.trim() != ''">
+                and  pd.profits_type = #{profitsType}
+            </if>
+            <if test="profitsNo != null and profitsNo != ''">
+                and pd.profits_no like concat('%',#{profitsNo},'%')
+            </if>
+            <if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+                and pd.add_time between #{startDate} and #{endDate}
+            </if>
+            <if test="oemName != null and oemName != ''">
+                and pd.oem_name like concat('%',#{oemName},'%')
+            </if>
+            <if test="userName != null and userName != ''">
+                and m.member_name like concat('%',#{userName},'%')
+            </if>
+            <if test="userAcount != null and userAcount != ''">
+                and  m.member_account like concat('%',#{userAcount},'%')
+            </if>
+            <if test="profitsStatus != null and profitsStatus != ''">
+                and pd.profits_status =#{profitsStatus}
+            </if>
+        </where>
+        order by add_time desc
+    </select>
+
+    <!--查询会员分润记录（小程序端） add by Kaven 2019-12-20-->
+    <select id="listMemberProfitsPage" parameterType="com.yuqian.itax.profits.entity.query.MemberProfitsQuery" resultMap="memberProfitsMap">
+        select
+            t.profits_amount,
+            t.profits_time,
+            t.order_type
+        from
+            t_e_profits_detail t
+        where
+            t.user_id = #{userId}
+            and t.oem_code = #{oemCode}
+            and t.user_type = 1
+            and t.profits_status in (2,3)
+            order by profits_time desc
+    </select>
+
+    <!--推广中心-分润记录-查询总分润 add by Kaven 2020-06-10 -->
+    <select id="queryTotalProfitsAmount" parameterType="com.yuqian.itax.profits.entity.query.MemberProfitsQuery" resultType="java.lang.Long">
+        select
+        ifnull(sum(p.profits_amount),0) as total_profits_amount
+        FROM
+        t_e_profits_detail p INNER JOIN t_e_order o ON p.order_no = o.order_no AND p.oem_code = o.oem_code
+        INNER JOIN t_r_member_order r ON o.rela_id = r.id AND r.oem_code = o.oem_code
+        INNER JOIN t_e_member_account a ON a.id = o.user_id AND o.user_type = 1
+        LEFT JOIN t_e_member_account parent ON a.parent_member_id = parent.id
+        <where>
+            p.oem_code = #{oemCode} and p.user_id = #{userId}
+            <if test="profitsType != null and profitsType != 0">
+                and p.profits_type = #{profitsType}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(p.profits_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(p.profits_time,'%Y-%m') = #{month}
+            </if>
+            <if test="startDate != null and startDate.trim() != '' ">
+                and  date_format(p.profits_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+            </if>
+            <if test=" endDate != null and endDate.trim() != ''">
+                and  date_format(p.profits_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+            </if>
+            and p.user_type = 1
+            <if test="levelNo != null">
+                <choose>
+                    <when test="levelNo == 0">
+                        AND p.user_type = 1
+                    </when>
+                    <when test="levelNo == 1">
+                        AND p.user_type = 1
+                    </when>
+                    <otherwise>
+                        AND p.user_type != 1
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <!--推广中心-查询会员分润记录（小程序端） add by Kaven 2020-06-16 update by yejian 2020-09-08 -->
+    <select id="listMemberProfitsPageNew" parameterType="com.yuqian.itax.profits.entity.query.MemberProfitsQuery" resultMap="memberProfitsMap">
+        SELECT
+        p.id,
+        p.profits_type order_type,
+        CASE p.profits_type WHEN 1 THEN '会员升级费分润' WHEN 2 THEN '托管费分润' WHEN 3 THEN '开票服务费分润'
+        WHEN 4 THEN '注销服务费分润' WHEN 5 THEN '会费返还分润' WHEN 6 THEN '托管费续费' END AS profits_name,
+        p.profits_time,
+        CASE WHEN a.id IN (
+        SELECT id FROM t_e_member_account WHERE
+        (
+        parent_member_id IN ( SELECT id FROM t_e_member_account WHERE parent_member_id = p.user_id AND member_type = 2 )
+        OR parent_member_id = p.user_id
+        OR ( id = p.user_id AND extend_type = 3 )
+        )
+        AND member_type != 2
+        ) THEN '直推用户'
+        WHEN a.id IN (
+        SELECT id FROM t_e_member_account t WHERE t.member_type != 2
+        AND t.member_tree LIKE ( SELECT CONCAT( member_tree, '/%' ) FROM t_e_member_account WHERE id = p.user_id )
+        AND t.id NOT IN (
+        SELECT id FROM t_e_member_account WHERE
+        (
+        parent_member_id IN ( SELECT id FROM t_e_member_account WHERE parent_member_id = p.user_id AND member_type = 2 )
+        OR parent_member_id = p.user_id
+        OR ( id = p.user_id AND extend_type = 3 )
+        )
+        AND member_type != 2
+        )
+        ) THEN '裂变用户' ELSE '裂变用户' END AS level,
+        (
+        SELECT
+        IFNULL( real_name, member_name )
+        FROM t_e_member_account
+        WHERE
+        parent_member_id = p.user_id AND member_type = 2 AND LOCATE( member_tree, a.member_tree ) > 0
+        ORDER BY id DESC LIMIT 1
+        ) AS staff_name,
+        p.profits_amount,
+        IFNULL(a.real_name, a.member_name) real_name,
+        p.available_profits_amount as order_amount,
+        p.profits_rate,
+        p.remark
+        FROM
+        t_e_profits_detail p INNER JOIN t_e_order o ON p.order_no = o.order_no AND p.oem_code = o.oem_code
+        INNER JOIN t_r_member_order r ON o.rela_id = r.id AND r.oem_code = o.oem_code
+        INNER JOIN t_e_member_account a ON a.id = o.user_id AND o.user_type = 1
+        LEFT JOIN t_e_member_account parent ON a.parent_member_id = parent.id
+        <where>
+            p.oem_code = #{oemCode} and p.user_id = #{userId}
+            <if test="profitsType != null and profitsType != 0">
+                and p.profits_type = #{profitsType}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(p.profits_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(p.profits_time,'%Y-%m') = #{month}
+            </if>
+            <if test="startDate != null and startDate.trim() != '' ">
+                and  date_format(p.profits_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+            </if>
+            <if test=" endDate != null and endDate.trim() != ''">
+                and  date_format(p.profits_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+            </if>
+            <if test="levelNo != null">
+                <choose>
+                    <when test="levelNo == 0">
+                        AND p.user_type = 1
+                    </when>
+                    <when test="levelNo == 1">
+                        AND p.user_type = 1
+                    </when>
+                    <otherwise>
+                        AND p.user_type != 1
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        ORDER BY p.profits_time DESC
+    </select>
+
+    <select id="findProfitsDetailByParams" resultMap="baseEntityMap">
+       select
+          <include refid="Base_Columns" />
+        from t_e_profits_detail
+        <where>
+            <if test="startTime != null">
+                and profits_time <![CDATA[>=]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and profits_time <![CDATA[<=]]> #{endTime}
+            </if>
+            <if test="oemCode != null">
+                and oem_code = #{oemCode}
+            </if>
+            <if test="profitsStatus != null">
+                and profits_status = #{profitsStatus}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryEarningsByUserId" resultType="java.lang.Long">
+        SELECT
+            IFNULL(SUM(P.PROFITS_AMOUNT),0)
+        FROM
+         T_E_PROFITS_DETAIL P
+        WHERE
+            P.USER_ID = #{userId}
+        <if test="userType ==1 ">
+            AND P.USER_TYPE = 1
+        </if>
+        <if test="userType!=1 ">
+            AND P.USER_TYPE != 1
+        </if>
+        <if test="startDate != null and startDate != '' ">
+            AND P.PROFITS_TIME <![CDATA[>=]]>#{startDate}
+        </if>
+        <if test="endDate != null and endDate != '' ">
+            AND P.PROFITS_TIME <![CDATA[<=]]> #{endDate}
+        </if>
+    </select>
+
+    <resultMap id="profitDetailMap" type="com.yuqian.itax.capital.entity.vo.ProfitDetailVO">
+        <result column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="oem_code" property="oemCode"/>
+        <result column="profits_amount" property="profitsAmount"/>
+        <result column="profits_status" property="profitsStatus"/>
+        <result column="wallet_type" property="walletType"/>
+        <result column="withdraw_order_no" property="withdrawOrderNo"/>
+        <result column="profits_type" property="profitsType"/>
+        <result column="add_time" property="addTime"/>
+        <result column="profits_type_name" property="profitsTypeName"/>
+    </resultMap>
+    <select id="profitsDetailForWithdraw" resultMap="profitDetailMap">
+        SELECT id, order_no, user_id, oem_code, profits_amount, profits_status, wallet_type, withdraw_order_no, profits_type, add_time,
+            (case profits_type when 1 then '会员升级费' when 2 then '托管费' when 3 then '开票服务费' when 4 then '注销服务费' when 5 then '会费返还' when 6 then '托管费续费' end) profits_type_name
+		FROM t_e_profits_detail
+		WHERE `user_id` = #{memberId} AND `oem_code` = #{oemCode} AND `profits_amount` <![CDATA[ > ]]> 0 AND `wallet_type` = 2 AND `profits_status` IN(2,3) AND `withdraw_order_no` IS NULL
+		<if test="maximalProfitDetailId != null">
+            AND id <![CDATA[ <= ]]> #{maximalProfitDetailId}
+        </if>
+        <if test="profitDetailIdList != null">
+            AND id IN
+            <foreach collection="profitDetailIdList" item="profitDetailId" open="(" close=")" separator=",">
+                #{profitDetailId}
+            </foreach>
+        </if>
+		ORDER BY id DESC
+    </select>
+    <update id="updateMemberAccountByMemberId">
+        update t_e_profits_detail set user_account = #{memberAccount},update_time=now(), remark=#{remark} where user_id = #{memberId} and user_type = 1;
+    </update>
+    <update id="batchUpdateProfitsDetail">
+        UPDATE t_e_profits_detail
+        SET <if test="maximalProfitDetailId == null and profitDetailIdList == null">
+            withdraw_order_no = null
+        </if>
+        <if test="maximalProfitDetailId != null or profitDetailIdList != null">
+            withdraw_order_no = #{withdrawOrderNo}
+        </if>
+        WHERE `user_id` = #{memberId} AND `oem_code` = #{oemCode} AND `profits_amount` <![CDATA[ > ]]> 0 AND `wallet_type` = 2 AND `profits_status` IN(2,3)
+        <if test="maximalProfitDetailId != null">
+            AND id <![CDATA[ <= ]]> #{maximalProfitDetailId}
+        </if>
+        <if test="profitDetailIdList != null">
+            AND id IN
+            <foreach collection="profitDetailIdList" item="profitDetailId" open="(" close=")" separator=",">
+                #{profitDetailId}
+            </foreach>
+        </if>
+        <if test="maximalProfitDetailId == null and profitDetailIdList == null and withdrawOrderNo != null and withdrawOrderNo.trim() != ''">
+            AND withdraw_order_no = #{withdrawOrderNo}
+        </if>
+    </update>
+
+    <resultMap id="AchievementExcelMap" type="com.yuqian.itax.nabei.entity.AchievementExcelVo">
+        <result column="sequence" property="sequence"/>
+        <result column="profits_no" property="profitsNo"/>
+        <result column="name" property="name"/>
+        <result column="id_card_no" property="idCardNo"/>
+        <result column="profits_amount" property="profitsAmount"/>
+    </resultMap>
+    <select id="getByWithdrawOrderNo" resultMap="AchievementExcelMap">
+        SELECT (@i:=@i+1) sequence, p.`profits_no`, a.`real_name` `name`, a.`id_card_no`, TRUNCATE(p.`profits_amount`/100,2) profits_amount
+        FROM t_e_profits_detail p
+        INNER JOIN t_e_member_account a ON a.`id` = p.`user_id`,(SELECT @i:=0)t
+        WHERE p.`withdraw_order_no` = #{orderNo}
+    </select>
+</mapper>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.ConsumptionInvoiceOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.ConsumptionInvoiceOrderEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="ein" property="ein"/>
+		<result column="phone" property="phone"/>
+		<result column="regist_address" property="registAddress"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_code" property="districtCode"/>
+		<result column="district_name" property="districtName"/>
+		<result column="category_id" property="categoryId"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="bill_to_email" property="billToEmail"/>
+		<result column="consumption_order_rela" property="consumptionOrderRela"/>
+		<result column="consumption_invoice_remark" property="consumptionInvoiceRemark"/>
+		<result column="invoice_pdf_url" property="invoicePdfUrl"/>
+		<result column="invoice_operator" property="invoiceOperator"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="general_taxpayer_qualification" property="generalTaxpayerQualification"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, invoice_amount, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name,
+		 	city_code, city_name, district_code, district_name,category_id, category_name, invoice_type, invoice_way, invoice_type_name, complete_time, bill_to_email, consumption_order_rela,
+		 	consumption_invoice_remark, invoice_operator,invoice_pdf_url, invoice_imgs,add_time, add_user, update_time, update_user, remark,courier_number,courier_company_name,general_taxpayer_qualification
+    </sql>
+
+	<resultMap id="receivingMap" type="com.yuqian.itax.order.entity.vo.ConsumptionInvoiceReceivingVO">
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient" property="recipient"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConsumptionInvoiceOrderVO" id="voMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="real_name" property="realName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="phone" property="phone"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="bill_to_email" property="billToEmail"/>
+		<result column="invoice_pdf_url" property="invoicePdfUrl"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+		<result column="remark" property="remark"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="consumption_order_rela" property="consumptionOrderRela"/>
+	</resultMap>
+
+	<resultMap id="jobMap" type="com.yuqian.itax.order.entity.vo.ConsumptionInvoiceOrderJobVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+
+	<select id="getReceivingInfoById" resultMap="receivingMap">
+		select convert(c.invoice_amount/100, decimal(12,2)) invoice_amount,c.province_name,c.city_name,c.district_name,c.recipient_address,c.recipient_phone,c.recipient,
+		c.courier_number,c.courier_company_name,o.order_type,c.order_no
+		FROM t_e_consumption_invoice_order c
+		left join t_e_order o on o.order_no = c.order_no
+		where c.id = #{id}
+	</select>
+
+	<select id="listConsumptionInvoiceByStatus" resultMap="jobMap">
+		select c.order_no,c.courier_number,c.courier_company_name,o.order_status,c.update_time
+		FROM t_e_consumption_invoice_order c
+		left join t_e_order o on c.order_no = o.order_no
+		where o.order_status = 5 and c.invoice_way = 1
+	</select>
+
+	<select id="queryInvoiceList" resultMap="voMap">
+		SELECT
+			c.id,
+			c.order_no,
+			m.member_account,
+			IFNULL(m.real_name,m.member_name) real_name,
+			convert(c.invoice_amount/100, decimal(12,2)) invoice_amount,
+			o.order_status,
+			c.add_time,
+			c.complete_time,
+			c.company_name,
+			c.ein,
+			c.company_address,
+			c.phone,
+			c.bank_name,
+			c.bank_number,
+			c.category_name,
+			c.invoice_way,
+			<!--c.bill_to_email,-->
+			c.remark,
+			c.invoice_pdf_url,
+			c.invoice_imgs,
+			c.consumption_order_rela,
+			e.oem_code,
+			e.oem_name
+		FROM
+			t_e_consumption_invoice_order c
+		LEFT JOIN t_e_order o ON o.order_no = c.order_no
+		LEFT JOIN t_e_member_account m ON m.id = o.user_id
+		LEFT JOIN t_e_oem e ON e.oem_code=c.oem_code
+		<where>
+			<if test="orderNo != null and orderNo !=''">
+				and c.order_no like concat('%', #{orderNo},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount !=''">
+				and m.member_account like concat('%', #{memberAccount},'%')
+			</if>
+			<if test="memberName != null and memberName !=''">
+				and case when m.real_name is null or m.real_name = ''
+				then m.member_name like concat('%',#{memberName},'%')
+				else m.real_name like concat('%',#{memberName},'%') end
+			</if>
+		<!--	<if test="billToEmail != null and billToEmail !=''">
+				and c.bill_to_email like concat('%', #{billToEmail},'%')
+			</if>-->
+			<if test="orderStatus != null ">
+				and o.order_status  =#{orderStatus}
+			</if>
+			<if test="invoiceWay != null and invoiceWay != '' ">
+				and c.invoice_way  =#{invoiceWay}
+			</if>
+			<if test="startApplyTime != null and startApplyTime != '' and endApplyTime != '' and endApplyTime != null  ">
+				and c.add_time between #{startApplyTime} and #{endApplyTime}
+			</if>
+			<if test="startCompleteTime != null and startCompleteTime != '' and endCompleteTime != '' and endCompleteTime != null  ">
+				and c.complete_time between #{startCompleteTime} and #{endCompleteTime}
+			</if>
+			<if test="companyName != null and companyName !=''">
+				and c.company_name like concat('%', #{companyName},'%')
+			</if>
+			<if test="oemCode != null and oemCode !=''">
+				and c.oem_code = #{oemCode}
+			</if>
+		</where>
+		order by c.add_time desc
+	</select>
+
+	<!-- 查询消费开票订单列表 -->
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConsumptionInvoiceOrderPageVO" id="conInvOrderVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="add_time" property="addTime"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_pdf_url" property="invoicePdfUrl"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+	</resultMap>
+	<select id="findConsumptionInvoiceOrderList" resultMap="conInvOrderVoMap">
+		SELECT i.order_no, o.order_status, i.add_time, i.invoice_way, i.company_name, i.invoice_amount, i.invoice_pdf_url,i.invoice_imgs
+		FROM t_e_consumption_invoice_order i
+		LEFT JOIN t_e_order o ON o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} AND o.oem_code = #{oemCode}
+		ORDER BY i.add_time DESC
+	</select>
+
+	<!-- 查询消费开票订单详情 -->
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConsumptionInvoiceOrderDetailVO" id="conInvOrderDetailVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="phone" property="phone"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="consumption_order_rela" property="consumptionOrderRela"/>
+		<result column="rela_order_count" property="ralaOrderCount"/>
+		<result column="bill_to_email" property="billToEmail"/>
+		<result column="invoice_pdf_url" property="invoicePdfUrl"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	<select id="getDetailByOrderNo" resultMap="conInvOrderDetailVoMap">
+		SELECT i.order_no, o.order_status, i.invoice_amount, i.invoice_way, i.company_name, i.ein, i.invoice_pdf_url,i.invoice_imgs,
+				i.company_address, i.phone, i.bank_name, i.bank_number, i.consumption_order_rela, i.bill_to_email,i.remark,
+				(LENGTH(REPLACE(i.consumption_order_rela,',','--')) - LENGTH(i.consumption_order_rela))+1 AS rela_order_count,
+				i.recipient, i.recipient_phone, i.recipient_address, i.province_name, i.city_name, i.district_name
+		FROM t_e_consumption_invoice_order i
+		LEFT JOIN t_e_order o ON o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} AND o.oem_code = #{oemCode} AND i.order_no = #{orderNo}
+	</select>
+
+	<!-- 查询消费开票订单对应的消费订单列表 -->
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConsumptionRelaOrderVO" id="conRelaOrderVoMap">
+		<result column="add_time" property="addTime"/>
+		<result column="order_type" property="orderType"/>
+		<result column="consumption_amount" property="consumptionAmount"/>
+	</resultMap>
+	<select id="findConsumptionRelaOrderList" resultMap="conRelaOrderVoMap">
+		SELECT add_time, order_type, consumption_amount
+		FROM t_e_member_consumption_record
+		WHERE member_id = #{memberId} AND oem_code = #{oemCode} AND FIND_IN_SET(order_no, #{consumptionOrderRela})
+		ORDER BY add_time DESC
+	</select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.AgentProfitsRulesMapper">
+    <resultMap type="com.yuqian.itax.user.entity.AgentProfitsRulesEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="agent_type" property="agentType"/>
+			<result column="agent_id" property="agentId"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="membership_fee" property="membershipFee"/>
+			<result column="register_fee" property="registerFee"/>
+			<result column="invoice_fee" property="invoiceFee"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, agent_type, agent_id, agent_account, membership_fee, register_fee, invoice_fee,cancel_company_fee, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<select id="getAgentProfitsRulesEntityByAgentId" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_agent_profits_rules
+		where agent_id=#{agentId}
+	</select>
+
+	<select id="queryAgentProfitsRulesEntityByAgentIdAndAgentType" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_agent_profits_rules
+		where agent_id=#{agentId} and agent_type=#{agentType}
+	</select>
+	<select id="queryAgentProfitsRulesEntityByOemCodeAndAgentType" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_agent_profits_rules
+		<where>
+			 agent_type=#{agentType}
+			<if test="oemCode != null and oemCode.trim() != ''">
+				AND	oem_code=#{oemCode}
+			</if>
+		</where>
+	</select>
+</mapper>

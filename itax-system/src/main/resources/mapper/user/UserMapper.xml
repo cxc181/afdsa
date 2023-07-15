@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.UserMapper">
+    <resultMap type="com.yuqian.itax.user.entity.UserEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="username" property="username"/>
+			<result column="password" property="password"/>
+			<result column="nickname" property="nickname"/>
+			<result column="slat" property="slat"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="oem_name" property="oemName"/>
+			<result column="status" property="status"/>
+			<result column="binding_account" property="bindingAccount"/>
+			<result column="account_type" property="accountType"/>
+			<result column="platform_type" property="platformType"/>
+			<result column="park_id" property="parkId"/>
+			<result column="pay_password" property="payPassword"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, username, password,nickname, slat, oem_code,oem_name, status, binding_account, account_type,platform_type,park_id, pay_password, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!--代理商列表查询 start -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.AgentPageInfoVO" id="AgentPageInfoEntityMap">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="phone" property="phone"/>
+		<result column="nickname" property="nickname"/>
+		<result column="platform_type" property="platformType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="binding_account" property="bindingAccount"/>
+		<result column="status" property="status"/>
+		<result column="oem_name" property="oemName"/>
+
+	</resultMap>
+	<select id="getAgentInfoList" resultMap="AgentPageInfoEntityMap" >
+		select 		u.id, u.status, u.username, ue.phone,u.nickname,u.platform_type,u.binding_account,u.add_time,u.oem_name
+		from sys_e_user u
+		INNER JOIN sys_e_user_extend  ue on u.id=ue.user_id
+		LEFT JOIN t_e_user_rela ur ON ur.user_id=u.id  and ur.user_class!=5
+		<where>
+			u.platform_type in (4,5) and u.account_type=1
+			and u.id!=#{userId}
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and u.oem_code like concat('%',#{oemCode},'%')
+			</if>
+			<if test="username != null and username != ''">
+				and u.username like concat('%',#{username},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and ue.phone like concat('%',#{phone},'%')
+			</if>
+			<if test="nickname != null and nickname != ''">
+				and u.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="platformType != null ">
+				and u.platform_type =#{platformType}
+			</if>
+			<if test="bindingAccount != null and bindingAccount != ''">
+				and u.binding_account like concat('%',#{bindingAccount},'%')
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and u.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="status != null ">
+				and u.status = #{status}
+			</if>
+		</where>
+		order by u.add_time desc
+
+	</select>
+	<!--代理商列表查询 end -->
+
+
+	<sql id="user_Columns">
+		u.id,  u.username, ue.phone,u.nickname,u.account_type,u.binding_account,u.add_time,ue.parent_user_account,u.oem_name
+    </sql>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.UserPageInfoVO" id="UserPageInfoEntityMap">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="phone" property="phone"/>
+		<result column="nickname" property="nickname"/>
+		<result column="role_name" property="roleName"/>
+		<result column="role_id" property="roleId"/>
+		<result column="org_name" property="orgName"/>
+		<result column="org_id" property="orgId"/>
+		<result column="add_time" property="addTime"/>
+
+	</resultMap>
+	<select id="getUserInfoList" resultMap="UserPageInfoEntityMap" >
+		select
+		u.id,
+		u.username,
+		u.account_type,
+		ue.phone,
+		u.nickname,
+		o.org_name,
+		r.role_name,
+		r.id role_id,
+		o.id org_id,
+		u.add_time,
+		u.status
+		from sys_e_user u
+		INNER JOIN sys_e_user_extend  ue on u.id=ue.user_id
+		LEFT JOIN sys_r_user_role ur on ur.user_id=u.id
+		LEFT JOIN sys_e_roles r on r.id=ur.role_id
+		LEFT JOIN sys_r_user_org uo on uo.user_id=u.id
+		LEFT JOIN sys_e_org o on o.id=uo.org_id
+		LEFT JOIN  t_e_user_rela ure ON ure.user_id=u.id and ure.user_class!=5
+
+		<where>
+			<if test="tree != null and tree != ''">
+				and ure.user_tree like concat(#{tree},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and u.oem_code =#{oemCode}
+			</if>
+			<if test="username != null and username != ''">
+				and u.username like concat('%',#{username},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and ue.phone like concat('%',#{phone},'%')
+			</if>
+			<if test="nickname != null and nickname != ''">
+				and u.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and r.role_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="orgId != null ">
+				and o.id=#{orgId}
+			</if>
+			<if test="status != null ">
+				and u.status=#{status}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and u.add_time between #{startDate} and #{endDate}
+			</if>
+		</where>
+		order by u.add_time desc
+
+	</select>
+
+
+	<select id="getPartnerByCityCode" resultMap="baseEntityMap">
+		select u.* from sys_e_user u
+		LEFT JOIN sys_r_user_city uc on u.id=uc.user_id
+		<where>
+		 u.platform_type='4' and
+		 u.status !=2  and
+		 u.oem_code=#{oemCode} and
+		 uc.city_code=#{cityCode}
+		</where>
+	</select>
+	<select id="getCityAgentByCityCode" resultMap="baseEntityMap">
+		select u.* from sys_e_user u
+		LEFT JOIN sys_r_user_city uc on u.id=uc.user_id
+		<where>
+			u.platform_type='5' and
+			u.status !=2  and
+			u.oem_code=#{oemCode} and
+			uc.city_code=#{cityCode}
+		</where>
+	</select>
+
+
+	 <select id="getOemAccount" resultMap="baseEntityMap">
+		select * from sys_e_user
+		<where>
+			account_type='1' and platform_type='2'
+			<if test="oemCode != null and oemCode != ''">
+				and oem_code =#{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode == ''">
+				and (oem_code is null or oem_code='')
+			</if>
+		</where>
+	 </select>
+
+	<select id="getParkByParkId" resultMap="baseEntityMap">
+		select  u.* from sys_e_user u
+		<where>
+			u.account_type=1 and
+			u.platform_type=3 and
+			u.park_id=#{parkId}
+		</where>
+	</select>
+
+	<select id="getParkAccountByOrgId" resultMap="baseEntityMap">
+		select  u.* from sys_e_user u
+		LEFT JOIN  sys_r_user_org  uo ON uo.user_id=u.id
+		LEFT JOIN sys_e_org o ON o.id=uo.org_id
+		<where>
+			u.account_type=1 and
+			u.platform_type=3 and
+			o.id=#{orgId}
+		</where>
+	</select>
+	<select id="getAgentAccount" resultMap="baseEntityMap">
+		select u.* from
+		sys_e_user u
+		LEFT JOIN sys_r_user_org uo ON uo.user_id=u.id
+		LEFT JOIN sys_e_org o on o.id=uo.org_id
+		<where>
+		o.id=#{orgId} and
+		u.account_type=1 and
+		u.platform_type=#{platformType} and
+		u.oem_code=#{oemCode}
+		</where>
+	</select>
+
+	<select id="getUserByPlatformTypeAndAccountType" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from sys_e_user
+		<where>
+			account_type=#{accountType} and
+			platform_type=#{platformType}
+			<if test="oemCode != null and oemCode != ''">
+				and oem_code =#{oemCode}
+			</if>
+		</where>
+	</select>
+	 <select id="getUserByUserName" resultMap="baseEntityMap">
+		 select * from sys_e_user
+		 <where>
+			 username=#{username}
+			 <if test="oemCode != null and oemCode.trim() != ''">
+				 and oem_code =#{oemCode}
+			 </if>
+			 <if test="oemCode == null or oemCode.trim() == ''">
+				 and (oem_code is null or oem_code='')
+			 </if>
+		 </where>
+	 </select>
+
+	<select id="getUserByNickname" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from sys_e_user
+		where nickname=#{nickname} and
+		oem_code=#{oemCode}
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CustomerServiceWorkVO" id="CustomerServiceMap">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="nickname" property="nickname"/>
+	</resultMap>
+
+	<select id="getCustomerServiceByOemCode" resultMap="CustomerServiceMap">
+		select id,username, nickname from sys_e_user
+		where
+			account_type = 2 and status = 1
+			<if test="id != null ">
+				and id != #{id}
+			</if>
+			<choose>
+				<when test="oemCode != null and oemCode.trim() != ''">
+					and oem_code = #{oemCode}
+				</when>
+				<otherwise>
+					and oem_code is null
+				</otherwise>
+			</choose>
+	</select>
+
+	<select id="getOrgAdminAccount" resultMap="baseEntityMap">
+		SELECT AU.*
+		FROM SYS_E_USER U
+		LEFT JOIN SYS_R_USER_ORG UO ON UO.USER_ID=U.ID
+		LEFT JOIN SYS_R_USER_ORG UOT ON UOT.ORG_ID=UO.ORG_ID
+
+		LEFT JOIN  SYS_E_USER AU ON AU.ID=UOT.USER_ID
+		WHERE  AU.ACCOUNT_TYPE=1 AND
+		u.id=#{userId}
+	</select>
+
+	<select id="qeruyUserByAccountAndOemCode" resultMap="baseEntityMap">
+		SELECT *
+		FROM SYS_E_USER U
+		<where>
+			u.username = #{account}
+			<choose>
+				<when test="oemCode != null and oemCode.trim() != ''">
+					and u.oem_code=#{oemCode}
+				</when>
+				<otherwise>
+					and (u.oem_code is null or u.oem_code='')
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.UserAndExtendVO" id="userAndExtendVOMap">
+
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="nickname" property="nickname"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="phone" property="phone"/>
+	</resultMap>
+
+	<select id="qeruyUserByUsernameAndOemCode" resultMap="userAndExtendVOMap">
+		SELECT *
+		FROM SYS_E_USER U ,sys_e_user_extend ue
+		<where>
+		u.id=ue.user_id and u.status=1
+		<if test="oemCode != null and oemCode.trim() != ''">
+			and u.oem_code=#{oemCode}
+		</if>
+		<if test="oemCode == null or oemCode.trim() == ''">
+			and (u.oem_code is null or u.oem_code='')
+		</if>
+		<if test="username != null and username.trim() != ''">
+			and u.username=#{username}
+		</if>
+		<!--仅支持oem机构管理员手机号查询 -->
+		<if test="userPhone != null and userPhone.trim() != ''">
+			and ue.phone=#{userPhone} and u.platform_type = 2 and u.account_type = 1
+		</if>
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.AccountVO" id="accountVOMap">
+		<id column="id" property="bindAccountId"/>
+		<result column="username" property="account"/>
+		<result column="platform_type" property="bindAccountLevel"/>
+		<result column="nickname" property="name"/>
+		<result column="phone" property="phone"/>
+
+	</resultMap>
+	<select id="queryAccount" resultMap="accountVOMap">
+		SELECT
+		u.id,
+		u.username,
+		u.platform_type,
+		u.nickname,
+		ue.phone
+		FROM  sys_e_user u
+		INNER JOIN sys_e_user_extend ue ON ue.user_id = u.id
+		<where>
+			u.platform_type in (4,5)
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and u.oem_code=#{oemCode}
+			</if>
+			<if test="oemCode == null or oemCode.trim() == ''">
+				and (u.oem_code is null or u.oem_code='')
+			</if>
+			<if test="phone != null and phone.trim() != ''">
+				and ue.phone=#{phone}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryAccountByOemCodeAndAccountTypeAndPlatformType" resultMap="baseEntityMap">
+		SELECT
+		id
+		FROM  sys_e_user
+		<where>
+			status = 1
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code=#{oemCode}
+			</if>
+			<if test="accountType != null ">
+				and account_type=#{accountType}
+			</if>
+			<if test="platformType != null ">
+				and platform_type=#{platformType}
+			</if>
+			<if test="id != null ">
+				and id != #{id}
+			</if>
+		</where>
+	</select>
+</mapper>

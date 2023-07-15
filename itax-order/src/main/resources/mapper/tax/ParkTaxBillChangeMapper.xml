@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.ParkTaxBillChangeMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.ParkTaxBillChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_bills_id" property="parkBillsId"/>
+			<result column="tax_bill_year" property="taxBillYear"/>
+			<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+			<result column="park_id" property="parkId"/>
+			<result column="invoice_company_number" property="invoiceCompanyNumber"/>
+			<result column="uploading_company_number" property="uploadingCompanyNumber"/>
+			<result column="already_tax_money" property="alreadyTaxMoney"/>
+			<result column="should_tax_money" property="shouldTaxMoney"/>
+			<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+			<result column="supplement_tax_money" property="supplementTaxMoney"/>
+			<result column="should_upload_vat_vouchers_company_number" property="shouldUploadVatVouchersCompanyNumber"/>
+			<result column="should_upload_iit_vouchers_company_number" property="shouldUploadIitVouchersCompanyNumber"/>
+			<result column="already_upload_vat_vouchers_company_number" property="alreadyUploadVatVouchersCompanyNumber"/>
+			<result column="already_upload_iit_vouchers_company_number" property="alreadyUploadIitVouchersCompanyNumber"/>
+			<result column="vouchers_status" property="vouchersStatus"/>
+			<result column="tax_bill_status" property="taxBillStatus"/>
+			<result column="cur_file_url" property="curFileUrl"/>
+			<result column="cancellation_company" property="cancellationCompany"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_bills_id, tax_bill_year, tax_bill_seasonal, park_id, invoice_company_number, uploading_company_number, already_tax_money, should_tax_money, recoverable_tax_money, supplement_tax_money, should_upload_vat_vouchers_company_number, should_upload_iit_vouchers_company_number, already_upload_vat_vouchers_company_number, already_upload_iit_vouchers_company_number, vouchers_status, tax_bill_status, cur_file_url, add_time, add_user, update_time, update_user, remark, cancellation_company
+    </sql>
+
+	<select id="queryParkTaxBillChange" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_park_tax_bill_change
+		where tax_bill_year=#{taxBillYear} and tax_bill_seasonal=#{taxBillSeasonal} and park_id=#{parkId}
+		order by add_time desc
+	</select>
+</mapper>

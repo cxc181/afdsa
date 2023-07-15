@@ -1,0 +1,1190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberCompanyMapper">
+	<resultMap type="com.yuqian.itax.user.entity.MemberCompanyEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+		<result column="member_id" property="memberId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="business_scope" property="businessScope"/>
+		<result column="industry_id" property="industryId"/>
+		<result column="industry" property="industry"/>
+		<result column="business_address" property="businessAddress"/>
+		<result column="business_license" property="businessLicense"/>
+		<result column="end_time" property="endTime"/>
+		<result column="status" property="status"/>
+		<result column="annual_fee" property="annualFee"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="park_id" property="parkId"/>
+		<result column="is_top_up" property="isTopUp"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="operator_email" property="operatorEmail"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="id_card_number" property="idCardNumber"/>
+		<result column="id_card_front" property="idCardFront"/>
+		<result column="id_card_reverse" property="idCardReverse"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="is_send_notice" property="isSendNotice"/>
+		<result column="cancel_remark" property="cancelRemark"/>
+		<result column="tax_reg_date" property="taxRegDate"/>
+		<result column="registered_capital" property="approvedTurnover"/>
+		<result column="approved_turnover" property="approvedTurnover"/>
+		<result column="user_agreement_imgs" property="userAgreementImgs"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyVo" id="voMap">
+		<result column="id" property="id"/>
+		<result column="member_id" property="memberId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="end_time" property="endTime"/>
+		<result column="status" property="status"/>
+		<result column="is_top_up" property="isTopUp"/>
+		<result column="park_id" property="parkId"/>
+		<result column="ein" property="ein"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="use_invoice_amount" property="useInvoiceAmount"/>
+		<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="member_account" property="memberAccount"/>
+        <result column="oem_name" property="oemName"/>
+        <result column="oem_code" property="oemCode"/>
+        <result column="add_time" property="addTime"/>
+        <result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+        <result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+        <result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+        <result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+        <result column="cate_id" property="cateId"/>
+        <result column="operator_name" property="operatorName"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="hosting_status" property="hostingStatus"/>
+        <result column="order_no" property="orderNo"/>
+		<result column="tax_disc_code" property="taxDiscCode"/>
+		<result column="tax_disc_type" property="taxDiscType"/>
+		<result column="face_amount" property="faceAmount"/>
+		<result column="face_amount_type" property="faceAmountType"/>
+		<result column="channel" property="channel"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="tax_reg_date" property="taxRegDate"/>
+		<result column="income_levy_type" property="incomeLevyType" />
+		<result column="is_exist_renew_product" property="isExistRenewProduct"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+		<result column="userAgreementAddr" property="userAgreementAddr"/>
+		<result column="renew_product_status" property="renewProductStatus"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyDetailVo" id="voDetailMap">
+		<result column="id" property="id"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="ein" property="ein"/>
+		<result column="company_name" property="companyName"/>
+		<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+		<result column="company_type" property="companyType"/>
+		<result column="company_type_name" property="companyTypeName"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+		<result column="business_license" property="businessLicense"/>
+		<result column="business_license_copy" property="businessLicenseCopy"/>
+		<result column="add_time" property="addTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="reset_date" property="resetDate"/>
+		<result column="use_invoice_amount_year" property="useInvoiceAmountYear"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="status" property="status"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="cancel_credentials" property="cancelCredentials"/>
+		<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+		<result column="cancel_remark" property="cancelRemark"/>
+		<result column="registered_capital" property="registeredCapital"/>
+		<result column="approved_turnover" property="approvedTurnover"/>
+		<result column="is_exist_renew_product" property="isExistRenewProduct"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+		<result column="user_agreement_imgs" property="userAgreementImgs"/>
+		<result column="renew_product_status" property="renewProductStatus"/>
+		<result column="customer_service_tel" property="customerServiceTel"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberComVO" id="comInvoiceStatisticMap">
+		<result column="id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="status" property="status"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="year_invoice_amount" property="yearInvoiceAmount"/>
+		<result column="month_invoice_amount" property="monthInvoiceAmount"/>
+	</resultMap>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyCertListVo" id="voCertMap">
+		<result column="resources_type" property="resourcesType"/>
+		<result column="resources_type_name" property="resourcesTypeName"/>
+		<result column="address" property="address"/>
+		<result column="is_in_park" property="isInPark"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyCertInParkVo" id="voCertInParkMap">
+		<result column="id" property="id"/>
+		<result column="resources_type" property="resourcesType"/>
+		<result column="resources_type_name" property="resourcesTypeName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyListApiVO" id="companyApiVo">
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="end_time" property="endTime"/>
+		<result column="member_id" property="userId"/>
+		<result column="operator_tel" property="regPhone"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="park_id" property="parkId"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="park_name" property="parkName"/>
+		<result column="status" property="status"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="use_invoice_amount" property="useInvoiceAmount"/>
+		<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+		<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+	</resultMap>
+
+	<sql id="Base_Columns">
+			id, member_id, company_name, ein, business_scope, industry_id, industry, business_address, business_license, end_time, status, annual_fee, oem_code,
+			park_id,is_top_up, add_time, add_user, update_time, update_user, remark, operator_name, company_type, operator_tel, operator_email, agent_account, id_card_number,
+			id_card_front, id_card_reverse ,is_send_notice,cancel_remark,user_agreement_imgs,taxpayer_type
+	</sql>
+
+	<select id="listMemberCompany" resultMap="voMap">
+        SELECT
+        c.id, c.member_id, c.company_name, c.company_type, c.operator_name, c.end_time, c.status, c.is_top_up,
+        c.order_no, r.id record_id,
+        p.id park_id, p.park_name, p.park_code, tp.total_invoice_amount, r.use_invoice_amount,
+		IF(tp.total_invoice_amount - IFNULL(cirsv.use_total_invoice_amount, 0) &lt; 0, 0, tp.total_invoice_amount - IFNULL(cirsv.use_total_invoice_amount, 0)) remain_invoice_amount,
+        tp.VAT_breaks_amount,tp.VAT_breaks_cycle,tp.income_tax_breaks_amount,tp.income_tax_breaks_cycle,
+		(CASE
+		WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ > ]]> 30 THEN 1
+		WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ < ]]> 0 THEN 3
+		ELSE 2
+		END) `overdue_status`,
+		(case
+		when ifnull(t.renew_product_id, 0) = 0 then 0
+		else 1 end) is_exist_renew_product,
+		t.status renew_product_status,
+		c.taxpayer_type
+        FROM t_e_member_company c
+        LEFT JOIN t_e_company_invoice_record r ON c.id = r.company_id AND CASE WHEN c.overdue_status != 3 THEN r.end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+        LEFT JOIN t_e_park p ON p.id = c.park_id
+        LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id and tp.company_type = c.company_type and tp.taxpayer_type = c.taxpayer_type
+        LEFT JOIN company_invoice_record_statistics_view cirsv ON cirsv.user_id = c.member_id and cirsv.company_id = c.id
+		LEFT JOIN (SELECT pro.id renew_product_id, pro.prod_type, pro.oem_code, pro.status
+				FROM t_e_product pro
+				WHERE pro.status in(1,3)) t
+		ON t.oem_code = c.`oem_code` AND t.prod_type = (CASE WHEN c.company_type = 1 THEN 16 WHEN c.company_type = 2 THEN 18 WHEN c.company_type = 3 THEN 19 WHEN c.company_type = 4 THEN 20 END)
+        WHERE c.member_id = #{memberId} and c.oem_code = #{oemCode}
+        <if test="type != null">
+			<choose>
+				<when test="type == 1">
+					and c.status != 4 and c.status != 6
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		GROUP BY r.company_id HAVING r.id = min(r.id)
+		ORDER BY c.add_time DESC
+	</select>
+
+	<!-- 佣金钱包-提现-开票主体企业列表查询  add by Kaven 2020-06-23 -->
+	<select id="listMemberCompanyForCommission" resultMap="voMap">
+        SELECT DISTINCT
+        ( c.id ),
+        c.member_id,
+        c.company_name,
+        c.company_type,
+        c.operator_name,
+        c.end_time,
+        c.STATUS,
+        c.is_top_up,
+        c.order_no,
+        ic.category_name,
+        p.id park_id,
+        p.park_name,
+        p.park_code,
+        r.total_invoice_amount,
+        r.use_invoice_amount,
+        r.remain_invoice_amount,
+        tp.VAT_breaks_amount,
+        tp.VAT_breaks_cycle,
+        tp.income_tax_breaks_amount,
+		tp.income_tax_breaks_cycle,
+		r.id record_id,
+		(CASE
+		WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ > ]]> 30 THEN 1
+		WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ < ]]> 0 THEN 3
+		ELSE 2
+		END) `overdue_status`
+		FROM
+		t_e_member_company c
+		LEFT JOIN t_e_company_invoice_record r ON c.id = r.company_id
+			AND CASE WHEN c.overdue_status != 3 THEN r.end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+			LEFT JOIN t_e_park p ON p.id = c.park_id
+			LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id
+			AND tp.company_type = c.company_type AND tp.taxpayer_type = c.taxpayer_type
+			LEFT JOIN t_e_company_invoice_category ic ON ic.company_id = c.id
+		<where>
+			c.member_id = #{userId} and c.status != 4
+			AND c.oem_code = #{oemCode}
+			AND ic.category_base_id IN
+			<foreach collection="categoryBaseIds" item="categoryBaseId" index="index" open="(" close=")" separator=",">
+				#{categoryBaseId}
+			</foreach>
+		</where>
+		GROUP BY c.`id` HAVING r.id = min(r.id)
+		ORDER BY c.add_time DESC
+	</select>
+
+	<select id="getMemberCompanyDetail" resultMap="voDetailMap">
+		SELECT
+			c.id, c.operator_name, c.ein,
+			c.operator_tel member_phone,
+		    c.company_name,c.cancel_credentials,c.user_agreement_imgs,
+			(tp.total_invoice_amount - cirsv.use_total_invoice_amount) remain_invoice_amount,
+			c.company_type,
+			CASE c.company_type
+				WHEN 1 THEN '个体户'
+				WHEN 2 THEN '个人独资企业'
+				WHEN 3 THEN '有限合伙公司'
+				WHEN 4 THEN '有限责任公司'
+				END company_type_name,
+			p.park_name,
+			p.park_code,
+			tp.VAT_breaks_amount,
+			tp.VAT_breaks_cycle,
+			tp.income_tax_breaks_amount,
+			tp.income_tax_breaks_cycle,
+			c.business_license,
+			c.business_license_copy,
+		    c.add_time,
+		    cirsv.use_invoice_amount_year,
+		    c.end_time,
+		    cirsv.end_time AS reset_date,
+		    tp.total_invoice_amount,
+		    c.status,
+		    r.id record_id,
+		    c.cancel_remark,
+		    c.registered_capital,
+		    c.approved_turnover,
+		    (CASE
+			WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ > ]]> 30 THEN 1
+			WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ < ]]> 0 THEN 3
+			ELSE 2
+			END) `overdue_status`,
+			(CASE
+			WHEN IFNULL(t.renew_product_id, 0) = 0 THEN 0
+			ELSE 1 END) is_exist_renew_product,
+			t.status renew_product_status,
+			c.taxpayer_type,
+			oem.customer_service_tel
+		FROM t_e_member_company c
+		INNER JOIN t_e_oem oem ON oem.oem_code = c.oem_code
+		LEFT JOIN t_e_member_account m ON m.id = c.member_id
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id and tp.company_type = c.company_type and c.taxpayer_type = tp.taxpayer_type
+		LEFT JOIN t_e_company_invoice_record r ON r.company_id = c.id AND CASE WHEN c.overdue_status != 3 THEN r.end_time >=  DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+		LEFT JOIN company_invoice_record_statistics_view cirsv ON cirsv.user_id = c.member_id and cirsv.company_id = c.id
+		LEFT JOIN (SELECT pro.id renew_product_id, pro.prod_type, pro.oem_code, pro.status
+				FROM t_e_product pro
+				WHERE pro.status in(1,3)) t
+		ON t.oem_code = c.`oem_code` AND t.prod_type = (CASE WHEN c.company_type = 1 THEN 16 WHEN c.company_type = 2 THEN 18 WHEN c.company_type = 3 THEN 19 WHEN c.company_type = 4 THEN 20 END)
+		WHERE c.member_id = #{memberId} and c.id = #{id} and c.oem_code = #{oemCode}
+		GROUP BY r.company_id HAVING r.id = min(r.id)
+	</select>
+
+	<!-- 修改过期企业的状态 -->
+	<update id="updateOverdueCompanyStatus">
+		UPDATE
+		t_e_member_company mc
+		SET
+		mc.`overdue_status` = 3,
+		mc.`is_send_notice` = 0
+		WHERE mc.`end_time` <![CDATA[ < ]]> DATE_FORMAT(NOW(), '%Y-%m-%d')
+		AND STATUS != 4
+		AND mc.`overdue_status` != 3
+	</update>
+
+	<select id="listMemberCompanyInfo" parameterType="com.yuqian.itax.user.entity.query.MemberCompanyQuery" resultMap="voMap">
+		SELECT
+			c.id, a.member_name,a.real_name, a.member_phone, c.company_name,a.member_account, c.company_type, c.add_time, c.end_time,c.operator_name,
+			p.park_name,
+		    CONVERT (TP.total_invoice_amount / 100,DECIMAL (12, 2)) total_invoice_amount,
+			CONVERT (r.use_total_invoice_amount / 100,DECIMAL (12, 2)) use_invoice_amount,
+			CONVERT ((TP.total_invoice_amount- r.use_total_invoice_amount) / 100,DECIMAL (12, 2)) remain_invoice_amount,
+		    oem.oem_name,
+			c.status, oem.oem_code,c.ein,c.taxpayer_type,
+			IFNULL(cth.status,0) hosting_status,cth.tax_disc_type,cth.tax_disc_code,cth.face_amount_type,cth.face_amount,cth.channel,c.overdue_status overdue,
+			c.tax_reg_date,p.income_levy_type,
+			(select CONCAT('https://oss-itax-public.inabei.cn/',a.template_html_url,'?parkId=',t.park_id,"&amp;oemCode=",p.oem_code,'&amp;companyId=',c.id,'&amp;memberId=',c.member_id,'&amp;type=',(select dict_value from sys_e_dictionary where dict_code = 'agreement_template_type'))
+					from t_e_product p,t_r_park_agreement_template t ,t_e_agreement_template a where t.product_id = p.id and t.agreement_template_id = a.id and a.template_type=2
+					and p.company_type = c.company_type and p.prod_type = c.company_type and  t.park_id =c.park_id and p.oem_code= c.oem_code order by `status` limit 1) as userAgreementAddr
+		FROM
+			t_e_member_company c
+		LEFT JOIN company_invoice_record_statistics_view r ON c.id = r.company_id
+		LEFT JOIN t_e_member_account a ON a.id = c.member_id
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_oem oem ON oem.oem_code = c.oem_code
+		LEFT JOIN t_e_tax_policy TP ON TP.PARK_ID=C.PARK_ID AND TP.company_type=C.company_type AND TP.taxpayer_type = c.taxpayer_type
+		LEFT JOIN t_e_company_tax_hosting cth ON cth.company_id=c.id
+		<where>
+			<if test="taxpayerType != null ">
+				and c.taxpayer_type = #{taxpayerType}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and c.oem_code = #{oemCode}
+			</if>
+			<if test="likeMemberPhone != null and likeMemberPhone.trim() != ''">
+				and a.member_phone like concat('%',#{likeMemberPhone},'%')
+			</if>
+			<if test="realName != null and realName.trim() != ''">
+				and a.real_name like concat('%',#{realName},'%')
+			</if>
+			<if test="likeCompName != null and likeCompName.trim() != ''">
+				and c.company_name like concat('%',#{likeCompName},'%')
+			</if>
+			<if test="operatorName != null and operatorName.trim() != ''">
+				and c.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="companyType != null">
+				and c.company_type = #{companyType}
+			</if>
+			<if test="ein != null and ein.trim() != ''">
+				and c.ein like concat('%',#{ein},'%')
+			</if>
+			<if test="parkId != null">
+				and c.park_id = #{parkId}
+			</if>
+			<if test="addTimeBeg != null">
+				and c.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and c.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="startTaxRegDate != null  and startTaxRegDate.trim() != ''">
+				and c.tax_reg_date >= #{startTaxRegDate}
+			</if>
+			<if test="endTaxRegDate != null  and endTaxRegDate.trim() != ''">
+				and c.tax_reg_date &lt;= #{endTaxRegDate}
+			</if>
+			<if test="companyStatus != null">
+				<choose>
+					<when test="companyStatus == 1">
+						and c.status between 1 and 3
+					</when>
+					<when test="companyStatus == 2">
+						and c.status = 2
+					</when>
+					<when test="companyStatus == 3">
+						and c.status = 4
+					</when>
+					<otherwise>
+						and c.status = #{companyStatus}
+					</otherwise>
+				</choose>
+			</if>
+			<if test="overdue != null">
+				and c.overdue_status=#{overdue}
+			</if>
+			<if test="likeOemName != null and likeOemName.trim() != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="hostingStatus != null and hostingStatus==1 ">
+				and cth.status =1
+			</if>
+			<if test=" hostingStatus != null and hostingStatus!=1 ">
+				and (cth.status != 1 or cth.status is  null)
+			</if>
+		</where>
+		GROUP BY c.id
+		ORDER BY c.add_time DESC
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyDetailH5VO" id="H5VOMap">
+		<result column="member_id" property="memberId"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="id_card_number"  property="idCardNumber"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="sign_img" property="sign"/>
+	</resultMap>
+	<select id="getCompanyInfoH5ById" resultMap="H5VOMap">
+		SELECT
+			MC.member_id,
+			mc.operator_name,
+			mc.id_card_number,
+			mc.operator_tel,
+			mc.order_no,
+			r.sign_img
+		FROM
+			t_e_member_company mc
+		LEFT JOIN t_e_register_order r ON r.order_no = mc.order_no
+		WHERE
+			mc.id = #{id}
+	</select>
+	<update id="updateStatus">
+		update
+			t_e_member_company
+		set
+			status = #{status},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			id = #{id}
+	</update>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyDetailAdminVO" id="MemberCompanyDetailAdminVO">
+		<id column="id" property="id"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="company_type" property="companyType"/>
+		<result column="park_name" property="parkName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="operator_email" property="operatorEmail"/>
+		<result column="status" property="status"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="use_invoice_amount" property="useInvoiceAmount"/>
+		<result column="remain_invoice_amount" property="remainInvoiceAmount"/>
+		<result column="end_time" property="endTime"/>
+		<result column="industry_id" property="industryId"/>
+		<result column="industry" property="industry"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="business_scope" property="businessScope"/>
+		<result column="business_address" property="businessAddress"/>
+		<result column="business_license" property="businessLicense"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="business_license_copy" property="businessLicenseCopy"/>
+		<result column="cancel_credentials" property="cancelCredentials"/>
+		<result column="id_card_number" property="idCardNumber"/>
+		<result column="tax_reg_date" property="taxRegDate"/>
+		<result column="cancel_remark" property="cancelRemark"/>
+		<result column="registered_capital" property="registeredCapital"/>
+		<result column="approved_turnover" property="approvedTurnover"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+		<result column="user_agreement_imgs" property="userAgreementImgs"/>
+	</resultMap>
+
+	<select id="queryDetailById" resultMap="MemberCompanyDetailAdminVO">
+		SELECT
+			c.id, c.company_name,c.ein, c.company_type, p.park_name, c.add_time, a.member_phone, c.operator_name, c.operator_tel, c.operator_email, c.status,
+			TP.total_invoice_amount, r.use_total_invoice_amount as use_invoice_amount, (TP.total_invoice_amount- r.use_total_invoice_amount) as remain_invoice_amount,
+			c.end_time, c.industry_id, c.industry, c.agent_account,c.cancel_remark,
+			c.business_scope, c.business_address, c.business_license, c.oem_code, oem.oem_name, c.business_license_copy, c.overdue_status,c.cancel_credentials,c.id_card_number,
+			c.registered_capital,approved_turnover,c.taxpayer_type,tax_reg_date,c.user_agreement_imgs
+		FROM
+			t_e_member_company c
+		LEFT JOIN company_invoice_record_statistics_view r ON c.id = r.company_id
+		LEFT JOIN t_e_member_account a ON a.id = c.member_id
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_oem oem ON oem.oem_code = c.oem_code
+		LEFT JOIN t_e_tax_policy TP ON TP.PARK_ID=C.PARK_ID AND TP.company_type=C.company_type AND TP.taxpayer_type = c.taxpayer_type
+		where
+			c.id = #{id}
+		GROUP BY r.company_id
+
+	</select>
+
+	<select id="allMemberCompanyList" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM
+			t_e_member_company
+		WHERE member_id = #{memberId} and oem_code = #{oemCode}
+		ORDER BY add_time DESC
+	</select>
+
+	<select id="getMemberCompanyByIdCard" resultMap="voMap">
+		SELECT DISTINCT
+		c.id, c.member_id, c.company_name, c.company_type, c.operator_name, c.end_time, c.status, c.is_top_up,c.park_id,c.ein,
+		tp.total_invoice_amount, sv.use_invoice_amount_year , tp.total_invoice_amount -sv.use_total_invoice_amount remain_invoice_amount, c.oem_code, cate.id cate_id,cth.status hosting_status
+		FROM t_e_member_company c
+		inner join company_invoice_record_statistics_view sv ON  sv.company_id = c.id
+		inner join t_e_company_invoice_category cate on c.id = cate.company_id
+		inner join t_e_tax_rules_config config on config.park_id = c.park_id and config.company_type = c.company_type and tax_type = 2
+		LEFT JOIN t_e_company_tax_hosting cth on cth.company_id=c.id
+		inner JOIN  t_e_tax_policy tp on tp.park_id=c.park_id and tp.taxpayer_type = c.taxpayer_type
+		WHERE
+		c.id_card_number = #{idCardNumber} and c.oem_code = #{oemCode}
+		<if test="status != null">
+			and c.status = #{status}
+		</if>
+		<if test="remainInvoiceAmount != null">
+			AND tp.total_invoice_amount -sv.use_total_invoice_amount <![CDATA[>=]]> #{remainInvoiceAmount}
+		</if>
+		<if test="categoryBaseId != null ">
+			and cate.category_base_id = #{categoryBaseId}
+		</if>
+		<if test="invoiceCompanyName != null and invoiceCompanyName.trim() != ''">
+			and c.company_name = #{invoiceCompanyName}
+		</if>
+		<if test="vatFeeRate != null">
+			and config.rate = #{vatFeeRate}
+		</if>
+		<if test="orderBy != null and orderBy.trim() != ''">
+			ORDER BY cth.`status`  ${orderBy}
+		</if>
+	</select>
+	<select id="countMemberCompanyByIdCard" resultType="int">
+		SELECT
+			count(1)
+		FROM
+			t_e_member_company c
+			<if test="remainInvoiceAmount != null">
+				inner join t_e_company_invoice_record r ON c.id = r.company_id
+				inner join company_invoice_record_statistics_view sv ON  sv.company_id = c.id
+				inner join t_e_tax_policy p ON p.`park_id` = c.`park_id` and p.taxpayer_type = c.taxpayer_type
+			</if>
+			<if test="vatFeeRate != null">
+				inner join t_e_tax_rules_config config on config.park_id = c.park_id and config.company_type = c.company_type and tax_type = 2
+			</if>
+		WHERE
+			c.id_card_number = #{idCardNumber} and c.oem_code = #{oemCode}
+			<if test="status != null">
+				and c.status = #{status}
+			</if>
+			<if test="remainInvoiceAmount != null">
+				and p.total_invoice_amount -sv.use_total_invoice_amount >= #{remainInvoiceAmount}
+			</if>
+			<if test="invoiceCompanyName != null and invoiceCompanyName.trim() != ''">
+				and c.company_name = #{invoiceCompanyName}
+			</if>
+			<if test="vatFeeRate != null">
+				and config.rate = #{vatFeeRate}
+			</if>
+			<if test="remainInvoiceAmount != null">
+				and r.id in (SELECT id FROM t_e_company_invoice_record WHERE end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') GROUP BY company_id HAVING id = min(id))
+			</if>
+	</select>
+
+	<select id="getMemberCompanyCertList" resultMap="voCertMap">
+		SELECT
+			cra.resources_type,
+			CASE cra.resources_type
+				WHEN 1 THEN '公章'
+				WHEN 4 THEN '营业执照正本'
+				WHEN 5 THEN '营业执照副本'
+				WHEN 6 THEN '发票章'
+				END resources_type_name,
+			cra.address,
+			cra.is_in_park
+		FROM t_e_member_company c
+		LEFT JOIN t_e_company_resources_address cra ON cra.company_id = c.id
+		WHERE c.id = #{id} and c.oem_code = #{oemCode} and c.member_id = #{memberId}
+			and cra.resources_type in(1,4,5,6)
+	</select>
+
+	<select id="getMemberCompanyCertInParkList" resultMap="voCertInParkMap">
+		SELECT
+		   cra.id,
+		   cra.resources_type,
+		   CASE cra.resources_type
+			   WHEN 1 THEN '公章'
+			   WHEN 4 THEN '营业执照正本'
+			   WHEN 5 THEN '营业执照副本'
+			   WHEN 6 THEN '发票章'
+			   END resources_type_name
+		FROM t_e_member_company c
+		LEFT JOIN t_e_company_resources_address cra ON cra.company_id = c.id
+		WHERE c.member_id = #{memberId} and c.oem_code = #{oemCode} and c.id = #{companyId} and cra.is_in_park = #{isInPark}
+		  and cra.resources_type in(1)
+	</select>
+
+	<select id="countMemberCompany" resultType="int">
+		SELECT count(1)
+		FROM t_e_member_company
+		WHERE member_id = #{memberId} and oem_code = #{oemCode}
+		and status != #{status}
+	</select>
+
+	<!-- 根据memberId查询企业列表 add by Kaven 2020-06-17 -->
+	<select id="queryMemberCompanyByMemberId" parameterType="com.yuqian.itax.user.entity.query.ExtendUserQuery" resultMap="comInvoiceStatisticMap">
+		select
+			id,company_name,status
+		from
+			t_e_member_company
+		<where>
+			member_id = #{userId} and oem_code = #{oemCode}
+		</where>
+	</select>
+
+	<select id="checkCompanyNameByShopName" resultType="string">
+		SELECT
+			MAX( case WHEN 1 != 1 then null
+			<if test="shopName != null and shopName.trim() != ''">
+				WHEN company_name = #{shopName} THEN '已有与字号相同的企业'
+			</if>
+			<if test="shopNameOne != null and shopNameOne.trim() != ''">
+				WHEN company_name = #{shopNameOne} THEN '已有与备选字号一相同的企业'
+			</if>
+			<if test="shopNameTwo != null and shopNameTwo.trim() != ''">
+				WHEN company_name = #{shopNameTwo} THEN '已有与备选字号二相同的企业'
+			</if>
+			end )
+		from
+			t_e_member_company
+		where
+			oem_code = #{oemCode}
+	</select>
+
+	<select id="checkCompanyName" resultType="int">
+		SELECT
+			count(1)
+		from
+			t_e_member_company
+		where
+			oem_code = #{oemCode}
+			and company_name = #{companyName}
+			and status != 4
+	</select>
+
+	<select id="checkCompanyNameNotOemCode" resultType="int">
+		SELECT
+			count(1)
+		from
+			t_e_member_company
+		where
+			company_name = #{companyName}
+			and status != 4
+	</select>
+
+	<select id="getCompanyListByQuery" resultMap="companyApiVo">
+		SELECT
+			c.id company_id, c.company_name, c.company_type, c.end_time, c.member_id,
+			c.operator_tel, c.operator_name, p.id park_id, p.park_code, p.park_name, c.status,
+			IFNULL(r.total_invoice_amount,0) total_invoice_amount,
+			IFNULL(r.use_invoice_amount,0) use_invoice_amount,
+			IFNULL(r.remain_invoice_amount,0) remain_invoice_amount,
+			IFNULL(tp.VAT_breaks_amount,0) VAT_breaks_amount,
+			IFNULL(tp.VAT_breaks_cycle,1) VAT_breaks_cycle,
+			IFNULL(tp.income_tax_breaks_amount,0) income_tax_breaks_amount,
+			IFNULL(tp.income_tax_breaks_cycle,1) income_tax_breaks_cycle, r.id record_id
+		FROM t_e_member_company c
+		LEFT JOIN (SELECT total_invoice_amount, use_invoice_amount, remain_invoice_amount, company_id FROM t_e_company_invoice_record WHERE end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') ORDER BY end_time ASC LIMIT 1) r on r.company_id =c.id
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id and tp.company_type = c.company_type and tp.taxpayer_type = c.taxpayer_type
+		LEFT JOIN t_e_member_account ma ON ma.id = c.member_id
+		WHERE c.oem_code = #{oemCode}
+			<if test="regPhone != null and regPhone.trim() != ''">
+				and ma.member_account = #{regPhone}
+			</if>
+			<if test="companyName != null and companyName.trim() != ''">
+				and c.company_name LIKE concat('%',#{companyName},'%')
+			</if>
+		<if test="idCard != null and idCard.trim() != ''">
+			and c.id_card_number = #{idCard}
+		</if>
+		<if test="status != null">
+			and c.status = #{status}
+		</if>
+		GROUP BY r.company_id HAVING r.id = min(r.id)
+		ORDER BY c.add_time DESC
+	</select>
+
+	<select id="listCorpAccCompany" resultMap="baseEntityMap">
+		SELECT DISTINCT
+		  c.*
+		FROM
+		  t_e_member_company c
+		  INNER JOIN t_e_park_corporate_account_config pcac
+			ON pcac.park_id = c.park_id
+			AND pcac.status = 1
+		WHERE c.member_id = #{memberId}
+		  AND c.oem_code = #{oemCode}
+		  AND c.company_type = 1
+		  AND c.status IN (1, 2, 3, 5)
+		  AND c.`park_id` IN
+		  (SELECT
+			p.`id`
+		  FROM
+			t_e_park p
+			INNER JOIN t_r_product_park pp
+			  ON pp.`park_id` = p.`id`
+			INNER JOIN t_e_product pro
+			  ON pro.`id` = pp.`product_id`
+			  AND pro.`prod_type` = 15
+			  AND pro.`oem_code` = #{oemCode}
+			  AND pro.`status` = 1
+			INNER JOIN t_r_oem_park op
+			  ON op.`park_id` = p.`id`
+			INNER JOIN t_e_oem o
+			  ON o.`oem_code` = op.`oem_code`
+			  AND o.`oem_code` = #{oemCode})
+		ORDER BY c.add_time DESC
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.IndividualVO" id="individualMap">
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="total_num" property="totalNum"/>
+		<result column="add_num" property="addNum"/>
+		<result column="audit_num" property="auditNum"/>
+		<result column="certify_num" property="certifyNum"/>
+		<result column="off_num" property="offNum"/>
+	</resultMap>
+	<select id="individualCount" resultMap="individualMap" parameterType="com.yuqian.itax.user.entity.query.IndividualQuery">
+		select oem.oem_name, oem.oem_code,
+			sum(case WHEN status != 4 THEN 1 WHEN status = 4 and company.update_time > #{endDate} THEN 1 ELSE 0 end) total_num,
+			sum(case WHEN (company.add_time >= #{startDate} and status != 4) THEN 1 WHEN (company.add_time >= #{startDate} and status = 4 and company.update_time > #{endDate}) THEN 1 ELSE 0 end) add_num,
+			sum(case WHEN (status = 4 and company.update_time &lt; #{endDate}) THEN 1 ELSE 0 end) off_num,
+			(SELECT sum(case WHEN record.order_status = 2 THEN 1 ELSE 0 end) from t_e_register_order_change_record record INNER JOIN (SELECT MAX(a.id) id FROM t_e_register_order_change_record a WHERE a.add_time &lt;= #{endDate} GROUP BY a.order_no) b on b.id = record.id WHERE record.oem_code = company.oem_code) audit_num,
+			(SELECT sum(case WHEN record.order_status = 4 THEN 1 ELSE 0 end) from t_e_register_order_change_record record INNER JOIN (SELECT MAX(a.id) id FROM t_e_register_order_change_record a WHERE a.add_time &lt;= #{endDate} GROUP BY a.order_no) b on b.id = record.id WHERE record.oem_code = company.oem_code) certify_num
+		from
+			t_e_member_company company
+		right join
+			t_e_oem oem on oem.oem_code = company.oem_code
+		<if test="endDate != null and endDate.trim() != ''">
+			and company.add_time &lt;= #{endDate}
+		</if>
+		<where>
+			oem.oem_status != 0
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+		</where>
+		GROUP BY
+			oem.oem_code
+	</select>
+	<select id="queryMemberCompanyListByEin" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from t_e_member_company
+		where (ein is null or ein = "") and status !=4
+	</select>
+	<resultMap type="com.yuqian.itax.user.entity.vo.MemberCompanyBasicVo" id="memberCompanyBasicVo">
+		<result column="id" property="id"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="status" property="status"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="end_time" property="endTime"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="member_id" property="memberId"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="auth_status" property="authStatus"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="shouldUploadWaterNum" property="shouldUploadWaterNum"/>
+	</resultMap>
+	<select id="queryCompanyBasicInfoByEinOrId" resultMap="memberCompanyBasicVo">
+	select c.id,c.company_name,c.ein,c.`status`,c.overdue_status,c.end_time,c.operator_tel,c.operator_name, c.park_id,p.park_name,p.park_code,
+			c.member_id,m.member_account,ifnull(m.real_name,m.member_name) member_name,m.auth_status,o.oem_code,o.oem_name,
+		(select count(1) from t_e_invoice_order where bank_water_status NOT IN(2,4) and company_id = c.id and complete_time is not null) shouldUploadWaterNum
+		 from t_e_member_company c ,t_e_member_account m,t_e_oem o,t_e_park p
+		where c.member_id = m.id and c.oem_code = m.oem_code and m.oem_code = o.oem_code and p.id = c.park_id
+		<if test="id !=null and id !=''">
+			and c.id=#{id}
+		</if>
+		<if test="ein !=null and ein !=''">
+			and c.ein=#{ein}
+		</if>
+		<if test="status !=null">
+			and c.status = #{status}
+		</if>
+		<if test="overdueStatus == null">
+			and overdue_status !=3
+		</if>
+		<if test="overdueStatus != null and overdueStatus > 0">
+			and overdue_status =#{overdueStatus}
+		</if>
+	</select>
+
+	<select id="queryMemberCompanyByEinStatusNotCancellation" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from
+		t_e_member_company where ein=#{ein} and status !=4
+	</select>
+
+	<select id="queryMemberCompanyIdByEin" resultType="java.lang.Long">
+		select case when c.`status`=1 then c.id  else max(c.id) end from t_e_member_company c where c.ein=#{ein}
+	</select>
+
+	<select id="queryMemberCompanyByEinAndNotId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from
+		t_e_member_company where ein=#{ein} and id != #{id} and status != 4
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.TrusteeFeeRenewDetailVO" id="trusteeFeeRenewDetailMap">
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="park_name" property="parkName"/>
+		<result column="end_time" property="endTime"/>
+	</resultMap>
+	<select id="queryTrusteeFeeRenewDetail" resultMap="trusteeFeeRenewDetailMap">
+		SELECT
+			mc.`company_name`,
+			mc.`company_type`,
+			mc.`operator_name`,
+			mc.`operator_tel`,
+			p.`park_name`,
+			mc.`end_time`
+		FROM
+			t_e_member_company mc
+		INNER JOIN t_e_member_account ma ON ma.`id` = mc.`member_id`
+		INNER JOIN t_e_park p ON mc.`park_id` = p.`id`
+		INNER JOIN t_e_member_level ml ON ml.`id` = ma.`member_level`
+		WHERE
+			mc.`id` = #{companyId}
+		AND
+			ma.`id` = #{memberId}
+	</select>
+	<!-- 修改即将过期企业的状态 -->
+	<update id="updateCompanyOverdueStatus">
+		UPDATE
+		  t_e_member_company mc
+		SET
+		  mc.overdue_status = 2
+		WHERE
+		DATEDIFF(mc.`end_time`,DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND #{surplusDays}
+		  AND mc.status != 4
+	</update>
+
+	<resultMap id="companyOverdueStatusReminderMap" type="com.yuqian.itax.user.entity.vo.CompanyOverdueStatusReminderVO">
+		<result column="member_id" property="memberId"/>
+		<result column="id" property="id"/>
+		<result column="is_trigger" property="isTrigger"/>
+	</resultMap>
+
+	<resultMap id="overdueCompanyInfoMap" type="com.yuqian.itax.user.entity.vo.OverdueCompanyInfoVO">
+		<result column="member_id" property="memberId"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="company_id" property="companyId"/>
+		<result column="is_eligible" property="isEligible"/>
+		<result column="is_send_notice" property="isSendNotice"/>
+		<result column="count" property="count"/>
+	</resultMap>
+	<select id="queryOverdueByMemberId" resultMap="overdueCompanyInfoMap">
+		SELECT
+		ma.`id` AS `member_id`,
+		ma.`member_account`,
+		ma.`oem_code`,
+		ma.`member_phone`,
+		GROUP_CONCAT(mc.`id`) AS `company_id`,
+		GROUP_CONCAT(DATEDIFF(DATE_FORMAT(NOW(),'%Y-%m-%d'),mc.`end_time`) = #{overdueDays}) AS `is_eligible`,
+		GROUP_CONCAT(mc.`is_send_notice`) AS `is_send_notice`,
+		COUNT(mc.`id`) `count`
+		FROM
+		`t_e_member_company` mc
+		LEFT JOIN
+		`t_e_member_account` ma
+		ON
+		ma.`id` = mc.`member_id`
+		WHERE mc.`end_time` <![CDATA[ < ]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+		AND mc.`status` != 4
+		GROUP BY mc.`member_id`
+	</select>
+
+	<select id="queryWillExpireByMemberId" resultMap="overdueCompanyInfoMap">
+		SELECT
+		ma.`id` `member_id`,
+		ma.`member_account`,
+		ma.`oem_code`,
+		ma.`member_phone`,
+		GROUP_CONCAT(mc.`id`) `company_id`,
+		GROUP_CONCAT(DATEDIFF(mc.`end_time`,DATE_FORMAT(NOW(),'%Y-%m-%d')) = #{surplusDays}) AS `is_eligible`,
+    	GROUP_CONCAT(mc.`is_send_notice`) AS `is_send_notice`,
+		COUNT(mc.`id`) `count`
+		FROM
+		`t_e_member_company` mc
+		LEFT JOIN `t_e_member_account` ma
+		ON ma.`id` = mc.`member_id`
+		WHERE DATEDIFF(mc.`end_time`, DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND #{surplusDays}
+		AND mc.`status` != 4
+		GROUP BY mc.`member_id`
+	</select>
+
+	<!--更新企业过期状态-->
+	<update id="updateOverdueStatus">
+		UPDATE
+		  t_e_member_company mc
+		SET mc.`overdue_status` =
+		CASE
+		WHEN DATEDIFF(#{endTime}, DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND #{surplusDays} THEN 2
+		WHEN mc.`end_time` <![CDATA[ < ]]> DATE_FORMAT(NOW(),'%Y-%m-%d') THEN 3
+		ELSE 1
+		END
+		WHERE mc.`id` = #{id}
+	</update>
+
+	<!--根据会员id和公司id查询信息 -->
+	<select id="getMemberCompanyBymemberId" resultMap="voMap">
+		SELECT DISTINCT
+		( c.id ),
+		c.member_id,
+		c.company_name,
+		c.company_type,
+		c.operator_name,
+		c.end_time,
+		c.STATUS,
+		c.is_top_up,
+		c.order_no,
+		ic.category_name,
+		p.id park_id,
+		p.park_name,
+		p.park_code,
+		r.total_invoice_amount,
+		r.use_invoice_amount,
+		IF(tp.total_invoice_amount - IFNULL(cirsv.use_total_invoice_amount, 0) &lt; 0, 0, tp.total_invoice_amount - IFNULL(cirsv.use_total_invoice_amount, 0)) remain_invoice_amount,
+		tp.VAT_breaks_amount,
+		tp.VAT_breaks_cycle,
+		tp.income_tax_breaks_amount,
+		tp.income_tax_breaks_cycle,
+		r.id record_id,
+		c.overdue_status
+		FROM
+		t_e_member_company c
+		LEFT JOIN t_e_company_invoice_record r ON c.id = r.company_id
+		AND CASE WHEN c.overdue_status != 3 THEN r.end_time >= DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id
+		AND tp.company_type = c.company_type AND tp.taxpayer_type = c.taxpayer_type
+		LEFT JOIN t_e_company_invoice_category ic ON ic.company_id = c.id
+		LEFT JOIN company_invoice_record_statistics_view cirsv ON cirsv.user_id = c.member_id and cirsv.company_id = c.id
+		<where>
+			c.member_id = #{userId} and c.status = 1 and c.company_type = 1
+			AND c.oem_code = #{oemCode}
+			AND ic.category_name IN
+			<foreach collection="categoryBaseIds" item="categoryBaseId" index="index" open="(" close=")" separator=",">
+				#{categoryBaseId}
+			</foreach>
+			<if test="operatorIdCardNo!=null">
+				AND c.id_card_number = #{operatorIdCardNo}
+			</if>
+		</where>
+		GROUP BY c.`id` HAVING r.id = min(r.id)
+		ORDER BY c.add_time DESC
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.GJUserCompanyVo" id="gjUserCompanyVo">
+		<result column="id" property="companyId"/>
+		<result column="member_id" property="memberId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="is_cancel" property="isCancel"/>
+		<result column="monthInvoiceAmount" property="monthInvoiceAmount"/>
+		<result column="yearInvoiceAmount" property="yearInvoiceAmount"/>
+		<result column="totalInvoiceAmount" property="totalInvoiceAmount"/>
+	</resultMap>
+
+	<!-- 根据国金用户id查询企业列表 -->
+	<select id="findCompanyListByChannelUserId" resultMap="gjUserCompanyVo">
+		select a.id member_id,a.oem_code,c.id ,c.company_name,case when c.`status` = 4 then 2 else 1 end is_cancel,
+		sum(case when DATE_FORMAT(io.complete_time,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m') and o.order_status = 7 and io.complete_time is not null then io.invoice_amount else 0 end) monthInvoiceAmount,
+		sum(case when DATE_FORMAT(io.complete_time,'%Y') = DATE_FORMAT(now(),'%Y') and o.order_status = 7 and io.complete_time is not null then io.invoice_amount else 0 end) yearInvoiceAmount,
+		sum(case when io.complete_time is not null and o.order_status = 7 then io.invoice_amount else 0 end) totalInvoiceAmount
+		from t_e_member_account a
+		inner join t_e_member_company c on a.id = c.member_id and a.oem_code = c.oem_code
+		left join t_e_invoice_order io on c.id = io.company_id  and c.oem_code = io.oem_code
+		left join t_e_order o on io.order_no = o.order_no
+		where 1=1
+		<if test="channelUserId != null">
+			and a.channel_user_id = #{channelUserId}
+		</if>
+		<if test="channelOemCode != null">
+			and a.channel_code = #{channelOemCode}
+		</if>
+		<if test="oemCode != null">
+			and a.oem_code = #{oemCode}
+		</if>
+		group by c.id
+	</select>
+
+	<!--  =======个体户迁移 start  ======== -->
+      <!-- 迁移企业年开票记录 -->
+	<insert id="transferCompanyInvoiceRecord">
+		INSERT INTO `t_e_company_invoice_record` (`company_id`, `year`, `total_invoice_amount`,`use_invoice_amount`, `remain_invoice_amount`, `oem_code`, `end_time`, `add_time`, `add_user`, `remark`)
+		select #{newCompanyId} `company_id`, `year`, `total_invoice_amount`,`use_invoice_amount`, `remain_invoice_amount`, #{newOemCode}`oem_code`, `end_time`,now()  `add_time`,
+			 #{operUser}`add_user`,'个体户迁移' `remark`
+     	from t_e_company_invoice_record  where company_id = #{oldCompanyId}  order by year desc limit 1
+	</insert>
+
+	<!-- 迁移企业资源所在地 -->
+	<insert id="transferCompanyResourcesAddress">
+		INSERT INTO `t_e_company_resources_address` (`company_id`, `resources_type`, `address`, `oem_code`, `add_time`, `add_user`, `remark`)
+			select #{newCompanyId} `company_id`, `resources_type`, `address`, #{newOemCode} `oem_code`, now() `add_time`,#{operUser} `add_user`,'个体户迁移'`remark`
+		 from t_e_company_resources_address where company_id = #{oldCompanyId}
+	</insert>
+
+	<!-- 迁移企业开票类目 -->
+	<insert id="transferCompanyInvoiceategory">
+		INSERT INTO `t_e_company_invoice_category` (`oem_code`, company_id,`industry_id`, `category_base_id`, `category_name`, `add_time`, `add_user`, `remark`)
+		SELECT  #{newOemCode} `oem_code`, #{newCompanyId} company_id,`industry_id`, `category_base_id`, `category_name`, now()`add_time`,#{operUser} `add_user`, '个体户迁移'`remark`
+			FROM `t_e_company_invoice_category` WHERE company_id = #{oldCompanyId}
+	</insert>
+
+	<!-- 迁移企业税单 -->
+	<update id="transferCompanyTaxBill">
+		update t_e_company_tax_bill set company_id = #{newCompanyId},update_time=now(),update_user =#{operUser},remark='个体户迁移' where company_id = #{oldCompanyId}
+	</update>
+	<!--  =======个体户迁移 end  ======== -->
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyDetailOfAccessPartyVo" id="DetailOfAccessPartyMap">
+		<result column="operator_name" property="operatorName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type_name" property="companyTypeName"/>
+		<result column="park_name" property="parkName"/>
+		<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+		<result column="business_license" property="businessLicense"/>
+		<result column="business_license_copy" property="businessLicenseCopy"/>
+		<result column="end_time" property="endTime"/>
+		<result column="status" property="status"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="cancel_credentials" property="cancelCredentials"/>
+	</resultMap>
+	<!--接入方获取企业详情-->
+	<select id="queryCompanyDetailOfAccessParty" resultMap="voDetailMap">
+		SELECT
+			c.operator_name,
+			c.operator_tel member_phone,
+		    c.company_name,c.cancel_credentials,
+			CASE c.company_type
+				WHEN 1 THEN '个体户'
+				WHEN 2 THEN '个人独资企业'
+				WHEN 3 THEN '有限合伙公司'
+				WHEN 4 THEN '有限责任公司'
+				END company_type_name,
+			p.park_name,
+			tp.VAT_breaks_amount,
+			tp.VAT_breaks_cycle,
+			tp.income_tax_breaks_amount,
+			tp.income_tax_breaks_cycle,
+			c.business_license,
+			c.business_license_copy,
+		    c.end_time,
+		    c.status,
+		    r.id record_id,
+		    (CASE
+			WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ > ]]> 30 THEN 1
+			WHEN DATEDIFF(c.`end_time`,DATE_FORMAT(NOW(), '%Y-%m-%d')) <![CDATA[ < ]]> 0 THEN 3
+			ELSE 2
+			END) `overdue_status`
+		FROM t_e_member_company c
+		LEFT JOIN t_e_member_account m ON m.id = c.member_id
+		LEFT JOIN t_e_park p ON p.id = c.park_id
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id and tp.company_type = c.company_type and tp.taxpayer_type = c.taxpayer_type
+		LEFT JOIN t_e_company_invoice_record r ON r.company_id = c.id AND CASE WHEN c.overdue_status != 3 THEN r.end_time >=  DATE_FORMAT(NOW(),'%Y-%m-%d') ELSE 1=1 END
+		LEFT JOIN company_invoice_record_statistics_view cirsv ON cirsv.user_id = c.member_id and cirsv.company_id = c.id
+		WHERE c.member_id = #{memberId} and c.id = #{id} and c.oem_code = #{oemCode}
+		GROUP BY r.company_id HAVING r.id = min(r.id)
+	</select>
+
+	<resultMap id="companyListOfAccessPartyMap" type="com.yuqian.itax.user.entity.vo.CompanyListOfAccessPartyVO">
+		<result column="id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="status" property="status"/>
+		<result column="park_name" property="parkName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="ein" property="ein"/>
+		<result column="industry" property="industry"/>
+		<result column="business_scope" property="businessScope"/>
+		<result column="invoicing_amount" property="invoicingAmount"/>
+		<result column="business_license_copy" property="businessLicenseCopy"/>
+	</resultMap>
+    <select id="queryListByMemberIds" resultMap="companyListOfAccessPartyMap">
+		SELECT c.`id`, c.`company_name`, c.`operator_name`, c.`status`, p.`park_name`, c.`add_time`, c.`ein`, c.`industry`, c.`business_scope`,
+		 cir.`remain_invoice_amount`, (tp.`total_invoice_amount` - v.`use_total_invoice_amount`) invoicing_amount, c.`business_license_copy`
+		FROM `t_e_member_company` c
+		INNER JOIN `t_e_park` p ON c.`park_id` = p.`id`
+		INNER JOIN `t_e_member_account` a ON a.`id` = c.`member_id`
+		INNER JOIN `t_e_oem_access_party` oap ON oap.`id` = a.`access_party_id`
+		INNER JOIN `t_e_company_invoice_record` cir ON cir.`company_id` = c.`id`
+		INNER JOIN `company_invoice_record_statistics_view` v ON v.`company_id` = c.`id`
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = c.park_id AND tp.company_type = c.company_type AND tp.taxpayer_type = c.taxpayer_type
+		<where>
+			<if test="accessPartyCode != null and accessPartyCode.trim() != ''">
+				and oap.`access_party_code` = #{accessPartyCode}
+			</if>
+			<if test="userId != null">
+				and a.`id` = #{userId}
+			</if>
+			<if test="phone != null and phone.trim() != ''">
+				and a.`member_phone` = #{phone}
+			</if>
+			<if test="companyId != null">
+				and c.`id` = #{companyId}
+			</if>
+			<if test="isIncludeCancelled != null and isIncludeCancelled == 0">
+				and c.`status` <![CDATA[ != ]]> 6
+			</if>
+		</where>
+		order by c.`add_time` DESC
+	</select>
+
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"></include>
+		FROM `t_e_member_company`
+		where order_no = #{orderNo}
+	</select>
+
+	<!-- 根据企业id查询企业支持的税收分类编码 -->
+	<select id="findCompanyTaxCodeByCompanyId" resultType="String">
+		SELECT DISTINCT t.tax_classification_code FROM t_e_member_company c,t_e_businessscope_taxcode t
+		INNER JOIN t_r_park_businessscope_taxcode r ON t.`id` = r.`businessscope_base_id`
+		INNER JOIN t_e_park_businessscope p ON r.`park_businessscope_id` = p.`id`
+		WHERE LOCATE(p.businessscope_name,c.business_scope) > 0
+		AND c.id = #{companyId}
+	</select>
+
+	<select id="getCompanyByBusinssContent" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_member_company where CONCAT('@',REPLACE(business_scope,';','@'),'@') like CONCAT('%@',#{content},'@%') and status != 4
+	</select>
+
+	<select id="getMemberCompanyOne" resultMap="baseEntityMap">
+		   select
+		         <include refid="Base_Columns"/>
+		   from t_e_member_company
+		   where company_name = #{companyName}
+	</select>
+
+	<!--通过税号查询企业信息-->
+	<select id="getMemberCompanyInfo" resultType="com.yuqian.itax.user.entity.MemberCompanyEntity">
+            select
+                    <include refid="Base_Columns" />
+            from t_e_member_company
+            where ein = #{ein}
+	</select>
+
+</mapper>

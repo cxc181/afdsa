@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyResourcesAddressMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyResourcesAddressEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="resources_type" property="resourcesType"/>
+			<result column="address" property="address"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="is_in_park" property="isInPark"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, resources_type, address, oem_code, is_in_park, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="listCompanyResourcesAddress" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns" />
+		from
+			t_e_company_resources_address
+		where
+			company_id = #{companyId}
+			and oem_code = #{oemCode}
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyResourcesAddressVO" id="companyResourcesAddressDetailMap">
+
+		<id column="id" property="id"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_id" property="companyId"/>
+		<result column="resources_type" property="resourcesType"/>
+		<result column="address" property="address"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+	<select id="queryCompanyResourcesAddressDetail" resultMap="companyResourcesAddressDetailMap">
+		select
+		a.id,c.company_name,a.company_id ,a.resources_type ,a.address,a.remark
+		from
+		t_e_company_resources_address a
+		LEFT JOIN t_e_member_company c ON a.company_id=c.id
+		where a.id=#{id}
+	</select>
+
+</mapper>

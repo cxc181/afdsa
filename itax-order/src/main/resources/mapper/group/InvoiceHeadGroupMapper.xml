@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.group.dao.InvoiceHeadGroupMapper">
+    <resultMap type="com.yuqian.itax.group.entity.InvoiceHeadGroupEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="company_name" property="companyName"/>
+			<result column="company_address" property="companyAddress"/>
+			<result column="ein" property="ein"/>
+			<result column="phone" property="phone"/>
+			<result column="regist_address" property="registAddress"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="bank_number" property="bankNumber"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="status" property="status"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="email" property="email"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, status, province_code, province_name, city_code, city_name, district_code, district_name, add_time, add_user, update_time, update_user, remark,email
+    </sql>
+
+	<select id="getInvoiceHeadGroup" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_invoice_head_group
+		<where>
+			<if test="oemCode!=null and oemCode !=''">
+				and oem_code=#{oemCode}
+			</if>
+		</where>
+	</select>
+</mapper>

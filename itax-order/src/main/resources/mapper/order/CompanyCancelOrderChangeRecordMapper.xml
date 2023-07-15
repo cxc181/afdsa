@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.CompanyCancelOrderChangeRecordMapper">
+    <resultMap type="com.yuqian.itax.order.entity.CompanyCancelOrderChangeRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="order_status" property="orderStatus"/>
+			<result column="company_id" property="companyId"/>
+			<result column="cancel_total_limit" property="cancelTotalLimit"/>
+			<result column="cancel_service_charge" property="cancelServiceCharge"/>
+			<result column="company_type" property="companyType"/>
+			<result column="company_name" property="companyName"/>
+			<result column="attachment_addr" property="attachmentAddr"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="oper_user_type" property="operUserType"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, order_status, company_id, cancel_total_limit, cancel_service_charge, company_type, company_name, attachment_addr, agent_account, oper_user_type, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

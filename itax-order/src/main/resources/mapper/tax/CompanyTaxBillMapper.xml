@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.CompanyTaxBillMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.CompanyTaxBillEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_tax_bill_id" property="parkTaxBillId"/>
+			<result column="tax_bill_year" property="taxBillYear"/>
+			<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+			<result column="park_id" property="parkId"/>
+			<result column="company_id" property="companyId"/>
+			<result column="invoice_money" property="invoiceMoney"/>
+			<result column="already_tax_money" property="alreadyTaxMoney"/>
+			<result column="should_tax_money" property="shouldTaxMoney"/>
+			<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+			<result column="supplement_tax_money" property="supplementTaxMoney"/>
+			<result column="vat_taxable_income_amount" property="vatTaxableIncomeAmount"/>
+			<result column="vat_rate" property="vatRate"/>
+			<result column="vat_already_tax_money" property="vatAlreadyTaxMoney"/>
+			<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+			<result column="vat_recoverable_tax_money" property="vatRecoverableTaxMoney"/>
+			<result column="vat_supplement_tax_money" property="vatSupplementTaxMoney"/>
+			<result column="tax_bill_status" property="taxBillStatus"/>
+			<result column="affirm_time" property="affirmTime"/>
+			<result column="complete_time" property="completeTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="additional_taxable_income_amount" property="additionalTaxableIncomeAmount"/>
+			<result column="additional_rate" property="additionalRate"/>
+			<result column="additional_already_tax_money" property="additionalAlreadyTaxMoney"/>
+			<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+			<result column="additional_recoverable_tax_money" property="additionalRecoverableTaxMoney"/>
+			<result column="additional_supplement_tax_money" property="additionalSupplementTaxMoney"/>
+			<result column="income_taxable_income_amount" property="incomeTaxableIncomeAmount"/>
+			<result column="income_rate" property="incomeRate"/>
+			<result column="income_already_tax_money" property="incomeAlreadyTaxMoney"/>
+			<result column="income_should_tax_money" property="incomeShouldTaxMoney"/>
+			<result column="income_recoverable_tax_money" property="incomeRecoverableTaxMoney"/>
+			<result column="income_supplement_tax_money" property="incomeSupplementTaxMoney"/>
+			<result column="zp_invoice_amount" property="zpInvoiceAmount"/>
+			<result column="pp_invoice_amount" property="ppInvoiceAmount"/>
+			<result column="over_time_is_sms" property="overTimeIsSms"/>
+			<result column="income_taxable_income_amount" property="incomeTaxableIncomeAmount"/>
+			<result column="income_levy_way" property="incomeLevyWay"/>
+			<result column="iit_voucher_pic" property="iitVoucherPic"/>
+			<result column="vat_voucher_pic" property="vatVoucherPic"/>
+			<result column="ticket_pic" property="ticketPic"/>
+			<result column="iit_vouchers_status" property="iitVouchersStatus"/>
+			<result column="vat_vouchers_status" property="vatVouchersStatus"/>
+			<result column="cancellation_amount" property="cancellationAmount"/>
+            <result column="year_cost_amount" property="yearCostAmount"/>
+			<result column="year_income_amount" property="yearIncomeAmount"/>
+			<result column="cost_item_imgs" property="costItemImgs"/>
+			<result column="ticket_free_income_amount" property="ticketFreeIncomeAmount"/>
+			<result column="vat_deduction_taxfee" property="vatDeductionTaxfee"/>
+			<result column="additional_deduction_taxfee" property="additionalDeductionTaxfee"/>
+			<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+			<result column="quarter_cost_amount" property="quarterCostAmount"/>
+			<result column="quarter_income_amount" property="quarterIncomeAmount"/>
+			<result column="sign_img" property="signImg"/>
+			<result column="income_levy_type" property="incomeLevyType"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="generate_type" property="generateType"/>
+			<result column="year_payable_income_tax" property="yearPayableIncomeTax"/>
+			<result column="income_tax_refund_amount" property="incomeTaxRefundAmount"/>
+			<result column="income_tax_year_freeze_amount" property="incomeTaxYearFreezeAmount"/>
+		    <result column="is_send_notice" property="isSendNotice"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_tax_bill_id, tax_bill_year, tax_bill_seasonal, park_id, company_id,pp_invoice_amount,zp_invoice_amount ,invoice_money, already_tax_money, should_tax_money,
+		recoverable_tax_money, supplement_tax_money, vat_taxable_income_amount, vat_rate, vat_already_tax_money, vat_should_tax_money, vat_recoverable_tax_money,
+		vat_supplement_tax_money, tax_bill_status, affirm_time, complete_time, add_time, add_user, update_time, update_user, remark, additional_taxable_income_amount,
+		additional_rate, additional_already_tax_money, additional_should_tax_money, additional_recoverable_tax_money, additional_supplement_tax_money, income_taxable_income_amount,
+		income_rate, income_already_tax_money, income_should_tax_money, income_recoverable_tax_money, income_supplement_tax_money,over_time_is_sms,income_taxable_income_amount,
+		income_levy_way,iit_voucher_pic,vat_voucher_pic,ticket_pic,iit_vouchers_status,vat_vouchers_status,cancellation_amount,year_cost_amount,year_income_amount,cost_item_imgs,
+		ticket_free_income_amount,vat_deduction_taxfee,additional_deduction_taxfee,iit_deduction_amount,quarter_cost_amount,quarter_income_amount,sign_img,income_levy_type,order_no,
+		generate_type,year_payable_income_tax,income_tax_refund_amount,income_tax_year_freeze_amount,is_send_notice
+    </sql>
+
+
+
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillXXJOBVO" id="xxjobVOMap">
+
+		<id column="park_id" property="parkId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="pp_invoice_amount" property="ppInvoiceAmount"/>
+		<result column="zp_invoice_amount" property="zpInvoiceAmount"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="vat_fee" property="vatFee"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+
+	</resultMap>
+	<select id="queryCompanyTaxBillByTime" resultMap="xxjobVOMap">
+		SELECT t.park_id, (SELECT id FROM t_e_member_company WHERE (ein = t.ein OR CAST(id AS CHAR) = t.ein) AND `status` != 4 AND `status` != 6
+		AND park_id = t.park_id LIMIT 1) company_id,
+		SUM(t.pp_invoice_amount) pp_invoice_amount, SUM(t.zp_invoice_amount) zp_invoice_amount,
+		SUM(t.invoice_amount) invoice_amount,
+		SUM(t.already_tax_money) already_tax_money,
+		SUM(t.vat_fee) vat_fee,
+		SUM(t.surcharge) surcharge,
+		SUM(t.personal_income_tax) personal_income_tax
+		FROM (SELECT
+		p.id park_id,
+		CAST(IFNULL(MC.ein,MC.id) AS CHAR) ein,
+		(SELECT CASE WHEN c.`status`=1 THEN c.id ELSE MAX(c.id) END FROM t_e_member_company c WHERE c.id = MC.id )
+		company_id,
+		SUM(CASE WHEN io.invoice_type=1 THEN io.invoice_amount ELSE 0 END )pp_invoice_amount,
+		SUM(CASE WHEN io.invoice_type=2 THEN io.invoice_amount ELSE 0 END )zp_invoice_amount,
+		SUM(IFNULL(io.invoice_amount, 0)) invoice_amount,
+		SUM(IFNULL(io.VAT_fee, 0))+SUM(IFNULL(io.VAT_payment, 0)) + SUM(IFNULL(io.surcharge, 0))+
+		SUM(IFNULL(io.surcharge_payment, 0)) + SUM(IFNULL(io.personal_income_tax, 0)) +
+		SUM(IFNULL(io.income_tax_payment, 0))-SUM(IFNULL(io.refund_tax_fee, 0)) already_tax_money,
+		SUM(IFNULL(io.VAT_fee, 0))+SUM(IFNULL(io.VAT_payment, 0)) vat_fee,
+		SUM(IFNULL(io.surcharge, 0))+ SUM(IFNULL(io.surcharge_payment, 0)) surcharge,
+		SUM(IFNULL(io.personal_income_tax, 0))+ SUM(IFNULL(io.income_tax_payment, 0))-SUM(IFNULL(io.refund_tax_fee, 0))
+		personal_income_tax
+		FROM
+		t_e_park p
+		INNER JOIN (SELECT * FROM t_e_member_company c WHERE id NOT IN (SELECT company_id FROM t_e_company_tax_bill
+		WHERE tax_bill_status !=9 AND tax_bill_year=#{taxBillYear} AND tax_bill_seasonal=#{taxBillSeasonal} GROUP BY
+		company_id)) MC ON MC.park_id=P.ID and MC.company_type = 1
+		LEFT JOIN t_e_invoice_order io ON io.company_id =MC.id AND io.tax_year=#{taxBillYear} and
+		io.tax_seasonal=#{taxBillSeasonal}
+		<where>
+			((MC.`status`!=4 and MC.`status`!=6) or io.id is not null)
+			<if test="parkId != null ">
+				and p.id =#{parkId}
+			</if>
+			and concat(date_format(MC.add_time, '%Y'),FLOOR((date_format(MC.add_time, '%m')+2)/3))  <![CDATA[<=]]>
+			concat(#{taxBillYear}, #{taxBillSeasonal})
+		</where>
+		GROUP BY p.id,MC.id
+		) t GROUP BY t.ein
+	</select>
+
+	<insert id="insertCompanyTaxBillByTaxBillYearAndTaxBillSeasonal">
+
+	</insert>
+
+	<select id="queryCompanyTaxBillByEin" resultMap="baseEntityMap">
+		SELECT
+			ctb.*
+		FROM
+			t_e_company_tax_bill ctb
+		INNER JOIN t_e_member_company mc ON mc.id = ctb.company_id
+		WHERE
+			ctb.tax_bill_status <![CDATA[ != ]]> 9
+		<if test="ein != null and ein.trim() != ''">
+			and mc.ein = #{ein}
+		</if>
+		<if test="(ein == null or ein.trim() == '') and companyId != null">
+			and mc.id = #{companyId}
+		</if>
+			and ctb.tax_bill_year=#{taxBillYear} and ctb.tax_bill_seasonal=#{taxBillSeasonal}
+
+	</select>
+
+	<select id="queryCompanyTaxBillByEinAndParkTaxBillId" resultMap="baseEntityMap">
+		SELECT
+			ctb.*
+		FROM
+			t_e_company_tax_bill ctb
+		INNER JOIN t_e_member_company mc ON mc.id = ctb.company_id
+		WHERE
+			mc.ein = #{ein} and ctb.park_tax_bill_id=#{parkTaxBillId}
+	</select>
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillListVO" id="listParkTaxBillMap">
+		<id column="id" property="companyTaxBillId"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+		<result column="supplement_tax_money" property="supplementTaxMoney"/>
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="company_name" property="companyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="over_time_desc" property="overTimeDesc"/>
+		<result column="vouchers_status" property="vouchersStatus"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+		<result column="park_id" property="parkId"/>
+		<result column="company_status" property="companyStatus"/>
+	</resultMap>
+
+	<select id="listCompanyTaxBill" parameterType="com.yuqian.itax.tax.entity.query.CompanyTaxBillQuery" resultMap="listParkTaxBillMap">
+		select
+			ctb.id, mc.company_name, mc.operator_name, ctb.tax_bill_year, ctb.tax_bill_seasonal, ctb.tax_bill_status, mc.status company_status,
+			ctb.already_tax_money, ctb.should_tax_money, ctb.recoverable_tax_money, ctb.supplement_tax_money, ctb.income_levy_type, ctb.park_id,
+			(case when
+			(iit_voucher_pic is null or iit_voucher_pic = '') and (vat_voucher_pic is null or vat_voucher_pic = '')
+			then 0 else 1 end ) vouchers_status
+			<if test="overTime != null ">
+				, (CASE WHEN ctb.income_levy_type = 1 AND ctb.tax_bill_status IN(2,7)
+					THEN (CASE WHEN DATE_FORMAT(NOW(), '%Y-%m-%d') > DATE_FORMAT(pec.end_time, '%Y-%m-%d')
+						THEN CONCAT('已超时',DATEDIFF(NOW(), pec.end_time),'天')
+						ELSE CONCAT('截止日：',DATE_FORMAT(pec.end_time,'%m月%d号')) END)
+					WHEN ctb.income_levy_type = 2 AND ctb.tax_bill_status = 2 AND DATE_SUB(NOW(), INTERVAL 15 DAY) > affirm_time
+					THEN CONCAT('超', 15, '天未处理')
+					ELSE '' END) over_time_desc
+			</if>
+		from
+			t_e_company_tax_bill ctb
+		inner join
+			t_e_member_company mc on ctb.company_id = mc.id
+		left join t_e_park_endtime_config pec ON pec.park_id = ctb.park_id AND ctb.`tax_bill_seasonal` = pec.quarter AND ctb.`tax_bill_year` = pec.year
+		where
+			mc.oem_code = #{oemCode} and member_id = #{memberId}
+		<if test="taxBillYear != null ">
+			and ctb.tax_bill_year = #{taxBillYear}
+		</if>
+		<if test="taxBillSeasonal != null ">
+			and ctb.tax_bill_seasonal = #{taxBillSeasonal}
+		</if>
+		<if test="taxBillStatus != null ">
+			and ctb.tax_bill_status = #{taxBillStatus}
+		</if>
+		<choose>
+			<when test="taxBillType == 2">
+				and ctb.tax_bill_status in (1, 2, 7)
+			</when>
+			<otherwise>
+				and ctb.tax_bill_status > 0 and ctb.tax_bill_status <![CDATA[ != ]]> 6
+			</otherwise>
+		</choose>
+		<if test="companyId != null ">
+			and ctb.company_id = #{companyId}
+		</if>
+		<if test="taxBillType == 1">
+			order by ctb.add_time desc, ctb.id desc
+		</if>
+		<if test="taxBillType == 2">
+			order by ctb.add_time, ctb.id
+		</if>
+	</select>
+	<select id="queryCompanyTaxBillByParkTaxBillId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_company_tax_bill
+		where  park_tax_bill_id=#{parkTaxBillId}
+
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillListVOAdmin" id="voMap">
+		<id column="id" property="id"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="park_name" property="parkName"/>
+		<result column="company_name" property="companyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="ein" property="ein"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="real_name" property="realName"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="supplement_tax_money" property="supplementTaxMoney"/>
+		<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="affirm_time" property="affirmTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="iit_voucher_pic" property="iitVoucherPic"/>
+		<result column="iit_vouchers_status" property="iitVouchersStatus"/>
+		<result column="vat_voucher_pic" property="vatVoucherPic"/>
+		<result column="vat_vouchers_status" property="vatVouchersStatus"/>
+		<result column="voucher_flag" property="voucherFlag"/>
+		<result column="ticket_pic" property="ticketPic"/>
+		<result column="park_tax_bill_id" property="parkTaxBillId"/>
+		<result column="generate_type" property="generateType"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+		<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+		<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+		<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+	</resultMap>
+	<select id="queryCompanyTaxBillList" resultMap="voMap">
+		SELECT
+			ctb.id,
+			ctb.tax_bill_year,
+			ctb.tax_bill_seasonal,
+			ctb.generate_type,
+			p.park_name,
+			mc.company_name,
+			mc.operator_name,
+			mc.ein,
+			ma.member_account,
+			IFNULL(ma.real_name,ma.member_account) real_name,
+			convert(ctb.invoice_money/100, decimal(12,2)) invoice_money,
+			convert(ctb.already_tax_money/100, decimal(12,2)) already_tax_money,
+			convert(ctb.should_tax_money/100, decimal(12,2)) should_tax_money,
+			convert(ctb.supplement_tax_money/100, decimal(12,2)) supplement_tax_money,
+			convert(ctb.recoverable_tax_money/100, decimal(12,2)) recoverable_tax_money,
+			convert(ctb.cancellation_amount/100, decimal(12,2)) cancellation_amount,
+			ctb.tax_bill_status,
+			ctb.affirm_time,
+			ctb.complete_time,
+			ctb.iit_voucher_pic,
+			ctb.iit_vouchers_status,
+			ctb.vat_vouchers_status,
+			ctb.vat_voucher_pic,
+			ctb.ticket_pic,
+			ctb.income_levy_type,
+			case when ctb.iit_voucher_pic is null and ctb.vat_voucher_pic is null then 0 else 1 end voucher_flag,
+			o.oem_name,
+			ctb.park_tax_bill_id,
+			convert(ctb.vat_should_tax_money/100, decimal(12,2)) vat_should_tax_money,
+			convert(ctb.additional_should_tax_money/100, decimal(12,2)) additional_should_tax_money,
+			convert(ctb.iit_deduction_amount/100, decimal(12,2)) iit_deduction_amount
+		FROM
+			t_e_company_tax_bill ctb
+		INNER JOIN t_e_park p ON p.id = ctb.park_id
+		LEFT JOIN t_e_member_company mc ON mc.id = ctb.company_id
+		LEFT JOIN t_e_member_account ma ON ma.id = mc.member_id
+		LEFT JOIN t_e_oem o ON o.oem_code = ma.oem_code
+		<where>
+			<if test="taxBillYear != null ">
+				and ctb.tax_bill_year = #{taxBillYear}
+			</if>
+			<if test="taxBillSeasonal != null ">
+				and ctb.tax_bill_seasonal = #{taxBillSeasonal}
+			</if>
+			<if test="parkId != null ">
+				and ctb.park_id = #{parkId}
+			</if>
+			<if test="isTicketPic != null and isTicketPic == 1">
+				and ctb.ticket_pic is not null
+			</if>
+			<if test="isTicketPic == 2">
+				and ctb.ticket_pic is null
+			</if>
+			<if test="generateType != null">
+				and ctb.generate_type = #{generateType}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and mc.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="operatorName != null and operatorName != ''">
+				and mc.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="ein != null and ein != ''">
+				and mc.ein like concat('%',#{ein},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="realName != null and realName != ''">
+				and case when
+				ma.real_name is null or ma.real_name = ''
+				then
+				ma.member_name like concat('%',#{realName},'%')
+				else
+				ma.real_name like concat('%',#{realName},'%')
+				end
+			</if>
+			<if test="taxBillStatus != null ">
+				and ctb.tax_bill_status = #{taxBillStatus}
+			</if>
+			<if test="iitVouchersStatus != null ">
+				and ctb.iit_vouchers_status = #{iitVouchersStatus}
+			</if>
+			<if test="vatVouchersStatus != null ">
+				and ctb.vat_vouchers_status = #{vatVouchersStatus}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != '' ">
+				and ctb.complete_time between #{startDate} and #{endDate}
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and o.oem_code = #{oemCode}
+			</if>
+			<if test="invoiceFlag != null and invoiceFlag == 0">
+				and ctb.invoice_money> 0
+			</if>
+			<if test="invoiceFlag != null and invoiceFlag == 1">
+				and ctb.invoice_money = 0
+			</if>
+		</where>
+	</select>
+	<resultMap type="com.yuqian.itax.tax.entity.vo.DownloadCompanyTaxBillVOAdmin" id="downloadMap">
+		<result column="tax_bill_time" property="taxBillTime"/>
+		<result column="park_name" property="parkName"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+		<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+		<result column="income_should_tax_money" property="incomeShouldTaxMoney"/>
+	</resultMap>
+	<resultMap type="com.yuqian.itax.tax.entity.vo.DownloadCompanyTaxBillByAccountsVO" id="downloadlByAccountsMap">
+		<result column="tax_bill_time" property="taxBillTime"/>
+		<result column="park_name" property="parkName"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+		<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+		<result column="quarter_cost_amount" property="quarterCostAmount"/>
+		<result column="year_income_amount" property="yearIncomeAmount"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+		<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+		<result column="income_should_tax_money" property="incomeShouldTaxMoney"/>
+		<result column="year_cost_amount" property="yearCostAmount"/>
+		<result column="income_tax_year_freeze_amount" property="incomeTaxYearFreezeAmount"/>
+		<result column="income_tax_refund_amount" property="incomeTaxRefundAmount"/>
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="generate_type" property="generateType"/>
+		<result column="year_iit_deduction_amount" property="yearIitDeductionAmount"/>
+	</resultMap>
+	
+	<resultMap id="approvedTaxBillMap" type="com.yuqian.itax.tax.entity.vo.ApprovedTaxBillVO">
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+		<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+		<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+	</resultMap>
+
+	<select id="queryDownloadCompanyTaxBillListByAccounts" resultMap="downloadlByAccountsMap">
+		SELECT
+		CONCAT(ctb.tax_bill_year,"年",ctb.tax_bill_seasonal,"季度") tax_bill_time,
+		p.park_name,
+		mc.company_name,
+		mc.ein,
+		mc.operator_name,
+		convert(ctb.invoice_money/100, decimal(12,2))  invoice_money,
+		convert(ctb.iit_deduction_amount/100, decimal(12,2))  iit_deduction_amount,
+		convert(ctb.quarter_cost_amount/100, decimal(12,2))  quarter_cost_amount,
+		convert(ctb.year_income_amount/100, decimal(12,2))  year_income_amount,
+		convert(ctb.year_cost_amount/100, decimal(12,2))  year_cost_amount,
+		convert(ctb.should_tax_money/100, decimal(12,2)) should_tax_money,
+		convert(ctb.vat_should_tax_money/100, decimal(12,2)) vat_should_tax_money,
+		convert(ctb.additional_should_tax_money/100, decimal(12,2))	additional_should_tax_money,
+		convert(ctb.income_should_tax_money/100, decimal(12,2))	income_should_tax_money,
+		convert(ctb.income_tax_refund_amount/100, decimal(12,2))	income_tax_refund_amount,
+		convert(ctb.income_tax_year_freeze_amount/100, decimal(12,2))	income_tax_year_freeze_amount,
+		tax_bill_status,generate_type,
+		convert((select ifnull(sum(ctb1.`iit_deduction_amount`),0) as year_iit_deduction_amount
+				FROM t_e_company_tax_bill ctb1
+				WHERE ctb1.`tax_bill_year` = #{taxBillYear} AND ctb1.`tax_bill_seasonal` <![CDATA[ <= ]]> #{taxBillSeasonal}
+				AND ctb1.`tax_bill_status` != 9 AND ctb1.company_id = mc.id )/100,decimal(12,2)) as year_iit_deduction_amount
+		FROM
+		t_e_company_tax_bill ctb
+		INNER JOIN t_e_park p on p.id=ctb.park_id
+		INNER JOIN t_e_member_company mc ON mc.id=ctb.company_id
+		<where>
+			ctb.tax_bill_year = #{taxBillYear} and ctb.tax_bill_seasonal = #{taxBillSeasonal} and ctb.tax_bill_status != 9 and ctb.park_id = #{parkId}
+		</where>
+	</select>
+	
+	<select id="getApprovedTaxBill" resultMap="approvedTaxBillMap">
+		SELECT
+		mc.company_name,
+		mc.ein,
+		convert(ctb.vat_should_tax_money/100, decimal(12,2)) vat_should_tax_money,
+		convert(ctb.additional_should_tax_money/100, decimal(12,2))	additional_should_tax_money,
+		convert(ctb.iit_deduction_amount/100, decimal(12,2))  iit_deduction_amount
+		FROM
+		t_e_company_tax_bill ctb
+		INNER JOIN t_e_member_company mc ON mc.id=ctb.company_id
+		where ctb.park_tax_bill_id = #{parkTaxBillId}
+	</select>
+	
+	
+	
+	<select id="queryDownloadCompanyTaxBillList" resultMap="downloadMap">
+		SELECT
+			CONCAT(ctb.tax_bill_year,"年",ctb.tax_bill_seasonal,"季度") tax_bill_time,
+			p.park_name,
+			mc.company_name,
+			mc.ein,
+			mc.operator_name,
+			convert(ctb.invoice_money/100, decimal(12,2))  invoice_money,
+			convert(ctb.should_tax_money/100, decimal(12,2)) should_tax_money,
+			convert(ctb.vat_should_tax_money/100, decimal(12,2)) vat_should_tax_money,
+			convert(ctb.additional_should_tax_money/100, decimal(12,2))	additional_should_tax_money,
+			convert(ctb.income_should_tax_money/100, decimal(12,2))	income_should_tax_money
+		FROM
+			t_e_company_tax_bill ctb
+		INNER JOIN t_e_park p on p.id=ctb.park_id
+		INNER JOIN t_e_member_company mc ON mc.id=ctb.company_id
+		<where>
+			ctb.park_tax_bill_id=#{parkTaxBillId} and ctb.invoice_money<![CDATA[>]]>0
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.TaxBillInfoToMemberVO" id="taxMap">
+		<result column="park_name" property="parkName"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="member_id" property="memberId"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="recoverable" property="recoverable"/>
+		<result column="supplement" property="supplement"/>
+		<result column="years" property="years"/>
+		<result column="months" property="months"/>
+		<result column="days" property="days"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+	</resultMap>
+	<select id="queryCompanyTaxBillInfoToMember" resultMap="taxMap">
+		SELECT
+			p.park_name,ctb.tax_bill_year,ctb.tax_bill_seasonal,ma.id member_id,ma.member_phone,ma.oem_code,
+			sum(case when ctb.recoverable_tax_money>0 then 1 else 0 end) recoverable,
+			sum(case when ctb.supplement_tax_money>0 then 1 else 0 end) supplement,
+			YEAR(ec.end_time) years,month(ec.end_time) months,DAY(ec.end_time) days,
+			SUM(ctb.`invoice_money`) invoice_money
+		FROM
+			t_e_company_tax_bill ctb
+		INNER JOIN t_e_park p ON p.id = ctb.park_id
+		INNER JOIN t_e_member_company mc ON mc.id = ctb.company_id
+		INNER JOIN t_e_member_account ma ON ma.id = mc.member_id
+		INNER join t_e_park_endtime_config ec ON p.id= ec.park_id and ec.`quarter` = ctb.`tax_bill_seasonal`
+		<where>
+			<if test="memberId != null">
+				and ma.id =#{memberId}
+			</if>
+			<if test="parkTaxBillId != null">
+				and ctb.park_tax_bill_id =#{parkTaxBillId}
+			</if>
+			<if test="taxBillYear != null">
+				and ctb.tax_bill_year =#{taxBillYear}
+			</if>
+			<if test="taxBillSeasonal != null">
+				and ctb.tax_bill_seasonal =#{taxBillSeasonal}
+			</if>
+		</where>
+		GROUP BY p.id,ma.id
+	</select>
+
+	<select id="queryCompanyTaxByOverTime" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_company_tax_bill
+		where
+		  tax_bill_status = 2 and  date_sub(now(), interval #{overTime} day) > affirm_time and (over_time_is_sms != 1 or over_time_is_sms is null)
+		<if test="companyId != null">
+			and company_id = #{companyId}
+		</if>
+	</select>
+
+	<select id="queryCompanyTaxByCompanyId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_company_tax_bill
+		where
+		tax_bill_status = 2 and company_id = #{companyId} and income_levy_type = 2
+	</select>
+
+	<select id="queryShouldCompanyByParkTaxBillId" resultType="java.lang.Long">
+		SELECT
+			SUM(ctb.should_tax_money)
+		FROM
+			t_e_company_tax_bill ctb
+		where ctb.park_tax_bill_id=#{parkTaxBillId}
+	</select>
+	<select id="queryCompanyTaxBillTotalVatIiTfJByTime" resultType="java.util.Map">
+		SELECT
+			IFNULL(sum(cb.vat_should_tax_money),0) vat_total_should_amount,
+			IFNULL(sum(cb.income_should_tax_money),0) iit_total_should_amount,
+			IFNULL(sum(cb.additional_should_tax_money),0) fj_total_should_amount
+		FROM
+			t_e_company_tax_bill cb
+		WHERE
+			cb.tax_bill_year=#{taxBillYear} and cb.company_id=#{companyId}
+	</select>
+
+    <update id="updateCompanyTaxBillByParkId">
+        update t_e_company_tax_bill  ctb set ctb.park_tax_bill_id=#{parkTaxBillId} where ctb.park_id=#{parkId}
+            and ctb.tax_bill_year = #{taxBillYear}
+            and ctb.tax_bill_seasonal = #{taxBillSeasonal}
+            and generate_type = 1
+    </update>
+
+	<!-- 以下内容为预税单 -->
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillPrepareListVO" id="companyTaxBillPrepareListMap">
+		<result column="company_id" property="companyId"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+		<result column="supplement_tax_money" property="supplementTaxMoney"/>
+		<result column="company_name" property="companyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+	</resultMap>
+	<select id="listPagePrepareCompanyTaxBill" resultMap="companyTaxBillPrepareListMap">
+		SELECT
+			company_id,
+			tax_bill_year,
+			tax_bill_seasonal,
+			company_name,
+			total_invoice_amount,
+			should_tax_money, already_tax_money,
+			if(should_tax_money - already_tax_money > 0, should_tax_money - already_tax_money, 0) supplement_tax_money,
+			if(already_tax_money -  should_tax_money> 0, already_tax_money -  should_tax_money, 0) recoverable_tax_money
+		FROM
+			(SELECT
+			company_id,
+			year tax_bill_year,
+			`quarter` tax_bill_seasonal,
+			company_name,
+			ifnull(vat_zp_amount, 0) + ifnull(vat_pp_amount, 0) total_invoice_amount,
+			ifnull(vat_should_tax_money, 0) + ifnull(additional_should_tax_money, 0) + ifnull(income_should_tax_money, 0) should_tax_money,
+			ifnull(vat_already_tax_money, 0) + ifnull(additional_already_tax_money, 0) + ifnull(income_already_tax_money, 0) already_tax_money
+			FROM
+			company_current_quarter_tax_statistics_view
+			WHERE
+				member_id =#{memberId}
+			<if test="companyId != null ">
+				and company_id = #{companyId}
+			</if>
+			) a
+	</select>
+	<resultMap type="com.yuqian.itax.tax.entity.vo.CompanyTaxBillPrepareVO" id="companyTaxBillPrepareDetailMap">
+		<result column="company_id" property="companyId"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="company_name" property="companyName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="vat_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+		<result column="zp_invoice_amount" property="zpInvoiceAmount"/>
+		<result column="pp_invoice_amount" property="ppInvoiceAmount"/>
+		<result column="more_quarter_invoice_amount" property="moreQuarterInvoiceAmount"/>
+		<result column="already_tax_money" property="alreadyTaxMoney"/>
+		<result column="should_tax_money" property="shouldTaxMoney"/>
+		<result column="recoverable_tax_money" property="recoverableTaxMoney"/>
+		<result column="supplement_tax_money" property="supplementTaxMoney"/>
+		<result column="vat_taxable_income_amount" property="vatTaxableIncomeAmount"/>
+		<result column="vat_rate" property="vatRate"/>
+		<result column="vat_already_tax_money" property="vatAlreadyTaxMoney"/>
+		<result column="vat_should_tax_money" property="vatShouldTaxMoney"/>
+		<result column="vat_recoverable_tax_money" property="vatRecoverableTaxMoney"/>
+		<result column="vat_supplement_tax_money" property="vatSupplementTaxMoney"/>
+		<result column="additional_taxable_income_amount" property="additionalTaxableIncomeAmount"/>
+		<result column="additional_rate" property="additionalRate"/>
+		<result column="additional_already_tax_money" property="additionalAlreadyTaxMoney"/>
+		<result column="additional_should_tax_money" property="additionalShouldTaxMoney"/>
+		<result column="additional_recoverable_tax_money" property="additionalRecoverableTaxMoney"/>
+		<result column="additional_supplement_tax_money" property="additionalSupplementTaxMoney"/>
+		<result column="income_taxable_income_amount" property="incomeTaxableIncomeAmount"/>
+		<result column="income_rate" property="incomeRate"/>
+		<result column="taxable_income_rate" property="taxableIncomeRate"/>
+		<result column="income_already_tax_money" property="incomeAlreadyTaxMoney"/>
+		<result column="income_should_tax_money" property="incomeShouldTaxMoney"/>
+		<result column="income_recoverable_tax_money" property="incomeRecoverableTaxMoney"/>
+		<result column="income_supplement_tax_money" property="incomeSupplementTaxMoney"/>
+		<result column="levy_way" property="levyWay"/>
+	</resultMap>
+	<select id="prePareDetail" resultMap="companyTaxBillPrepareDetailMap">
+		SELECT
+			company_id, tax_bill_year, tax_bill_seasonal, company_name, operator_name, vat_breaks_cycle, income_tax_breaks_cycle,
+			invoice_money, zp_invoice_amount, pp_invoice_amount, more_quarter_invoice_amount,
+
+			vat_taxable_income_amount, vat_rate, vat_should_tax_money, vat_already_tax_money,
+			if(vat_should_tax_money - vat_already_tax_money > 0, vat_should_tax_money - vat_already_tax_money, 0) vat_supplement_tax_money,
+			if(vat_already_tax_money - vat_should_tax_money > 0, vat_already_tax_money - vat_should_tax_money, 0) vat_recoverable_tax_money,
+
+			additional_taxable_income_amount, additional_rate, additional_already_tax_money, additional_should_tax_money,
+			if(additional_should_tax_money - additional_already_tax_money > 0, additional_should_tax_money - additional_already_tax_money, 0) additional_supplement_tax_money,
+			if(additional_already_tax_money - additional_should_tax_money > 0, additional_already_tax_money - additional_should_tax_money, 0) additional_recoverable_tax_money,
+
+			income_taxable_income_amount, taxable_income_rate, income_rate, income_should_tax_money, income_already_tax_money, levy_way,
+			if(income_should_tax_money - income_already_tax_money > 0, income_should_tax_money - income_already_tax_money, 0) income_supplement_tax_money,
+			if(income_already_tax_money - income_should_tax_money > 0, income_already_tax_money - income_should_tax_money, 0) income_recoverable_tax_money,
+
+			should_tax_money, already_tax_money,
+			if(should_tax_money - already_tax_money > 0, should_tax_money - already_tax_money, 0) supplement_tax_money,
+			if(already_tax_money - should_tax_money > 0, already_tax_money - should_tax_money, 0) recoverable_tax_money
+		FROM
+			(SELECT
+				company_id, year tax_bill_year, `quarter` tax_bill_seasonal, company_name, operator_name, vat_breaks_cycle,income_tax_breaks_cycle,
+				ifnull(vat_zp_amount, 0) zp_invoice_amount, ifnull(vat_pp_amount, 0) pp_invoice_amount,
+				ifnull(more_quarter_invoice_amount, 0) more_quarter_invoice_amount,
+				ifnull(vat_zp_amount, 0) + ifnull(vat_pp_amount, 0) invoice_money,
+
+				ifnull(vat_taxable_income_amount, 0) vat_taxable_income_amount, ifnull(vat_rate, 0) vat_rate,
+				ifnull(vat_should_tax_money, 0) vat_should_tax_money, ifnull(vat_already_tax_money, 0) vat_already_tax_money,
+
+				ifnull(additional_taxable_income_amount, 0) additional_taxable_income_amount, ifnull(additional_rate, 0) additional_rate,
+				ifnull(additional_already_tax_money, 0) additional_already_tax_money,
+				ifnull(additional_should_tax_money, 0) additional_should_tax_money,
+
+				ifnull(income_taxable_income_amount, 0) income_taxable_income_amount, ifnull(taxable_income_rate, 0) taxable_income_rate,
+				ifnull(income_rate, 0) income_rate, levy_way,
+				ifnull(income_should_tax_money, 0) income_should_tax_money,
+				ifnull(income_already_tax_money, 0) income_already_tax_money,
+
+				ifnull(vat_should_tax_money, 0) + ifnull(additional_should_tax_money, 0) + ifnull(income_should_tax_money, 0) should_tax_money,
+				ifnull(vat_already_tax_money, 0) + ifnull(additional_already_tax_money, 0) + ifnull(income_already_tax_money, 0) already_tax_money
+			FROM
+				company_current_quarter_tax_statistics_view
+			WHERE
+				member_id =#{memberId} and company_id = #{companyId}
+		) a
+	</select>
+
+	<resultMap id="periodPaidTaxMap" type="com.yuqian.itax.order.entity.vo.PeriodPaidTaxVo">
+		<result column="vat_fee" property="vatFee"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="income_tax" property="incomeTax"/>
+		<result column="year_cost_amount" property="yearCostAmount"/>
+		<result column="iit_deduction_amount" property="iitDeductionAmount"/>
+		<result column="current_vat_tax" property="currentVatTax"/>
+		<result column="current_income_tax" property="currentIncomeTax"/>
+		<result column="year_history_income_tax" property="yearHistoryIncomeTax"/>
+	</resultMap>
+	<select id="queryPayableTaxFee" resultMap="periodPaidTaxMap">
+		SELECT
+			ifnull(sum(b.`vat_should_tax_money`),0) vat_fee,
+			ifnull(sum(b.`additional_should_tax_money`),0) surcharge,
+			ifnull(sum(b.`income_should_tax_money`),0) income_tax,
+			ifnull(sum(b.`quarter_cost_amount`),0) year_cost_amount,
+			ifnull(sum(b.`iit_deduction_amount`),0) iit_deduction_amount,
+			ifnull((SUM(CASE WHEN b.`tax_bill_seasonal` = #{seasonal} THEN b.`vat_should_tax_money` ELSE 0 END)),0) current_vat_tax,
+			ifnull((SUM(CASE WHEN b.`tax_bill_seasonal` = #{seasonal} THEN b.`income_should_tax_money` ELSE 0 END)),0) current_income_tax,
+			IFNULL((
+				SELECT ctb.`year_payable_income_tax`
+				FROM t_e_company_tax_bill ctb
+				WHERE ctb.`tax_bill_seasonal` <![CDATA[ < ]]> #{seasonal}
+				AND ctb.`year_payable_income_tax` <![CDATA[ > ]]> 0
+				AND ctb.`tax_bill_year` = #{year}
+				AND ctb.`tax_bill_status` != 9
+				AND (CASE WHEN (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL THEN ctb.company_id =#{companyId} ELSE ctb.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+				ORDER BY ctb.`tax_bill_seasonal` DESC LIMIT 0,1), 0) year_history_income_tax
+		FROM
+			t_e_company_tax_bill b
+		WHERE
+			b.`tax_bill_year` = #{year}
+		AND
+			b.`tax_bill_seasonal` <![CDATA[ <= ]]> #{seasonal}
+		AND
+			b.`tax_bill_status` != 9
+		AND
+			( CASE WHEN (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL THEN b.company_id =#{companyId} ELSE b.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+	</select>
+
+	<resultMap id="pendingTaxBillMap" type="com.yuqian.itax.tax.entity.vo.PendingTaxBillVO">
+		<result column="id" property="companyTaxBillId"/>
+		<result column="tax_bill_year" property="taxBillYear"/>
+		<result column="tax_bill_seasonal" property="taxBillSeasonal"/>
+		<result column="tax_bill_status" property="taxBillStatus"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+		<result column="time_difference" property="timeDifference"/>
+		<result column="member_id" property="memberId"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="invoice_money" property="invoiceMoney"/>
+		<result column="company_id" property="companyId"/>
+		<result column="is_send_notice" property="isSendNotice"/>
+	</resultMap>
+	<select id="queryPendingTaxBill" resultMap="pendingTaxBillMap">
+		SELECT c.`id`, c.`tax_bill_year`, c.`tax_bill_seasonal`, c.`tax_bill_status`, c.`income_levy_type`,
+				DATEDIFF(CONCAT(DATE_FORMAT(NOW(),'%y'),'-',DATE_FORMAT(pec.`end_time`,'%m-%d')), DATE_FORMAT(NOW(),'%y-%m-%d')) time_difference,
+				ma.`id` member_id, ma.`member_phone`, mc.`operator_tel`, ma.`oem_code`, c.`invoice_money`, mc.`id` company_id, c.`is_send_notice`
+		FROM t_e_company_tax_bill c
+		INNER JOIN t_e_member_company mc ON mc.`id` = c.`company_id`
+		INNER JOIN t_e_member_account ma ON ma.`id` = mc.`member_id`
+		INNER JOIN t_e_park_endtime_config pec ON pec.`park_id` = c.`park_id` AND pec.`quarter` = c.`tax_bill_seasonal` AND pec.`oper_type` = 3
+		<where>
+		    <if test="ein != null and ein.trim() != ''">
+                and mc.`ein` = #{ein}
+            </if>
+			<if test="(ein == null or ein.trim() == '') and companyId != null">
+				and mc.`id` = #{companyId}
+			</if>
+			<if test="taxBillYear != null">
+				and c.`tax_bill_year` = #{taxBillYear}
+			</if>
+			<if test="taxBillSeasonal != null">
+				and c.`tax_bill_seasonal` = #{taxBillSeasonal}
+			</if>
+			<if test="statusRange != null and (statusRange == 1 or statusRange == 3)">
+				and c.`tax_bill_status` IN (2,6,7)
+			</if>
+			<if test="statusRange != null and statusRange == 2">
+				and c.`tax_bill_status` IN (2,6,7,8)
+			</if>
+			<if test="statusRange != null and statusRange == 4">
+				and c.`tax_bill_status` IN (1,3,4,5,10)
+			</if>
+			<if test="statusRange != null and statusRange == 5">
+				and c.`tax_bill_status` = 8
+			</if>
+			<if test="statusRange == null">
+				and c.`tax_bill_status` <![CDATA[ != ]]> 9
+			</if>
+			GROUP BY c.`id`
+			ORDER BY c.`tax_bill_year` DESC, c.`tax_bill_seasonal` DESC, c.`id` DESC
+		</where>
+	</select>
+
+	<select id="getCompanyTaxBillByTaxBillStatus" resultType="Long">
+		select id FROM t_e_company_tax_bill
+		where tax_bill_status not in(3,4,1,5,9) and park_tax_bill_id = #{parkTaxBillId}
+	</select>
+
+	<select id="getCompanyTaxBillByCompanyIdAndAddTime" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"></include>
+		FROM t_e_company_tax_bill where company_id = #{companyId} and add_time > #{addTime}
+		and (tax_bill_status = 2 or tax_bill_status = 8) order by add_time desc
+	</select>
+	<select id="getCancellationCompanyByParkTaxBillId" resultType="integer">
+		SELECT COUNT(id)
+		FROM t_e_company_tax_bill where park_tax_bill_id = #{parkTaxBillId}
+		and ((vat_deduction_amount is not null and vat_deduction_amount != 0) or (iit_deduction_amount is not null and iit_deduction_amount != 0))
+	</select>
+	<select id="getCompanyTaxBillByStatus" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"></include>
+		FROM t_e_company_tax_bill where company_id = #{companyId} and tax_bill_status = 7
+	</select>
+
+	<select id="getCostItemByCompanyBillsYear" resultType="Map">
+			select cost_item_name as costItemName ,ifnull(convert(sum(cost_item_amount), SIGNED),0) as totalAmount from t_e_company_tax_cost_item i
+			inner join t_e_company_tax_bill b on b.`id` = i.`company_tax_id`
+			where i.company_tax_id in
+			(select id from t_e_company_tax_bill where tax_bill_year = #{taxBillYear} and
+			company_id in (select id from t_e_member_company where id = #{companyId}
+			 <if test="ein !=null and ein.trim() != ''">
+				 or ein = #{ein}
+			 </if>
+			 )
+			 and b.tax_bill_seasonal <![CDATA[ < ]]> #{taxBillSeasonal})
+			 and b.tax_bill_status != 9
+			<if test="costItemName != null and costItemName.trim() != ''">
+				and i.cost_item_name = #{costItemName}
+			</if>
+			group by i.cost_item_name
+	</select>
+</mapper>

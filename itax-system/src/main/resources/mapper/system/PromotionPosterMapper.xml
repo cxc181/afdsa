@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.PromotionPosterMapper">
+    <resultMap type="com.yuqian.itax.system.entity.PromotionPosterEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="poster_name" property="posterName"/>
+			<result column="poster_sn" property="posterSn"/>
+			<result column="poster_address" property="posterAddress"/>
+			<result column="qr_left_margin" property="qrLeftMargin"/>
+			<result column="qr_top_margin" property="qrTopMargin"/>
+			<result column="qr_width" property="qrWidth"/>
+			<result column="qr_height" property="qrHeight"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, poster_name, poster_sn, poster_address, qr_left_margin, qr_top_margin, qr_width, qr_height, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.PromotionPosterVO" id="promotionPosterVOMap">
+
+		<id column="id" property="id"/>
+		<result column="poster_name" property="posterName"/>
+		<result column="poster_sn" property="posterSn"/>
+		<result column="poster_address" property="posterAddress"/>
+		<result column="oem_names" property="oemNames"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+	</resultMap>
+	<select id="queryPromotionPosterList"  resultMap="promotionPosterVOMap">
+		select * from (
+			select pp.id, pp.poster_name,
+				pp.poster_sn,
+				pp.poster_address,
+				(select  group_concat( o.oem_name) from t_r_poster_oem po,t_e_oem o where o.oem_code=po.oem_code and po.poster_id=pp.id) oem_names,
+				pp.add_time,
+				pp.add_user
+			from t_e_promotion_poster pp
+		) b
+		<where>
+			<if test="posterName != null and posterName != ''">
+				and poster_name like concat('%',#{posterName},'%')
+			</if>
+			<if test="posterSn != null and posterSn != ''">
+				and poster_sn =#{posterSn}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and oem_names like concat('%',#{oemName},'%')
+			</if>
+		</where>
+	</select>
+	<select id="getMaxPosterSn" resultType="int">
+		select max(ifnull(pp.poster_sn,0))+1 poster_sn from t_e_promotion_poster pp
+	</select>
+
+	<select id="selectPromotionPosterByNotId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_promotion_poster where id !=#{id} and poster_sn=#{sn}
+	</select>
+	<select id="getPromotionPosterList" resultMap="baseEntityMap">
+		select pp.* from t_r_poster_oem po
+		INNER JOIN t_e_promotion_poster pp on pp.id = po.poster_id
+		where po.oem_code = #{oemCode}
+		order by pp.poster_sn
+	</select>
+</mapper>

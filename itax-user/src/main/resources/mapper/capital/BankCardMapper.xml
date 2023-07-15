@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.capital.dao.UserBankCardMapper">
+    <resultMap type="com.yuqian.itax.capital.entity.UserBankCardEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="user_name" property="userName"/>
+			<result column="id_card" property="idCard"/>
+			<result column="phone" property="phone"/>
+			<result column="bank_number" property="bankNumber"/>
+			<result column="status" property="status"/>
+			<result column="bank_card_type" property="bankCardType"/>
+			<result column="professional_bank_id" property="professionalBankId"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="bank_code" property="bankCode"/>
+			<result column="user_type" property="userType"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.capital.entity.vo.BankCardVO" id="bankCardMap">
+		<id column="id" property="id"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="bank_card_type" property="bankCardType"/>
+		<result column="bank_code" property="bankCode"/>
+		<result column="phone" property="reserveMobile"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id, oem_code, bank_name, user_name, id_card, phone, bank_number, status, bank_card_type, professional_bank_id, add_time, add_user, update_time, update_user, remark,bank_code,user_type
+    </sql>
+	<select id="getBankCardInfoByUserIdAndUserType" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_user_bank_card
+		where oem_code=#{oemCode} and user_id=#{userId} and user_type = #{userType} and status = 2
+	</select>
+
+	<!-- 查询用户绑定的银行卡列表 add by Kaven 2019-12-16 -->
+	<select id="listBankCards" resultMap="bankCardMap">
+		select id,bank_name,bank_number,bank_card_type,bank_code,phone
+		from t_e_user_bank_card
+		where oem_code = #{oemCode} and user_id = #{userId} and status = 2
+	</select>
+
+	<!-- 根据银行卡号和机构编码获取系统银行号 add ni.jiang -->
+	<select id="getBankNoByBankAccount" resultType="string">
+		select bank_no from sys_e_bank_info where bank_code in (select bank_code from t_e_user_bank_card where bank_number = #{bankNumber} and oem_code = #{oemCode}) limit 1
+	</select>
+</mapper>

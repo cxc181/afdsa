@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.OrderSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.OrderSnapshotEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="user_id" property="userId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="company_id" property="companyId"/>
+			<result column="user_type" property="userType"/>
+			<result column="order_type" property="orderType"/>
+			<result column="product_id" property="productId"/>
+			<result column="upgrade_level_no" property="upgradeLevelNo"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="service_fee" property="serviceFee"/>
+			<result column="profit_amount" property="profitAmount"/>
+			<result column="oem_profits" property="oemProfits"/>
+			<result column="snapshot_time" property="snapshotTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, user_id, park_id, oem_code, company_id, user_type, order_type, product_id, upgrade_level_no, pay_amount, service_fee, profit_amount, oem_profits, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.snapshot.entity.vo.RechargeWithdrawSnapshotVO" id="rechargeWithdrawMap">
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="recharge" property="rechargeAmt"/>
+		<result column="withdraw" property="withdrawAmt"/>
+	</resultMap>
+	<select id="rechargeWithdraw" parameterType="com.yuqian.itax.snapshot.entity.query.OrderSnapshotQuery" resultMap="rechargeWithdrawMap">
+		select oem.oem_name, oem.oem_code,
+			convert(sum(case when order_type = 1 then ifnull(pay_amount, 0) - ifnull(service_fee, 0) else 0 end)/100, decimal(65,2)) recharge,
+			convert(sum(case when order_type = 3 then ifnull(pay_amount, 0) - ifnull(service_fee, 0) else 0 end)/100, decimal(65,2)) withdraw
+		from
+			t_e_order_snapshot orders
+		right join
+			t_e_oem oem on oem.oem_code = orders.oem_code
+		<if test="startDate != null and startDate.trim() != ''">
+			and orders.snapshot_time >= #{startDate}
+		</if>
+		<if test="endDate != null and endDate.trim() != ''">
+			and orders.snapshot_time &lt;= #{endDate}
+		</if>
+		<where>
+			oem.oem_status != 0
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+		</where>
+		group by
+			oem.oem_code
+	</select>
+	<resultMap type="com.yuqian.itax.snapshot.entity.vo.OemCapitalVO" id="oemCapitalMap">
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="register_amt" property="registerAmt"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="total_tax_fee" property="totalTaxFee"/>
+		<result column="upgrade_amt" property="upgradeAmt"/>
+		<result column="corporate_amt" property="corporateAmt"/>
+		<result column="custody_amt" property="custodyAmt"/>
+		<result column="add_profit_amt" property="addProfitAmt"/>
+		<result column="total_profit_amt" property="totalProfitAmt"/>
+	</resultMap>
+	<select id="oemCapital" parameterType="com.yuqian.itax.snapshot.entity.query.OemCapitalQuery" resultMap="oemCapitalMap">
+		select oem.oem_name, oem.oem_code,
+			convert(sum(case when orders.snapshot_time >= #{startDate} and order_type = 5 then pay_amount else 0 end)/100, decimal(65,2)) register_amt,
+			b.service_fee,
+			b.postage_fees + convert(sum(case when orders.snapshot_time >= #{startDate} and order_type = 9 then pay_amount else 0 end)/100, decimal(65,2)) postage_fees,
+			b.total_tax_fee,
+			convert(sum(case when orders.snapshot_time >= #{startDate} and order_type = 7 then pay_amount else 0 end)/100, decimal(65,2)) upgrade_amt,
+			convert(sum(case when orders.snapshot_time >= #{startDate} and order_type = 10 then pay_amount else 0 end)/100, decimal(65,2)) corporate_amt,
+			convert(sum(case when orders.snapshot_time >= #{startDate} and order_type = 15 then pay_amount else 0 end)/100, decimal(65,2)) custody_amt,
+			(convert(sum(case when orders.snapshot_time >= #{startDate} then orders.oem_profits else 0 end)/100, decimal(65,2)) + b.add_oem_profits) add_profit_amt,
+			(convert(sum(orders.oem_profits)/100, decimal(65,2)) + b.oem_profits) total_profit_amt
+		from
+			t_e_order_snapshot orders
+		right join
+			t_e_oem oem on oem.oem_code = orders.oem_code
+		<if test="endDate != null and endDate.trim() != ''">
+			and orders.snapshot_time &lt;= #{endDate}
+		</if>
+		left join
+			(select i.oem_code,
+				convert(sum(case when i.snapshot_time >= #{startDate} then i.service_fee else 0 end)/100, decimal(65,2)) service_fee,
+				convert(sum(case when i.snapshot_time >= #{startDate} then i.postage_fees else 0 end)/100, decimal(65,2)) postage_fees,
+				convert(sum(case when i.snapshot_time >= #{startDate} then i.total_tax_fee else 0 end)/100, decimal(65,2)) total_tax_fee,
+				convert(sum(case when i.snapshot_time >= #{startDate} then i.oem_profits else 0 end)/100, decimal(65,2)) add_oem_profits,
+				convert(sum(i.oem_profits)/100, decimal(65,2)) oem_profits
+			from
+				t_e_invoice_order_snapshot i
+			WHERE
+				i.snapshot_time &lt;= #{endDate}
+			GROUP BY
+				i.oem_code)
+			b on orders.oem_code = b.oem_code
+		<where>
+			oem.oem_status != 0
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+		</where>
+		group by
+			oem.oem_code
+	</select>
+
+	<insert id="updateOrInsertOrderSnapshot">
+		INSERT INTO t_e_order_snapshot (order_no, user_id, park_id, oem_code, company_id, user_type, order_type, product_id, upgrade_level_no, pay_amount, service_fee, profit_amount, oem_profits, snapshot_time, add_time, add_user, update_time, update_user, remark)
+		SELECT O.ORDER_NO, O.USER_ID, O.PARK_ID, O.OEM_CODE,CASE WHEN ORDER_TYPE = 5 THEN (SELECT MAX(COMPANY_ID) FROM  T_E_COMPANY_INVOICE_CATEGORY WHERE ORDER_NO = O.ORDER_NO)	WHEN ORDER_TYPE = 8 THEN (SELECT DISTINCT COMPANY_ID FROM  T_E_COMPANY_CANCEL_ORDER WHERE ORDER_NO = O.ORDER_NO) WHEN ORDER_TYPE = 10 THEN (SELECT DISTINCT COMPANY_ID FROM  T_E_CORPORATE_ACCOUNT_APPLY_ORDER WHERE ORDER_NO = O.ORDER_NO)		ELSE NULL END COMPANY_ID,     O.USER_TYPE, O.ORDER_TYPE,O.PRODUCT_ID,		CASE WHEN ORDER_TYPE = 7 THEN (SELECT LEVEL_NO FROM T_E_MEMBER_LEVEL WHERE ID = O.PRODUCT_ID) ELSE NULL END UPGRADE_LEVEL_NO, O.PAY_AMOUNT,		CASE WHEN ORDER_TYPE =3 OR ORDER_TYPE =4 THEN SERVICE_FEE	WHEN ORDER_TYPE =1 OR ORDER_TYPE =2 OR ORDER_TYPE =11 THEN 0 ELSE PAY_AMOUNT END SERVICE_FEE,		CASE WHEN PROFIT_STATUS = 2 THEN O.PROFIT_AMOUNT ELSE 0 END PROFIT_AMOUNT,		(SELECT IFNULL(AVAILABLE_PROFITS_AMOUNT - SUM(PROFITS_AMOUNT),0) FROM T_E_PROFITS_DETAIL WHERE ORDER_NO = O.ORDER_NO AND PROFITS_STATUS IN (2,3)) OEM_PROFITS,		IFNULL(O.UPDATE_TIME,O.ADD_TIME) SNAPSHOT_TIME,		NOW() ADD_TIME, NULL ADD_USER, NULL UPDATE_TIME, NULL UPDATE_USER, '历史数据处理' REMARK
+		FROM T_E_ORDER O
+		<where>
+			ORDER_TYPE <![CDATA[<>]]> '6'
+			AND ((ORDER_TYPE IN (1,2,3,4) AND ORDER_STATUS = 2 )	OR (ORDER_TYPE = 5 AND ORDER_STATUS = 5 )	OR (ORDER_TYPE = 7 AND ORDER_STATUS = 3 )	OR (ORDER_TYPE = 8 AND ORDER_STATUS = 2 )	OR (ORDER_TYPE = 9 AND ORDER_STATUS = 4 )	OR (ORDER_TYPE = 10 AND ORDER_STATUS = 2)	OR (ORDER_TYPE = 11 AND ORDER_STATUS = 2) OR (ORDER_TYPE = 12 AND ORDER_STATUS = 2) OR (ORDER_TYPE = 13 AND ORDER_STATUS = 2) OR (ORDER_TYPE = 14 AND ORDER_STATUS = 2) OR (ORDER_TYPE = 15 AND ORDER_STATUS = 2)	)
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(IFNULL(O.UPDATE_TIME,O.ADD_TIME),'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND DATE_FORMAT(IFNULL(O.UPDATE_TIME,O.ADD_TIME),'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="userId != null ">
+				AND O.USER_ID=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND O.oem_code=#{oemCode}
+			</if>
+		</where>
+	</insert>
+
+	<delete id="deleteOrderSnapshotByDate">
+		DELETE from t_e_order_snapshot
+		<where>
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="userId != null ">
+				AND USER_ID=#{userId}
+			</if>
+			<if test="oemCode != null ">
+				AND O.oem_code=#{oemCode}
+			</if>
+		</where>
+	</delete>
+</mapper>

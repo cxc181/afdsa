@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.ClassificationCodeVatMapper">
+
+    <resultMap type="com.yuqian.itax.system.entity.ClassificationCodeVatEntity" id="codeVatEntityMap">
+        <id column="id" property="id"/>
+        <result column="tax_classification_code" property="taxClassificationCode"/>
+        <result column="vat_fee_rate" property="vatFeeRate"/>
+        <result column="add_time" property="addTime"/>
+        <result column="add_user" property="addUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+	<!--根据税收分类编码查询对应的  增值税率-->
+	<select id="queryVatFeeRate" resultType="java.lang.String">
+           select
+                 <!-- IFNULL(group_concat(vat_fee_rate,',') ,0) -->
+                 group_concat(cast(vat_fee_rate as decimal(6,2)))
+            from t_r_classification_code_vat
+            where tax_classification_code = #{taxClassificationCode}
+	</select>
+
+    <select id="queryVatFeeRateList" resultMap="codeVatEntityMap">
+            select
+                  id,
+                  tax_classification_code,
+                  vat_fee_rate,
+                  add_time,
+                  add_user
+            from t_r_classification_code_vat
+            where tax_classification_code = #{taxClassificationCode}
+    </select>
+    <select id="queryVatRateByCompanyCategoryId" resultType="decimal">
+        SELECT v.`vat_fee_rate`
+        FROM t_r_classification_code_vat v
+        INNER JOIN t_e_invoice_category_base b ON b.`tax_classification_code` = v.`tax_classification_code`
+        WHERE b.`id` = #{companyCategoryId}
+    </select>
+
+</mapper>

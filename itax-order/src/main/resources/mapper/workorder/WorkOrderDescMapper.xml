@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.workorder.dao.WorkOrderDescMapper">
+    <resultMap type="com.yuqian.itax.workorder.entity.WorkOrderDescEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="work_order_no" property="workOrderNo"/>
+			<result column="desc_content" property="descContent"/>
+			<result column="customer_service_account" property="customerServiceAccount"/>
+			<result column="customer_service_name" property="customerServiceName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+
+	<resultMap type="com.yuqian.itax.workorder.entity.vo.WorkOrderDescVO" id="listMap">
+		<result column="customer_service_name" property="customerServiceName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="desc_content" property="descContent"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, work_order_no, desc_content, customer_service_account, customer_service_name, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryByWorkOrderNo" resultMap="listMap">
+		select
+		customer_service_name,add_time,desc_content
+		FROM t_e_work_order_desc
+		where work_order_no = #{workOrderNo} order by add_time desc
+	</select>
+</mapper>

@@ -1,0 +1,32 @@
+spring:
+  #mysql
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.16.100.40:3306/itax_dev #数据同步
+    username: itax
+    password: itax_7890
+  #redis
+  redis:
+      database: 6
+      host: 172.16.100.40
+      port: 6379
+      password: redis_test123
+  rabbitmq:
+    host: 172.16.100.40
+    port: 5672
+    username: rabbit_itax_dev
+    password: 123456
+    virtual-host: /itax_dev
+
+# log config
+xxl:
+  job:
+    admin:
+      addresses: http://172.16.100.40:8080/xxl-job-admin
+    executor:
+      appname: itax-xxl-job
+      ip: 172.16.100.104
+      port: 6666
+      logpath: /app/logs/itax-xxl-job/jobhandler
+      logretentiondays: -1
+    accessToken:

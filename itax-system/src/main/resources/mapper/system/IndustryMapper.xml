@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.IndustryMapper">
+    <resultMap type="com.yuqian.itax.system.entity.IndustryEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="industry_name" property="industryName"/>
+			<result column="example_name" property="exampleName"/>
+			<result column="parent_industry_id" property="parentIndustryId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, industry_name,example_name, parent_industry_id, park_id, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.IndustryInfoVO" id="listEntityMap">
+		<id column="id" property="id"/>
+		<result column="industry_name" property="industryName"/>
+		<result column="example_name" property="exampleName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="order_desc" property="orderDesc"/>
+		<result column="example_invoice" property="exampleInvoice"/>
+	</resultMap>
+
+	<select id="listIndustryInfo" parameterType="com.yuqian.itax.system.entity.query.IndustryQuery" resultMap="listEntityMap">
+		select
+			i.id, i.company_type, i.industry_name, i.example_name, i.order_desc,i.example_invoice
+		from
+			t_e_industry i
+		left join t_e_business_scope s on i.id = s.industry_id
+		left join t_e_ratify_tax tax on i.id = tax.industry_id
+		left join t_e_invoice_category cate on i.id = cate.industry_id
+		<where>
+			<if test="industryId != null">
+				and i.id = #{industryId}
+			</if>
+			<if test="parkId != null">
+				and i.park_id = #{parkId}
+			</if>
+			<if test="likeIndustryName != null and likeIndustryName.trim() != ''">
+				and i.industry_name like concat('%', #{likeIndustryName}, '%')
+			</if>
+			<if test="likeBusinessContent != null and likeBusinessContent.trim() != ''">
+				and s.business_content like concat('%', #{likeBusinessContent}, '%')
+			</if>
+			<if test="likeTaxName != null and likeTaxName.trim() != ''">
+				and tax.tax_name like concat('%', #{likeTaxName}, '%')
+			</if>
+			<if test="likeCategoryName != null and likeCategoryName.trim() != ''">
+				and cate.category_name like concat('%', #{likeCategoryName}, '%')
+			</if>
+			<if test="companyType != null">
+				and i.company_type = #{companyType}
+			</if>
+		</where>
+		group by i.id
+		order by i.add_time desc, i.id DESC
+	</select>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.IndustryVO" id="industryApiVO">
+		<id column="id" property="id"/>
+		<result column="industry_name" property="industryName"/>
+		<result column="example_name" property="exampleName"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+
+	<resultMap id="industryAndParkMap" type="com.yuqian.itax.system.entity.vo.IndustryAndParkInfoVo">
+		<id column="id" property="id"/>
+		<id column="industry_name" property="industryName"/>
+		<id column="example_name" property="exampleName"/>
+		<id column="park_id" property="parkId"/>
+		<id column="park_name" property="parkName"/>
+	</resultMap>
+
+	<!--查询行业列表（剔除oem机构黑名单行业） modify by Kaven 2020-08-10 -->
+	<select id="getIndustryList" resultMap="industryApiVO">
+		SELECT i.id, i.industry_name, i.example_name, i.remark
+		FROM t_e_industry i
+		LEFT JOIN t_e_park p ON p.id = i.park_id
+		<where>
+			p.park_code = #{parkCode} and i.company_type = #{companyType} and i.status = 1
+			and i.id not in (select industry_id from t_r_oem_park_industry_blacklist where oem_code = #{oemCode} and park_code = #{parkCode})
+			<!--<if test="industryName != null and industryName.trim() != ''">-->
+				<!--and i.industry_name like concat('%', #{industryName}, '%')-->
+			<!--</if>-->
+		</where>
+		order by i.add_time desc
+	</select>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.IndustryAdminVO" id="industryAdminVO">
+		<id column="id" property="id"/>
+		<result column="industry_name" property="industryName"/>
+		<result column="park_id" property="parkId"/>
+		<result column="is_select" property="isSelect"/>
+	</resultMap>
+	<select id="queryBlackListByParkId" resultMap="industryAdminVO">
+		select
+			i.id, i.industry_name, i.park_id
+			<choose>
+				<when test="oemCode != null and oemCode.trim() != ''">
+					, IFNULL((select 1 from t_r_oem_park_industry_blacklist black
+					inner join t_r_oem_park op on op.park_id = black.park_id
+					where
+					black.park_id = i.park_id
+					and black.industry_id = i.id
+					and black.oem_code = op.oem_code
+					and op.oem_code = #{oemCode}
+					),0) is_select
+				</when>
+				<otherwise>
+					, 0 is_select
+				</otherwise>
+			</choose>
+		from
+			t_e_industry i
+		inner join t_e_park park on park.id = i.park_id
+		where
+			i.company_type = 1
+			and i.park_id = #{parkId}
+			and i.status = 1
+		order by
+			i.add_time desc
+	</select>
+	<select id="selectByIndustryIds" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns" />
+		from
+			t_e_industry
+		where
+			park_id = #{parkId}
+			and id in
+		<foreach collection="ids" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="queryIndustryByParkIds" resultMap="industryAndParkMap">
+		select p.park_name,i.id,i.industry_name,i.example_name,i.park_id
+		from
+		t_e_industry i
+		left join t_e_park p on i.park_id = p.id
+		where i.park_id in
+		<foreach collection="parkIds" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		and i.status = 1 order by i.id asc
+	</select>
+
+	<resultMap id="ParkIndustryPresentationMap" type="com.yuqian.itax.system.entity.vo.ParkIndustryPresentationVO">
+		<result column="business_content" property="businessContent"/>
+		<result column="tax_name" property="taxName"/>
+		<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<result column="park_name" property="parkName"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+		<result column="park_policy_desc" property="parkPolicyDesc"/>
+		<result column="company_type" property="companyType"/>
+	</resultMap>
+	<select id="queryIndustryPresentation" resultMap="ParkIndustryPresentationMap">
+		SELECT
+		  b.`business_content`,
+		  t.`tax_name`,
+		  tp.`VAT_breaks_amount`,
+		  tp.`income_tax_breaks_amount`,
+		  p.`park_name`,
+		  tp.`VAT_breaks_cycle`,
+		  tp.`income_tax_breaks_cycle`,
+		  tp.`park_policy_desc`,
+		  tp.`company_type`
+		FROM
+		  `t_e_industry` i
+		  INNER JOIN `t_e_business_scope` b
+			ON b.`industry_id` = i.`id`
+		  INNER JOIN `t_e_ratify_tax` t
+			ON t.`industry_id` = i.`id`
+		  INNER JOIN `t_e_park` p
+			ON p.`id` = i.`park_id`
+		  INNER JOIN `t_e_tax_policy` tp
+			ON i.`park_id` = tp.`park_id` AND tp.`status` = 1  AND tp.`company_type` = i.`company_type` AND tp.taxpayer_type = 1
+		WHERE
+		  i.`id` = #{industryId}
+	</select>
+</mapper>

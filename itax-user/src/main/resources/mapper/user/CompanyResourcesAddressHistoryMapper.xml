@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyResourcesAddressHistoryMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyResourcesAddressHistoryEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="resources_type" property="resourcesType"/>
+			<result column="update_before" property="updateBefore"/>
+			<result column="update_after" property="updateAfter"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, resources_type, update_before, update_after, oem_code, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryCompanyResourcesAddressHistoryList" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns" />
+		from
+		t_e_company_resources_address_history
+		where
+		company_id = #{companyId}
+		and oem_code = #{oemCode}
+		and  resources_type =#{resourcesType}
+		order by add_time desc
+	</select>
+
+</mapper>

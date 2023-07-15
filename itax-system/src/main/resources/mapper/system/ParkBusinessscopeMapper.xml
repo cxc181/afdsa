@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.ParkBusinessscopeMapper">
+    <resultMap type="com.yuqian.itax.system.entity.ParkBusinessscopeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="businessscope_name" property="businessscopeName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, businessscope_name, add_time, add_user, update_time, update_user, remark,is_delete
+    </sql>
+    <select id="queryByParkId" resultType="string">
+		SELECT businessscope_name
+		FROM t_e_park_businessscope
+		<where>
+			is_delete = 1
+			<if test="parkId != null">
+				and park_id = #{parkId}
+			</if>
+			<if test="businessScopeName != null and businessScopeName.trim() != ''">
+				and businessscope_name like concat('%', #{businessScopeName}, '%')
+			</if>
+			<if test="businessScopes != null">
+				and businessscope_name in
+				<foreach collection="businessScopes" item="businessScope" open="(" close=")" separator=",">
+					#{businessScope}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<resultMap id="businessMap" type="com.yuqian.itax.park.entity.vo.ParkBusinessScopeVO">
+		<result column="businessscope_name" property="businessScopeName"/>
+	</resultMap>
+
+	<select id="queryByFindByParkIdAndBusinessScopeName" resultMap="businessMap">
+		SELECT businessscope_name,id
+		FROM t_e_park_businessscope
+		<where>
+			<if test="parkId != null">
+				and	park_id = #{parkId}
+			</if>
+			<if test="businessScopeName != null and businessScopeName.trim() != ''">
+				and businessscope_name like concat('%', #{businessScopeName}, '%')
+			</if>
+			and is_delete = 1
+		</where>
+	</select>
+	
+	<select id="getParkBusinessscopeByParkIdAndName" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"></include>
+		FROM t_e_park_businessscope
+		<where>
+			<if test="parkId != null">
+				and park_id = #{parkId}
+			</if>
+			<if test="scopeName != null">
+				and businessscope_name = #{scopeName}
+			</if>
+			and is_delete = 1
+		</where>
+	</select>
+
+	<select id="getParkBusinessscopeByScopeName" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"></include>
+		FROM t_e_park_businessscope
+		where park_id = #{parkId} and is_delete = 1 and businessscope_name in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+	<resultMap id="ParkBusinessScopeWithTaxCodeMap" type="com.yuqian.itax.park.entity.vo.ParkBusinessScopeWithTaxCodeVO">
+		<result column="tax_classification_code" property="taxClassificationCode"/>
+		<result column="park_businessscope_id" property="parkBusinessscopeId"/>
+		<result column="businessscope_name" property="businessscopeName"/>
+		<result column="businessscope_base_id" property="businessscopeBaseId"/>
+	</resultMap>
+    <select id="queryByTaxCode" resultMap="ParkBusinessScopeWithTaxCodeMap">
+		SELECT bt.`tax_classification_code`, pb.`id` park_businessscope_id, pb.`businessscope_name`, bt.`id` businessscope_base_id
+		FROM t_e_park_businessscope pb
+		INNER JOIN t_e_park p ON p.`id` = pb.`park_id`
+		INNER JOIN t_r_park_businessscope_taxcode pbt ON pbt.`park_businessscope_id` = pb.`id`
+		INNER JOIN t_e_businessscope_taxcode bt ON bt.`id` = pbt.`businessscope_base_id`
+		WHERE p.`status` = 1 AND pb.`park_id` = #{parkId}
+		AND bt.`tax_classification_code` IN
+		<foreach collection="taxCodeSet" item="taxCode" open="(" close=")" separator=",">
+			#{taxCode}
+		</foreach>
+		GROUP BY pb.`park_id`,bt.`tax_classification_code`
+	</select>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.ProductByParkMapper">
+    <resultMap type="com.yuqian.itax.product.entity.ProductByParkEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="product_id" property="productId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="prod_type" property="prodType"/>
+			<result column="prod_amount" property="prodAmount"/>
+			<result column="amount_name" property="amountName"/>
+			<result column="amount_way" property="amountWay"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="is_delete" property="isDelete"/>
+			<result column="processing_fee" property="processingFee"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="cancel_total_limit" property="cancelTotalLimit"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.product.entity.vo.ProductByParkVO" id="infoMap">
+		<id column="id" property="id"/>
+		<result column="park_id" property="parkId"/>
+		<result column="prod_amount" property="prodAmount"/>
+		<result column="amount_name" property="amountName"/>
+		<result column="cancel_total_limit" property="cancelTotalLimit"/>
+		<result column="processing_fee" property="processingFee"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, product_id, park_id, prod_type, prod_amount, amount_name, amount_way, oem_code, is_delete, processing_fee, add_time, add_user, update_time, update_user, remark, cancel_total_limit
+    </sql>
+
+	<select id="getProductByParkByProductId" resultMap="infoMap">
+		select id,park_id,prod_amount,amount_name,cancel_total_limit,processing_fee
+		from t_e_product_by_park
+		where product_id = #{productId} and is_delete = 0
+	</select>
+
+	<update id="updateIsDelete">
+		update t_e_product_by_park set is_delete = 1 where id = #{id}
+	</update>
+
+</mapper>

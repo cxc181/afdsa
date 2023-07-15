@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agreement.dao.AgreementTemplateMapper">
+    <resultMap type="com.yuqian.itax.agreement.entity.AgreementTemplateEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="template_code" property="templateCode"/>
+			<result column="template_name" property="templateName"/>
+			<result column="template_type" property="templateType"/>
+			<result column="template_content" property="templateContent"/>
+			<result column="template_html_url" property="templateHtmlUrl"/>
+			<result column="template_status" property="templateStatus"/>
+			<result column="template_desc" property="templateDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="template_show_name" property="templateShowName"/>
+    </resultMap>
+
+
+	<resultMap type="com.yuqian.itax.agreement.entity.vo.AgreementTemlateListVO" id="listMap">
+		<id column="id" property="id"/>
+		<result column="template_code" property="templateCode"/>
+		<result column="template_name" property="templateName"/>
+		<result column="template_type" property="templateType"/>
+		<result column="template_status" property="templateStatus"/>
+		<result column="template_desc" property="templateDesc"/>
+		<result column="template_html_url" property="templateHtmlUrl"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.agreement.entity.vo.AgreementTemplateDetailVO" id="detailMap">
+		<id column="id" property="id"/>
+		<result column="template_code" property="templateCode"/>
+		<result column="template_name" property="templateName"/>
+		<result column="template_type" property="templateType"/>
+		<result column="template_desc" property="templateDesc"/>
+		<result column="template_content" property="templateContent"/>
+		<result column="template_show_name" property="templateShowName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.agreement.entity.vo.AgreementTemplateSqlVO" id="AgreementTemplateSqlVO">
+		<result column="real_name" property="realName"/>
+		<result column="id_card_no" property="idCardNo"/>
+		<result column="id_card_addr" property="idCardAddr"/>
+		<result column="id_card_front" property="idCardFront"/>
+		<result column="id_card_back" property="idCardBack"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="legal_id_card_number" property="legalIdCardNumber"/>
+		<result column="legal_id_card_addr" property="legalIdCardAddr"/>
+		<result column="legal_id_card_front" property="legalIdCardFront"/>
+		<result column="legal_id_card_reverse" property="legalIdCardReverse"/>
+		<result column="contact_phone" property="contactPhone"/>
+		<result column="registered_name" property="registeredName"/>
+		<result column="shop_name_one" property="shopNameOne"/>
+		<result column="shop_name_two" property="shopNameTwo"/>
+		<result column="business_scope" property="businessScope"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="park_address" property="parkAddress"/>
+		<result column="park_belongs_company_name" property="parkBelongsCompanyName"/>
+		<result column="park_belongs_company_address" property="parkBelongsCompanyAddress"/>
+		<result column="park_ein" property="parkEin"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="oem_company_name" property="oemCompanyName"/>
+		<result column="oem_ein" property="oemEin"/>
+		<result column="oem_belongs_company_address" property="oemBelongsCompanyAddress"/>
+		<result column="oem_bank_number" property="oemBankNumber"/>
+		<result column="oem_bank_name" property="oemBankName"/>
+		<result column="cancel_total_limit" property="cancelTotalLimit"/>
+		<result column="prod_amount" property="prodAmount"/>
+		<result column="business_address" property="businessAddress"/>
+		<result column="sign_img" property="signImg"/>
+		<result column="sign_time" property="signTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="annual_fee" property="annualFee"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="agent_name" property="agentName"/>
+		<result column="agent_id_card_no" property="agentIdCardNo"/>
+		<result column="agent_id_card_front" property="agentIdCardFront"/>
+		<result column="agent_id_card_back" property="agentIdCardBack"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_official_seal_img" property="oemOfficialSealImg"/>
+		<result column="park_official_seal_img" property="parkOfficialSealImg"/>
+	</resultMap>
+
+	<resultMap id="parkAgreementsMap" type="com.yuqian.itax.agreement.entity.vo.ParkAgreementsVO">
+		<result column="template_code" property="templateCode"/>
+		<result column="template_desc" property="templateDesc"/>
+		<result column="template_name" property="templateName"/>
+		<result column="template_html_url" property="templateHtmlUrl"/>
+		<result column="template_type" property="templateType"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, template_code, template_name, template_type, CONVERT(template_content USING utf8mb4) AS template_content, template_html_url, template_status, template_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<select id="getTableInfo" resultMap="AgreementTemplateSqlVO">
+		SELECT
+		ma.real_name,
+		ma.id_card_no,
+		ma.id_card_addr,
+		ma.id_card_front,
+		ma.id_card_back,
+		ma.member_phone,
+		t.operator_name,
+		t.id_card_number AS legal_id_card_number,
+		t.id_card_addr AS legal_id_card_addr,
+		t.id_card_front AS legal_id_card_front,
+		t.id_card_reverse AS legal_id_card_reverse,
+		t.contact_phone,
+		t.registered_name,
+		t.shop_name_one,
+		t.shop_name_two,
+		t.business_scope,
+		oem.oem_name,
+		oem.official_seal_img as oem_official_seal_img,
+		pa.official_seal_img as park_official_seal_img,
+		pa.park_name,
+		pa.park_city,
+		pa.park_address,
+		pa.belongs_company_name AS park_belongs_company_name,
+		pa.belongs_company_address AS park_belongs_company_address,
+		pa.ein AS park_ein,
+		pa.recipient,
+		pa.recipient_phone,
+		io.company_name AS oem_company_name,
+		io.bank_number AS oem_bank_number,
+		oem.ein AS oem_ein,
+		oem.belongs_company_address AS oem_belongs_company_address,
+		io.bank_name AS oem_bank_name,
+		convert(ifnull(ppcancel.cancel_total_limit,procancel.cancel_total_limit)/100, decimal(12,2)) cancel_total_limit,
+		convert(ifnull(ppcancel.prod_amount,procancel.prod_amount)/100, decimal(12,2)) prod_amount,
+		convert(ifnull(ppcreate.prod_amount,procreate.prod_amount)/100, decimal(12,2)) annual_fee,
+		t.business_address,
+		t.sign_img,
+		case when pa.process_mark = 1 then (select DATE_FORMAT(add_time,'%Y年%m月%d日') from t_e_register_order_change_record where order_no = t.order_no and order_status = 1)
+      		else (select DATE_FORMAT(add_time,'%Y年%m月%d日') from t_e_register_order_change_record where order_no = t.order_no and order_status = 3) end sign_time,
+		DATE_FORMAT(mc.end_time,'%Y年%m月%d日') end_time,
+		ag.agent_account,
+		ag.agent_name,
+		ag.id_card_no as agent_id_card_no,
+		ag.id_card_front as agent_id_card_front,
+		ag.id_card_back as agent_id_card_back
+		FROM
+		t_e_member_account ma
+		INNER JOIN t_e_oem oem ON oem.oem_code = ma.oem_code
+		INNER JOIN t_e_invoice_info_by_oem io ON io.oem_code = oem.oem_code
+		INNER JOIN t_r_oem_park op ON oem.oem_code = op.oem_code
+		INNER JOIN t_e_park pa ON pa.id = op.park_id
+		LEFT JOIN t_e_park_agent_account ag on ag.park_id = pa.id and ag.status = 1 AND ag.id_card_front is not null
+		LEFT JOIN t_e_member_company mc ON mc.member_id = ma.id AND mc.id = #{companyId}
+		LEFT JOIN (
+		SELECT
+		o.product_id,
+		ro.*
+		FROM
+		t_e_order o,
+		t_e_register_order ro
+		WHERE
+		o.order_no = ro.order_no
+		AND o.order_type = 5
+		) t ON t.oem_code = ma.oem_code
+		AND (
+		t.order_no = #{orderNo}
+		OR t.order_no = mc.order_no
+		)
+		LEFT JOIN t_e_product procreate ON ma.oem_code = procreate.oem_code AND (procreate.id = t.product_id OR (procreate.prod_type = #{companyType} AND procreate.`status` = 1))
+		LEFT JOIN t_e_product_by_park ppcreate ON procreate.id = ppcreate.product_id AND ppcreate.park_id = #{parkId} AND ppcreate.is_delete = 0
+		LEFT JOIN t_e_product procancel ON ma.oem_code = procancel.oem_code AND procancel.prod_type = 11 AND procancel.`status` = 1
+		LEFT JOIN t_e_product_by_park ppcancel ON procancel.id = ppcancel.product_id AND ppcancel.park_id = #{parkId} AND ppcancel.is_delete = 0
+		WHERE 1=1
+		<if test="memberId == null or memberId ==0 ">
+			and ma.oem_code = #{oemCode}
+		</if>
+		<if test="memberId != null and memberId > 0">
+			and ma.id = #{memberId}
+		</if>
+		AND pa.id = #{parkId}
+		limit 1
+	</select>
+
+	<select id="listAgreementTemplate" resultMap="listMap">
+		SELECT
+		id,template_code,template_name,template_type,template_status,template_html_url,template_desc,add_time,add_user,update_time,update_user,template_show_name
+		FROM t_e_agreement_template
+		<where>
+			<if test="templateName != null and templateName != ''">
+				and template_name like concat('%',#{templateName},'%')
+			</if>
+			<if test="templateType != null">
+				and template_type = #{templateType}
+			</if>
+			<if test="templateStatus != null">
+				and template_status = #{templateStatus}
+			</if>
+		</where>
+		order by update_time desc
+	</select>
+
+	<select id="showTemplateUrl" resultType="String">
+		SELECT
+		template_html_url
+		FROM t_e_agreement_template
+		where id = #{id}
+	</select>
+
+	<select id="copyTemplate" resultType="String">
+		SELECT
+		 CONVERT(template_content USING utf8mb4) AS template_content
+		FROM t_e_agreement_template
+		where id = #{id}
+	</select>
+	<select id="queryParkAgreements" resultMap="parkAgreementsMap">
+		SELECT a.`template_code`,  a.`template_type`, a.`template_html_url`, a.`template_desc`, a.`template_show_name` as template_name
+		FROM t_e_agreement_template a
+		<if test="templateType == 1 and oemCode != null and oemCode.trim() !=''">
+			INNER JOIN t_e_product p ON p.`agreement_template_id` = a.`id`
+			AND p.`id` = #{productId}
+		</if>
+		<if test="templateType == 2 and oemCode != null and oemCode.trim() !=''">
+			INNER JOIN t_r_oem_park p ON p.`agreement_template_id` = a.`id`
+			AND p.`park_id` = #{parkId}
+		</if>
+		<if test="templateType == 3 or ((templateType == 2 or templateType == 1) and (oemCode == null or oemCode.trim() == ''))">
+			INNER JOIN t_r_park_agreement_template p ON p.`agreement_template_id` = a.`id`
+			AND p.`park_id` = #{parkId}
+			AND p.`product_id` = #{productId}
+		</if>
+		<where>
+			<if test="templateType != null">
+				AND a.`template_type` = #{templateType}
+			</if>
+			<if test="templateStatus != null">
+				AND a.`template_status` = #{templateStatus}
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				AND p.`oem_code` = #{oemCode}
+			</if>
+		</where>
+	</select>
+
+	<select id="TemplateDetail" resultMap="detailMap">
+		SELECT
+		id,template_code,template_name,template_type, CONVERT(template_content USING utf8mb4) AS template_content,template_desc,template_show_name
+		FROM t_e_agreement_template
+		where id = #{id}
+	</select>
+
+	<select id="checkTemplateName" resultType="Long">
+		SELECT id
+		FROM t_e_agreement_template
+		<where>
+			and template_name = #{name} and template_type = #{templateType}
+			<if test="id != null">
+				and id != #{id}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateStatus">
+		update t_e_agreement_template set
+		template_status = #{status}
+		where id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CompanyCorporateAccountMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CompanyCorporateAccountEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+			<result column="company_id" property="companyId"/>
+			<result column="member_id" property="memberId"/>
+			<result column="corporate_account_config_id" property="corporateAccountConfigId"/>
+			<result column="corporate_account" property="corporateAccount"/>
+			<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+			<result column="voucher_member_code" property="voucherMemberCode"/>
+			<result column="entrust_project_code" property="entrustProjectCode"/>
+			<result column="project_use_code" property="projectUseCode"/>
+			<result column="entrust_project_code_wj" property="entrustProjectCodeWj"/>
+			<result column="project_use_code_wj" property="projectUseCodeWj"/>
+			<result column="bind_bank_card_number" property="bindBankCardNumber"/>
+			<result column="bind_bank_name" property="bindBankName"/>
+			<result column="bind_bank_code" property="bindBankCode"/>
+			<result column="bind_bank_phone" property="bindBankPhone"/>
+			<result column="status" property="status"/>
+			<result column="cancel_credentials" property="cancelCredentials"/>
+			<result column="expiration_time" property="expirationTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="single_withdrawal_limit" property="singleWithdrawalLimit"/>
+			<result column="daily_withdrawal_limit" property="dailyWithdrawalLimit"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyCorpAccountVO" id="comCorpAccMap">
+		<id column="id" property="id"/>
+		<result column="company_name" property="companyName"/>
+		<result column="bind_bank_name" property="bindBankName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="status" property="status"/>
+		<result column="expiration_time" property="expirationTime"/>
+		<result column="voucher_member_code" property="voucherMemberCode"/>
+		<result column="entrust_project_code" property="entrustProjectCode"/>
+		<result column="overdue_status" property="overdueStatus"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyCorpAccountDetailVO" id="comCorpAccDetailMap">
+
+		<id column="id" property="id"/>
+		<result column="company_name" property="companyName"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="id_card_number" property="idCardNumber"/>
+		<result column="bind_bank_card_number" property="bindBankCardNumber"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CorporateInvoiceOrderVO" id="invoiceOrderMap">
+		<result column="company_name" property="companyName"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="remaining_withdrawal_amount" property="remainingWithdrawalAmount"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, company_id, member_id, corporate_account_config_id, corporate_account,corporate_account_bank_name, voucher_member_code, entrust_project_code, project_use_code,entrust_project_code_wj,project_use_code_wj,
+		 bind_bank_card_number, bind_bank_name, bind_bank_code, bind_bank_phone, status, cancel_credentials, expiration_time, add_time, add_user, update_time, update_user, remark,single_withdrawal_limit,daily_withdrawal_limit
+    </sql>
+
+    <update id="updateOverdueStatus">
+		UPDATE
+		  t_e_company_corporate_account cca
+		SET cca.`overdue_status` =
+		CASE
+		WHEN DATEDIFF(#{expirationTime}, DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND #{surplusDays} THEN 2
+		WHEN cca.`expiration_time` <![CDATA[ < ]]> DATE_FORMAT(NOW(),'%Y-%m-%d') THEN 3
+		ELSE 1
+		END
+		WHERE cca.`id` = #{id}
+	</update>
+
+	<update id="updateCompanyCorpAccOverdueStatus">
+		UPDATE t_e_company_corporate_account cca
+		SET
+		cca.overdue_status = 2
+		WHERE
+		DATEDIFF(DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d'),DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND #{surplusDays}
+		AND cca.status != 4
+	</update>
+
+	<update id="updateOverdueCorpAccStatus">
+		UPDATE
+		t_e_company_corporate_account cca
+		SET
+		cca.`overdue_status` = 3,
+		cca.`is_send_notice` = 0
+		WHERE DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+		AND STATUS != 4
+		AND cca.`overdue_status` != 3
+	</update>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyCorporateAccountVO" id="voMap">
+		<id column="id" property="id"/>
+		<result column="voucher_member_code" property="voucherMemberCode"/>
+		<result column="entrust_project_code" property="entrustProjectCode"/>
+		<result column="project_use_code" property="projectUseCode"/>
+		<result column="entrust_project_code_wj" property="entrustProjectCodeWj"/>
+		<result column="project_use_code_wj" property="projectUseCodeWj"/>
+		<result column="bind_bank_phone" property="bindBankPhone"/>
+		<result column="bind_bank_card_number" property="bindBankCardNumber"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="company_name" property="companyName"/>
+		<result column="corporate_account_config_id" property="corporateAccountConfigId"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="id_card_number" property="idCardNumber"/>
+		<result column="add_time" property="addTime"/>
+		<result column="status" property="status"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="headquarters_name" property="headquartersName"/>
+		<result column="headquarters_no" property="headquartersNo"/>
+		<result column="overdue_status" property="overdueStatus"/>
+		<result column="companyStatus" property="companyStatus"/>
+		<result column="single_withdrawal_limit" property="singleWithdrawalLimit"/>
+		<result column="daily_withdrawal_limit" property="dailyWithdrawalLimit"/>
+	</resultMap>
+
+	<select id="querCompanyCorporateAccountServiceList" resultMap="voMap">
+		SELECT
+			cca.id,
+			cca.voucher_member_code,
+			cca.entrust_project_code,
+			cca.project_use_code,
+			cca.entrust_project_code_wj,
+			cca.project_use_code_wj,
+			cca.bind_bank_card_number,
+			cca.bind_bank_phone,
+			cca.overdue_status,
+			ma.member_account,
+			IFNULL(ma.real_name,ma.member_name) member_name,
+			MC.company_name,
+			pcac.id corporate_account_config_id,
+			cca.corporate_account_bank_name,
+			cca.corporate_account,
+			MC.operator_name,
+			MC.operator_tel,
+			MC.id_card_number,
+		    MC.status as companyStatus,
+			cca.add_time,
+			cca.`status`,
+			o.oem_name,
+			o.oem_code,
+			MC.park_id,
+			p.park_name,
+			cca.headquarters_name,
+			cca.headquarters_no,
+			cca.single_withdrawal_limit,
+			cca.daily_withdrawal_limit
+		FROM
+			t_e_company_corporate_account cca
+		LEFT JOIN t_e_member_account ma ON ma.id = cca.member_id
+		LEFT JOIN t_e_member_company MC ON MC.ID = cca.company_id
+		LEFT JOIN t_e_park_corporate_account_config pcac ON pcac.id = cca.corporate_account_config_id
+		LEFT JOIN t_e_oem o ON o.oem_code = ma.oem_code
+		LEFT JOIN t_e_park p ON MC.park_id = p.id
+		<where>
+			<if test="oemCode != null and oemCode != ''">
+				and o.oem_code =#{oemCode}
+			</if>
+			<if test="memberAccount != null and memberAccount != ''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="memberName != null and memberName != ''">
+				and case when ma.real_name is null or ma.real_name = ''
+				then ma.member_name like concat('%',#{memberName},'%')
+				else ma.real_name like concat('%',#{memberName},'%') end
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and MC.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="operatorName != null and operatorName != ''">
+				and MC.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="operatorTel != null and operatorTel != ''">
+				and MC.operator_tel like concat('%',#{operatorTel},'%')
+			</if>
+			<if test="status != null ">
+				and cca.status =#{status}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				and cca.add_time <![CDATA[>=]]> #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				and cca.add_time <![CDATA[<=]]> #{endDate}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="corporateAccountBankName != null and corporateAccountBankName.trim() != ''">
+				and cca.corporate_account_bank_name like concat('%',#{corporateAccountBankName},'%')
+			</if>
+			<if test="parkId != null">
+				and MC.park_id = #{parkId}
+			</if>
+			<if test="overdueStatus != null">
+				and cca.overdue_status = #{overdueStatus}
+			</if>
+			<if test="companyStatus != null">
+				and MC.status = #{companyStatus}
+			</if>
+		</where>
+		order by cca.add_time desc
+	</select>
+
+	<select id="queryCompanyCorporateAccountDetail" resultMap="voMap">
+		SELECT
+			cca.id,
+			MC.company_name,
+			ma.oem_code,
+			pcac.corporate_account_bank_name,
+			cca.corporate_account
+		FROM
+			t_e_company_corporate_account cca
+		LEFT JOIN t_e_member_account ma ON ma.id = cca.member_id
+		LEFT JOIN t_e_member_company MC ON MC.ID = cca.company_id
+		LEFT JOIN t_e_park_corporate_account_config pcac ON pcac.id = cca.corporate_account_config_id
+		LEFT JOIN t_e_oem o ON o.oem_code = ma.oem_code
+		where  cca.id=#{id}
+	</select>
+
+	<!-- 分页查询企业对公户列表 add by Kaven 2020-09-07 -->
+	<select id="listComCorpAccountPage" parameterType="com.yuqian.itax.user.entity.query.ComCorpAccQuery" resultMap="comCorpAccMap">
+		SELECT
+		t.id,
+		c.company_name,
+		pc.corporate_account_bank_name as bind_bank_name,
+		t.corporate_account,
+		t.voucher_member_code,
+		t.entrust_project_code,
+		t.status,
+		t.expiration_time,
+		t.overdue_status
+		FROM
+		t_e_company_corporate_account t
+		LEFT JOIN t_e_member_company c ON t.company_id = c.id
+		LEFT JOIN t_e_park_corporate_account_config pc ON pc.id = t.corporate_account_config_id
+		<where>
+			t.member_id = #{currUserId} AND t.STATUS != 3
+		</where>
+	</select>
+
+	<!-- 对公户详情查询 add by Kaven 2020-09-07 -->
+	<select id="getDetail" resultMap="comCorpAccDetailMap">
+		SELECT
+			t.id,
+			pc.corporate_account_bank_name,
+			c.company_name,
+			t.corporate_account,
+			c.operator_name,
+			c.id_card_number,
+			t.bind_bank_card_number
+		FROM
+			t_e_company_corporate_account t
+			LEFT JOIN t_e_member_company c ON t.company_id = c.id
+			LEFT JOIN t_e_park_corporate_account_config pc ON pc.id = t.corporate_account_config_id
+		WHERE
+			t.id = #{id}
+	</select>
+
+	<!-- 对公户提现-选择开票记录列表 add by Kaven 2020-09-08 -->
+	<select id="listInvoiceOrderForCorp" parameterType="com.yuqian.itax.user.entity.query.CorporateAccountCollectionRecordQuery" resultMap="invoiceOrderMap">
+		SELECT
+			t.order_no,
+			i.complete_time,
+			i.company_name,
+			i.invoice_amount,
+			i.remaining_withdrawal_amount
+		FROM
+			t_e_order t
+		LEFT JOIN t_e_invoice_order i ON t.order_no = i.order_no
+		<where>
+			t.order_type = 6
+			AND t.order_status = 7
+			AND i.remaining_withdrawal_amount > 0
+			AND i.invoice_mark <![CDATA[ != ]]> 1
+			AND ( CASE WHEN (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+			<if test="day != null and day.trim() != '' ">
+				and date_format(i.complete_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(i.complete_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and i.complete_time between #{startDate} and #{endDate}
+			</if>
+			<if test="companyName != null and companyName.trim() != ''">
+				and i.company_name like concat('%', #{companyName}, '%')
+			</if>
+		</where>
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CompanyCorporateAccountHandlerVO" id="accountHandlerMap">
+		<id column="id" property="id"/>
+		<result column="company_id" property="companyId"/>
+		<result column="member_id" property="memberId"/>
+		<result column="corporate_account_config_id" property="corporateAccountConfigId"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="voucher_member_code" property="voucherMemberCode"/>
+		<result column="entrust_project_code" property="entrustProjectCode"/>
+		<result column="project_use_code" property="projectUseCode"/>
+		<result column="bind_bank_card_number" property="bindBankCardNumber"/>
+		<result column="bind_bank_name" property="bindBankName"/>
+		<result column="bind_bank_code" property="bindBankCode"/>
+		<result column="bind_bank_phone" property="bindBankPhone"/>
+		<result column="status" property="status"/>
+		<result column="cancel_credentials" property="cancelCredentials"/>
+		<result column="expiration_time" property="expirationTime"/>
+		<result column="oem_code" property="oemCode"/>
+	</resultMap>
+	<!-- 查询企业对公户列表（xxljob使用）-->
+	<select id="queryAccountHandlerList" resultMap="accountHandlerMap">
+		select a.id, a.company_id, a.member_id, a.corporate_account_config_id, a.corporate_account,
+		a.voucher_member_code, a.entrust_project_code, a.project_use_code, a.bind_bank_card_number, a.bind_bank_name,
+		a.bind_bank_code, a.bind_bank_phone, a.status, a.cancel_credentials, a.expiration_time, mc.oem_code
+		FROM t_e_company_corporate_account a
+		LEFT JOIN t_e_member_company mc on a.company_id = mc.id
+		WHERE a.status in(1,2,4)
+	</select>
+
+	<select id="queryCorpByCompanyId" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			t_e_company_corporate_account cca
+		WHERE
+			cca.`company_id` = #{companyId} and status != 3
+	</select>
+
+	<resultMap id="companyCorpAccRenewDetailMap" type="com.yuqian.itax.user.entity.vo.CompanyCorpAccRenewDetailVO">
+		<result column="company_name" property="companyName"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="expiration_time" property="expirationTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="prod_amount" property="prodAmount"/>
+	</resultMap>
+	<select id="companyCorpAccRenewDetail" resultMap="companyCorpAccRenewDetailMap">
+		SELECT
+		  mc.`company_name`,
+		  cca.`corporate_account_bank_name`,
+		  CONCAT(
+			LEFT(cca.`corporate_account`, 4),
+			'****',
+			RIGHT(cca.`corporate_account`, 3)
+		  ) corporate_account,
+		  mc.`operator_name`,
+		  DATE_FORMAT(
+			cca.`expiration_time`,
+			'%Y-%m-%d'
+		  ) expiration_time,
+		  DATE_FORMAT(
+			DATE_ADD(
+			  cca.`expiration_time`,
+			  INTERVAL 1 YEAR
+			),
+			'%Y-%m-%d'
+		  ) end_time,
+ 		  p.`prod_amount`
+		FROM
+		  t_e_company_corporate_account cca
+		  INNER JOIN t_e_member_company mc
+			ON mc.`id` = cca.`company_id`
+		  INNER JOIN t_e_product p
+    		ON p.`oem_code` = mc.`oem_code` AND p.`prod_type` = 17
+		WHERE cca.`id` = #{companyCorpAccId}
+	</select>
+
+	<resultMap id="overdueCompanyCropAccInfoMap" type="com.yuqian.itax.user.entity.vo.OverdueCompanyCropAccInfoVO">
+		<result column="member_id" property="memberId"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="crop_acc_id" property="cropAccId"/>
+		<result column="is_eligible" property="isEligible"/>
+		<result column="is_send_notice" property="isSendNotice"/>
+		<result column="count" property="count"/>
+	</resultMap>
+    <select id="queryOverdueCompanyCropAcc" resultMap="overdueCompanyCropAccInfoMap">
+		SELECT
+		ma.`id` AS `member_id`,
+		ma.`member_account`,
+		ma.`oem_code`,
+		ma.`member_phone`,
+		GROUP_CONCAT(cca.`id`) AS `crop_acc_id`,
+		GROUP_CONCAT(DATEDIFF(DATE_FORMAT(NOW(),'%Y-%m-%d'),DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d')) = #{overdueDays}) AS `is_eligible`,
+		GROUP_CONCAT(cca.`is_send_notice`) AS `is_send_notice`,
+		COUNT(cca.`id`) `count`
+		FROM
+		`t_e_company_corporate_account` cca
+		LEFT JOIN
+		`t_e_member_account` ma
+		ON
+		ma.`id` = cca.`member_id`
+		WHERE DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+		AND cca.`status` != 3
+		GROUP BY cca.`member_id`
+	</select>
+
+	<select id="queryWillExpireCompanyCropAcc" resultMap="overdueCompanyCropAccInfoMap">
+		SELECT
+		ma.`id` `member_id`,
+		ma.`member_account`,
+		ma.`oem_code`,
+		ma.`member_phone`,
+		GROUP_CONCAT(cca.`id`) `crop_acc_id`,
+		GROUP_CONCAT(DATEDIFF(DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d'),DATE_FORMAT(NOW(),'%Y-%m-%d')) = 30) AS `is_eligible`,
+		GROUP_CONCAT(cca.`is_send_notice`) AS `is_send_notice`,
+		COUNT(cca.`id`) `count`
+		FROM
+		`t_e_company_corporate_account` cca
+		LEFT JOIN `t_e_member_account` ma
+		ON ma.`id` = cca.`member_id`
+		WHERE DATEDIFF(DATE_FORMAT(cca.`expiration_time`,'%Y-%m-%d'), DATE_FORMAT(NOW(),'%Y-%m-%d')) BETWEEN 0 AND 30
+		AND cca.`status` != 3
+		GROUP BY cca.`member_id`
+	</select>
+</mapper>

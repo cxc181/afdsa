@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.UserOrderStatisticsDayMapper">
+    <resultMap type="com.yuqian.itax.user.entity.UserOrderStatisticsDayEntity" id="baseEntityMap">
+			 
+			<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="user_id" property="userId"/>
+			<result column="user_level_no" property="userLevelNo"/>
+			<result column="parent_user_id" property="parentUserId"/>
+			<result column="promote_user_direct" property="promoteUserDirect"/>
+			<result column="individual_direct" property="individualDirect"/>
+			<result column="company_regist_fee_direct" property="companyRegistFeeDirect"/>
+			<result column="invoice_fee_direct" property="invoiceFeeDirect"/>
+			<result column="company_cancel_fee_direct" property="companyCancelFeeDirect"/>
+			<result column="member_upgrade_fee_direct" property="memberUpgradeFeeDirect"/>
+			<result column="profits_fee_direct" property="profitsFeeDirect"/>
+			<result column="invoice_amount_direct" property="invoiceAmountDirect"/>
+			<result column="promote_user_fission" property="promoteUserFission"/>
+			<result column="individual_fission" property="individualFission"/>
+			<result column="company_regist_fee_fission" property="companyRegistFeeFission"/>
+			<result column="invoice_fee_fission" property="invoiceFeeFission"/>
+			<result column="member_upgrade_fee_fission" property="memberUpgradeFeeFission"/>
+			<result column="company_cancel_fee_fission" property="companyCancelFeeFission"/>
+			<result column="profits_fee_fission" property="profitsFeeFission"/>
+			<result column="invoice_amount_fission" property="invoiceAmountFission"/>
+			<result column="statistics_day" property="statisticsDay"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="custody_fee_renewal_direct" property="custodyFeeRenewalDirect"/>
+			<result column="custody_fee_renewal_fission" property="custodyFeeRenewalFission"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, user_id, user_level_no, parent_user_id, promote_user_direct, individual_direct, company_regist_fee_direct, invoice_fee_direct, company_cancel_fee_direct, member_upgrade_fee_direct, profits_fee_direct, invoice_amount_direct, promote_user_fission, individual_fission, company_regist_fee_fission, invoice_fee_fission,member_upgrade_fee_fission, company_cancel_fee_fission, profits_fee_fission, invoice_amount_fission,statistics_day, add_time, add_user, update_time, update_user, remark,custody_fee_renewal_direct,custody_fee_renewal_fission
+    </sql>
+
+	<select id="getOrderStatByDate" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM t_e_user_order_statistics_day
+		WHERE user_id = #{memberId}
+		<if test="day != null and day.trim() != '' ">
+			and date_format(statistics_day,'%Y-%m-%d') = #{day}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(statistics_day,'%Y-%m') = #{month}
+		</if>
+		<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != '' ">
+			and statistics_day between #{startDate} and #{endDate}
+		</if>
+	</select>
+
+	<select id="queryrOrderStatisticsDayByToday" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_user_order_statistics_day u
+		where
+		u.user_id=#{userId}
+		and u.oem_code=#{oemCode}
+		and date_format(u.statistics_day,'%Y%m%d') =date_format(now(),'%Y%m%d')
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.UserOrderStatisticsDayEmployeeVO" id="employeeVOMap">
+
+		<id column="id" property="id"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="up_real_name" property="upRealName"/>
+		<result column="up_member_account" property="upMemberAccount"/>
+		<result column="promote_user_direct" property="promoteUserDirect"/>
+		<result column="individual_direct" property="individualDirect"/>
+		<result column="company_regist_fee_direct" property="companyRegistFeeDirect"/>
+		<result column="invoice_fee_direct" property="invoiceFeeDirect"/>
+		<result column="member_upgrade_fee_direct" property="memberUpgradeFeeDirect"/>
+		<result column="company_cancel_fee_direct" property="companyCancelFeeDirect"/>
+		<result column="promote_user_fission" property="promoteUserFission"/>
+		<result column="individual_fission" property="individualFission"/>
+		<result column="company_regist_fee_fission" property="companyRegistFeeFission"/>
+		<result column="invoice_fee_fission" property="invoiceFeeFission"/>
+		<result column="member_upgrade_fee_fission" property="memberUpgradeFeeFission"/>
+		<result column="company_cancel_fee_fission" property="companyCancelFeeFission"/>
+		<result column="profits_fee" property="profitsFee"/>
+		<result column="total_profits_fee" property="totalProfitsFee"/>
+		<result column="custody_fee_renewal_direct" property="custodyFeeRenewalDirect"/>
+		<result column="custody_fee_renewal_fission" property="custodyFeeRenewalFission"/>
+	</resultMap>
+	<select id="queryUserOrderStatisticsDayEmployee" resultMap="employeeVOMap">
+		SELECT
+			ma.id,
+			o.oem_name,
+			ml.level_name,
+			IFNULL(
+			ma.real_name,
+			ma.member_name
+			) real_name,
+			ma.member_account,
+			IFNULL(
+			maa.real_name,
+			maa.member_name
+			) up_real_name,
+			maa.member_account up_member_account,
+			sum(os.promote_user_direct)promote_user_direct,
+			sum(os.individual_direct)individual_direct,
+			IFNULL(ROUND(sum(os.company_regist_fee_direct)/100,2),0) company_regist_fee_direct,
+			IFNULL(ROUND(sum(os.invoice_fee_direct)/100,2),0) invoice_fee_direct,
+			IFNULL(ROUND(sum(os.member_upgrade_fee_direct)/100,2),0) member_upgrade_fee_direct,
+			IFNULL(ROUND(sum(os.company_cancel_fee_direct)/100,2),0) company_cancel_fee_direct,
+			IFNULL(ROUND(sum(os.custody_fee_renewal_direct)/100,2),0) custody_fee_renewal_direct,
+			sum(os.promote_user_fission)promote_user_fission,
+			sum(os.individual_fission)individual_fission,
+			IFNULL(ROUND(sum(os.company_regist_fee_fission)/100,2),0) company_regist_fee_fission,
+			IFNULL(ROUND(sum(os.invoice_fee_fission)/100,2),0) invoice_fee_fission,
+			IFNULL(ROUND(sum(os.member_upgrade_fee_fission)/100,2),0) member_upgrade_fee_fission,
+			IFNULL(ROUND(sum(os.company_cancel_fee_fission)/100,2),0) company_cancel_fee_fission,
+			IFNULL(ROUND(sum(os.custody_fee_renewal_fission)/100,2),0) custody_fee_renewal_fission,
+			IFNULL(ROUND(sum(IFNULL(os.profits_fee_fission,0)+IFNULL(os.profits_fee_direct,0))/100,2),0) profits_fee,
+			(SELECT IFNULL(ROUND(sum(a.profits_fee_fission+a.profits_fee_direct) /100 ,2),0) from t_e_user_order_statistics_day a WHERE a.statistics_day <![CDATA[<=]]> #{endDate} and a.user_id = os.user_id) total_profits_fee
+		FROM
+		t_e_member_account ma
+		INNER JOIN t_e_oem o ON ma.oem_code = o.oem_code
+		INNER JOIN t_e_member_account maa ON ma.up_diamond_id = maa.id
+		LEFT JOIN t_e_member_level ml ON ma.member_level = ml.id
+		LEFT JOIN t_e_user_order_statistics_day os ON os.user_id = ma.id and os.statistics_day <![CDATA[>=]]> #{startDate} 	and os.statistics_day <![CDATA[<=]]> #{endDate}
+		<where>
+			(ma.`status` != 2 or(ma.`status`  =2 and ma.update_time <![CDATA[>=]]>  #{endDate} ))  and ma.add_time <![CDATA[<=]]> #{endDate} 	and ml.level_no=-1
+			<if test="oemCode!=null and oemCode!=''">
+				and ma.oem_code=#{oemCode}
+			</if>
+			<if test="realName!=null and realName!=''">
+				and case when ma.real_name is null or ma.real_name = ''
+				then ma.member_name like concat('%',#{realName},'%')
+				else ma.real_name like concat('%',#{realName},'%') end
+			</if>
+			<if test="memberAccount!=null and memberAccount!=''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="upRealName!=null and upRealName!=''">
+				and case when maa.real_name is null or maa.real_name = ''
+				then maa.member_name like concat('%',#{upRealName},'%')
+				else maa.real_name like concat('%',#{upRealName},'%') end
+			</if>
+			<if test="upMemberAccount!=null and upMemberAccount!=''">
+				and maa.member_account like concat('%',#{upMemberAccount},'%')
+			</if>
+		</where>
+		GROUP BY
+		ma.id,
+		ma.oem_code
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.UserOrderStatisticsDayMemberVO" id="memberVOMap">
+
+		<id column="id" property="id"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="promote_user_direct" property="promoteUserDirect"/>
+		<result column="individual_direct" property="individualDirect"/>
+		<result column="company_regist_fee_direct" property="companyRegistFeeDirect"/>
+		<result column="invoice_fee_direct" property="invoiceFeeDirect"/>
+		<result column="member_upgrade_fee_direct" property="memberUpgradeFeeDirect"/>
+		<result column="company_cancel_fee_direct" property="companyCancelFeeDirect"/>
+		<result column="promote_user_fission" property="promoteUserFission"/>
+		<result column="individual_fission" property="individualFission"/>
+		<result column="company_regist_fee_fission" property="companyRegistFeeFission"/>
+		<result column="invoice_fee_fission" property="invoiceFeeFission"/>
+		<result column="member_upgrade_fee_fission" property="memberUpgradeFeeFission"/>
+		<result column="company_cancel_fee_fission" property="companyCancelFeeFission"/>
+		<result column="profits_fee" property="profitsFee"/>
+		<result column="custody_fee_renewal_direct" property="custodyFeeRenewalDirect"/>
+		<result column="custody_fee_renewal_fission" property="custodyFeeRenewalFission"/>
+
+	</resultMap>
+
+	<select id="queryUserOrderStatisticsDayMember" resultMap="memberVOMap">
+		SELECT
+		o.oem_name,
+		ml.level_name,
+		IFNULL(
+		ma.real_name,
+		ma.member_name
+		) real_name,
+		ma.member_account,
+		ma.member_phone,
+		IFNULL(sum(promote_user_direct),0) + (select IFNULL(sum(promote_user_direct),0) from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1) promote_user_direct,
+		IFNULL(sum(individual_direct),0) + (select IFNULL(sum(individual_direct),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1) individual_direct,
+		ROUND((IFNULL(sum(company_regist_fee_direct),0) + (select  IFNULL(sum(company_regist_fee_direct),0) from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]>  #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) company_regist_fee_direct,
+		ROUND((IFNULL(sum(invoice_fee_direct),0) +(select IFNULL(sum(invoice_fee_direct),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) invoice_fee_direct,
+		ROUND((IFNULL(sum(member_upgrade_fee_direct),0) +(select IFNULL(sum(member_upgrade_fee_direct),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]>  #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) member_upgrade_fee_direct,
+		ROUND((IFNULL(sum(company_cancel_fee_direct),0) + (select IFNULL(sum(company_cancel_fee_direct),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) company_cancel_fee_direct,
+		ROUND((IFNULL(sum(custody_fee_renewal_direct),0) + (select IFNULL(sum(custody_fee_renewal_direct),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) custody_fee_renewal_direct,
+		IFNULL(sum(promote_user_fission),0) + (select IFNULL(sum(promote_user_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1) promote_user_fission,
+		IFNULL(sum(individual_fission),0) + (select IFNULL(sum(individual_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]>  #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1) individual_fission,
+		ROUND((IFNULL(sum(company_regist_fee_fission),0) + (select IFNULL(sum(company_regist_fee_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) company_regist_fee_fission,
+		ROUND((IFNULL(sum(invoice_fee_fission),0) + (select IFNULL(sum(invoice_fee_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]>#{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) invoice_fee_fission,
+		ROUND((IFNULL(sum(member_upgrade_fee_fission),0) + (select IFNULL(sum(member_upgrade_fee_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) member_upgrade_fee_fission,
+		ROUND((IFNULL(sum(company_cancel_fee_fission),0) + (select IFNULL(sum(company_cancel_fee_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) company_cancel_fee_fission,
+		ROUND((IFNULL(sum(custody_fee_renewal_fission),0) + (select IFNULL(sum(custody_fee_renewal_fission),0)  from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate}
+		and statistics_day  <![CDATA[<=]]> #{endDate} and parent_user_id = ma.id and user_level_no = -1))/100,2) custody_fee_renewal_fission,
+		ROUND((IFNULL(sum(IFNULL(profits_fee_fission,0)+IFNULL(profits_fee_direct,0)),0) + (select IFNULL(sum(IFNULL(profits_fee_fission,0)+IFNULL(profits_fee_direct,0)),0)
+		from t_e_user_order_statistics_day where statistics_day <![CDATA[>=]]> #{startDate} and statistics_day  <![CDATA[<=]]> #{endDate}
+		and parent_user_id = ma.id and user_level_no = -1))/100,2) profits_fee
+		FROM
+		t_e_member_account ma
+		INNER JOIN t_e_oem o ON ma.oem_code = o.oem_code
+		LEFT JOIN t_e_member_level ml ON ma.member_level = ml.id
+		LEFT JOIN t_e_user_order_statistics_day sd on sd.user_id = ma.id and sd.oem_code = ma.oem_code and sd.statistics_day <![CDATA[>=]]> #{startDate} and sd.statistics_day <![CDATA[<=]]> #{endDate}
+		<where>
+			(ma.`status` != 2 or(ma.`status`  =2 and ma.update_time  <![CDATA[>=]]> #{endDate} )) and ml.level_no!=-1 and ma.add_time <![CDATA[<=]]> #{endDate}
+			<if test="oemCode!=null and oemCode!=''">
+				and ma.oem_code=#{oemCode}
+			</if>
+			<if test="sign!=null and sign!=''">
+				and ma.sign=#{sign}
+			</if>
+			<if test="levelNo!=null ">
+				and ml.level_no = #{levelNo}
+			</if>
+			<if test="realName!=null and realName!=''">
+				and case when ma.real_name is null or ma.real_name = ''
+				then ma.member_name like concat('%',#{realName},'%')
+				else ma.real_name like concat('%',#{realName},'%') end
+			</if>
+			<if test="memberAccount!=null and memberAccount!=''">
+				and ma.member_account like concat('%',#{memberAccount},'%')
+			</if>
+
+			<if test="memberPhone!=null and memberPhone!=''">
+				and ma.member_phone like concat('%',#{memberPhone},'%')
+			</if>
+		</where>
+		GROUP BY
+		ma.id,
+		ma.oem_code
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.UserOrderStatisticsDayAgentVO" id="agentVOMap">
+
+		<id column="id" property="id"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="platform_type" property="platformType"/>
+		<result column="nickname" property="nickname"/>
+		<result column="username" property="username"/>
+		<result column="binding_account" property="bindingAccount"/>
+		<result column="promote_user_fission" property="promoteUserFission"/>
+		<result column="individual_fission" property="individualFission"/>
+		<result column="company_regist_fee_fission" property="companyRegistFeeFission"/>
+		<result column="invoice_fee_fission" property="invoiceFeeFission"/>
+		<result column="member_upgrade_fee_fission" property="memberUpgradeFeeFission"/>
+		<result column="company_cancel_fee_fission" property="companyCancelFeeFission"/>
+		<result column="custody_fee_renewal_fission" property="custodyFeeRenewalFission"/>
+		<result column="profits_fee" property="profitsFee"/>
+		<result column="total_profits_fee" property="totalProfitsFee"/>
+	</resultMap>
+	<select id="queryUserOrderStatisticsDayAgent"  resultMap="agentVOMap">
+		SELECT
+		eu.id,
+		o.oem_name,
+		eu.platform_type,
+		eu.nickname,
+		eu.username,
+		eu.binding_account,
+		(select count(1) from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%') and add_time <![CDATA[>=]]> #{startDate} and member_type!=2
+		and (update_time is null or (update_time is not null and (`status` != 2 or update_time <![CDATA[<=]]> #{endDate})))) promote_user_fission,
+		(select count(1) from t_e_member_company where member_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and add_time <![CDATA[>=]]> #{startDate}
+		and (update_time is null or (update_time is not null and (`status` != 4 or update_time <![CDATA[<=]]> #{endDate})))) individual_fission,
+		(select ROUND(IFNULL(sum(pay_amount),0)/100,2) from t_e_order where order_type = 5 and order_status = 5 and user_type = 1
+		and user_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and update_time <![CDATA[>=]]> #{startDate} and update_time <![CDATA[<=]]> #{endDate}) company_regist_fee_fission,
+		(select ROUND(IFNULL(sum(i.service_fee - i.service_fee_discount),0)/100,2) from t_e_order o,t_e_invoice_order i where o.order_no = i.order_no and o.order_type = 6
+		and o.order_status = 7 and o.user_type = 1
+		and o.user_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and i.complete_time <![CDATA[>=]]> #{startDate} and i.complete_time <![CDATA[<=]]> #{endDate}) invoice_fee_fission,
+		(select ROUND(IFNULL(sum(pay_amount),0)/100,2) from t_e_order where order_type = 7 and order_status = 3 and user_type = 1
+		and user_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and update_time <![CDATA[>=]]> #{startDate} and update_time <![CDATA[<=]]> #{endDate}) member_upgrade_fee_fission,
+		(select ROUND(IFNULL(sum(pay_amount),0)/100,2) from t_e_order where order_type = 8 and order_status = 2 and user_type = 1
+		and user_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and update_time <![CDATA[>=]]> #{startDate} and update_time <![CDATA[<=]]> #{endDate}) company_cancel_fee_fission,
+		(select ROUND(IFNULL(sum(pay_amount),0)/100,2) from t_e_order where order_type = 15 and order_status = 2 and user_type = 1
+		and user_id in (select id from t_e_member_account where member_tree like CONCAT(ma.member_tree,'%'))
+		and update_time <![CDATA[>=]]> #{startDate} and update_time <![CDATA[<=]]> #{endDate} ) custody_fee_renewal_fission,
+		(select ROUND(IFNULL(sum(profits_amount),0)/100,2) from t_e_profits_detail where user_id = eu.id  and user_type != 1 and oem_code = eu.oem_code
+		and add_time <![CDATA[>=]]> #{startDate} and add_time <![CDATA[<=]]> #{endDate} and profits_status in (2,3)) profits_fee,
+		(select ROUND(IFNULL(sum(profits_amount),0)/100,2) from t_e_profits_detail where user_id = eu.id  and user_type != 1 and oem_code = eu.oem_code
+		and add_time <![CDATA[<=]]> #{endDate} and profits_status in (2,3)) total_profits_fee
+		FROM  sys_e_user eu
+		INNER JOIN t_e_oem o ON eu.oem_code = o.oem_code
+		INNER JOIN t_e_member_account ma ON eu.binding_account = ma.member_account and ma.oem_code = eu.oem_code
+		<where>
+			eu.`status`!=2
+			<if test="oemCode!=null and oemCode!=''">
+				and eu.oem_code=#{oemCode}
+			</if>
+			<if test="platformType!=null ">
+				and eu.platform_type=#{platformType}
+			</if>
+			<if test="nickname!=null and nickname!=''">
+				and eu.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="username!=null and username!=''">
+				and eu.username like concat('%',#{username},'%')
+			</if>
+			<if test="bindingAccount!=null and bindingAccount!=''">
+				and eu.binding_account like concat('%',#{bindingAccount},'%')
+			</if>
+
+		</where>
+	</select>
+</mapper>

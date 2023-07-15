@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.RegisterOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.RegisterOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="operator_name" property="operatorName"/>
+			<result column="shop_name" property="shopName"/>
+			<result column="shop_name_one" property="shopNameOne"/>
+			<result column="shop_name_two" property="shopNameTwo"/>
+			<result column="organization_form" property="organizationForm"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="business_address" property="businessAddress"/>
+			<result column="contact_phone" property="contactPhone"/>
+			<result column="email" property="email"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_reverse" property="idCardReverse"/>
+			<result column="id_card_number" property="idCardNumber"/>
+			<result column="expire_date" property="expireDate"/>
+			<result column="ratify_tax" property="ratifyTax"/>
+			<result column="business_scope" property="businessScope"/>
+			<result column="registered_name" property="registeredName"/>
+			<result column="pay_order_no" property="payOrderNo"/>
+			<result column="sign_img" property="signImg"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="discount_amount" property="discountAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="alert_number" property="alertNumber"/>
+			<result column="regist_file" property="registFile"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="company_type" property="companyType"/>
+		    <result column="video_addr" property="videoAddr"/>
+			<result column="customer_service_phone" property="customerServicePhone"/>
+			<result column="is_other" property="isOther"/>
+			<result column="wechat_message_template_id" property="wechatMessageTemplateId"/>
+			<result column="is_wechat_authorization" property="isWechatAuthorization"/>
+			<result column="wechat_message_notice_result" property="wechatMessageNoticeResult"/>
+			<result column="wechat_message_error_cause" property="wechatMessageErrorCause"/>
+			<result column="wechat_message_notice_time" property="wechatMessageNoticeTime"/>
+			<result column="example_name" property="exampleName"/>
+			<result column="is_open_authentication" property="isOpenAuthentication"/>
+			<result column="coupons_issue_id" property="couponsIssueId"/>
+			<result column="rejected_item" property="rejectedItem"/>
+			<result column="is_all_codes" property="isAllCodes"/>
+			<result column="industry_business_scope" property="industryBusinessScope"/>
+			<result column="own_business_scope" property="ownBusinessScope"/>
+			<result column="taxcode_business_scope" property="taxcodeBusinessScope"/>
+			<result column="registered_capital" property="registeredCapital"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+			<result column="is_auto_create" property="isAutoCreate"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.OrderVO" id="orderMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="alert_number" property="alertNumber"/>
+		<result column="order_type" property="orderType"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, operator_name, shop_name, organization_form, industry_id, business_address, contact_phone, email, id_card_front,
+			id_card_reverse, id_card_number,expire_date, ratify_tax, business_scope, registered_name, pay_order_no, sign_img, order_amount, discount_amount,
+			pay_amount, alert_number, regist_file, agent_account, add_time, add_user, update_time, update_user, remark, company_type,video_addr,
+			customer_service_phone,is_other,wechat_message_template_id,is_wechat_authorization,wechat_message_notice_result,wechat_message_error_cause,
+			wechat_message_notice_time, shop_name_one, shop_name_two,example_name,is_open_authentication,coupons_issue_id,rejected_item,payment_voucher,pay_type,is_all_codes,industry_business_scope,
+			own_business_scope,taxcode_business_scope, id_card_addr, registered_capital, taxpayer_type, is_auto_create
+    </sql>
+
+	<resultMap id="regOrderMap" type="com.yuqian.itax.order.entity.vo.RegOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="regPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="parent_member_account" property="inviteCode"/>
+		<result column="registered_name" property="registerName"/>
+		<result column="prod_type" property="companyType"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="createTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="park_name" property="parkName"/>
+		<result column="prod_type" property="companyType"/>
+		<result column="is_open_authentication" property="isOpenAuthentication"/>
+	</resultMap>
+
+	<select id="queryByOrderNo" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_register_order
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</select>
+
+	<!-- 企业注册订单查询-拓展宝 add by Kaven 2020-03-25-->
+	<select id="queryRegistOrderList" parameterType="com.yuqian.itax.order.entity.query.TZBOrderQuery" resultMap="regOrderMap">
+		SELECT
+		t.order_no,
+		t.is_open_authentication,
+		m.member_account,
+		m.real_name,
+		t.operator_name,
+		l.level_no,
+		m.parent_member_account,
+		t.registered_name,
+		p.prod_type,
+		o.order_amount,
+		o.discount_amount,
+		o.pay_amount,
+		t.add_time,
+		o.order_status,
+		pk.park_name
+		FROM
+		t_e_register_order t
+		LEFT JOIN t_e_order o ON t.order_no = o.order_no
+		LEFT JOIN t_e_member_account m ON o.user_id = m.id
+		LEFT JOIN t_e_member_level l ON m.member_level = l.id
+		LEFT JOIN t_e_product p ON o.product_id = p.id
+		LEFT JOIN t_e_park pk ON o.park_id = pk.id
+		LEFT JOIN t_e_industry i ON i.id = t.industry_id
+		<where>
+			t.oem_code = #{oemCode}
+			<if test="orderNo != null and orderNo !=''">
+				and t.order_no = #{orderNo}
+			</if>
+			<if test="createTimeStart != null">
+				and t.add_time >= #{createTimeStart,jdbcType=TIMESTAMP}
+			</if>
+			<if test="createTimeEnd != null">
+				and t.add_time <![CDATA[<=]]> #{createTimeEnd,jdbcType=TIMESTAMP}
+			</if>
+			<if test="regPhone != null and regPhone != ''">
+				and m.member_account = #{regPhone}
+			</if>
+			<if test="idCard != null and idCard != ''">
+				and t.id_card_number = #{idCard}
+			</if>
+			<if test="inviteCode != null and inviteCode != ''">
+				and m.parent_member_account = #{inviteCode}
+			</if>
+			<if test="registerName != null and registerName != ''">
+				and t.registered_name like concat('%',#{registerName},'%')
+			</if>
+			<if test="companyType != null">
+				and p.prod_type = #{companyType}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="industryName != null and industryName != ''">
+				AND i.industry_name LIKE concat('%',#{industryName},'%')
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!-- 查询待通知订单列表 add by Kaven 2019-12-09 -->
+	<select id="queryNoticeRegOrderList" parameterType="java.lang.Long" resultMap="orderMap">
+		SELECT
+			t.*
+		FROM
+			t_e_register_order t
+			LEFT JOIN t_e_order o ON o.order_no = t.order_no
+			LEFT JOIN t_r_member_order r ON r.id = o.rela_id
+		WHERE
+			r.member_id = #{#{userId}}
+			AND o.order_status IN (3, 5)
+	</select>
+
+
+	<!-- 根据订单号更新签名或视频地址 add by Kaven 2019-12-11-->
+	<update id="updateSignOrVideoAddr" parameterType="java.util.Map">
+		update
+			t_e_register_order
+		<set>
+			<if test="signImg != null and '' != signImg">
+				sign_img = #{signImg},
+			</if>
+			<if test="videoAddr != null and '' != videoAddr">
+				video_addr = #{videoAddr},
+			</if>
+			<if test="businessAddress != null and '' != businessAddress">
+				business_address = #{businessAddress},
+			</if>
+			<if test="customerServicePhone != null and '' != customerServicePhone">
+				customer_service_phone = #{customerServicePhone},
+			</if>
+			<if test="isOpenAuthentication != null">
+				is_open_authentication = #{isOpenAuthentication},
+			</if>
+			update_time = #{updateTime}
+		</set>
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</update>
+
+
+	<!-- 根据订单号更新签名或视频地址 add by Kaven 2019-12-11-->
+	<update id="updateOrderById" parameterType="com.yuqian.itax.order.entity.RegisterOrderEntity">
+		update
+			t_e_register_order
+		<set>
+			<if test="shopName != null and '' != shopName">
+				shop_name = #{shopName},
+			</if>
+			shop_name_one = #{shopNameOne},
+			shop_name_two = #{shopNameTwo},
+			<if test="idCardFront != null and '' != idCardFront">
+			id_card_front = #{idCardFront},
+			</if>
+			<if test="idCardReverse != null and '' != idCardReverse">
+			id_card_reverse = #{idCardReverse},
+			</if>
+			<if test="videoAddr != null and '' != videoAddr">
+			video_addr = #{videoAddr},
+			</if>
+			<if test="customerServicePhone != null and '' != customerServicePhone">
+			customer_service_phone = #{customerServicePhone},
+			</if>
+			update_time = #{updateTime}
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<!-- 根据订单号更新微信授权标识 add by Kaven 2020-06-12 -->
+	<update id="updateWechatAuthFlagByOrderNo" parameterType="com.yuqian.itax.order.entity.RegisterOrderEntity">
+		update
+			t_e_register_order
+		<set>
+			is_wechat_authorization = #{isWechatAuthorization},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		</set>
+		<where>
+			order_no = #{orderNo} and oem_code = #{oemCode}
+		</where>
+	</update>
+
+	<!-- 查询待身份验证的订单列表 add by yejian 2020-06-11 -->
+	<select id="queryTobeAuthRegOrder" resultMap="baseEntityMap">
+		SELECT r.*
+		FROM
+		     t_e_register_order r
+		LEFT JOIN t_e_order o on o.order_no = r.order_no
+		WHERE o.user_id = #{memberId} AND o.oem_code = #{oemCode}
+		  and o.order_type = 5 and o.order_status = 9 and r.alert_number = 0
+	</select>
+
+	<resultMap id="payInfoMap" type="com.yuqian.itax.order.entity.vo.InvPayInfoVo">
+		<result column="order_amount" property="orderAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="face_amount" property="faceAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="pay_no" property="payNo"/>
+		<result column="pay_way" property="payWay"/>
+		<result column="discount_activity_id" property="discountActivityId"/>
+	</resultMap>
+
+	<select id="queryPayInfoByOrderNo" resultMap="payInfoMap">
+		SELECT
+		CONVERT (o.order_amount / 100,DECIMAL (12, 2)) order_amount,
+		CONVERT (o.discount_amount / 100,DECIMAL (12, 2)) discount_amount,
+		CONVERT (o.pay_amount / 100,DECIMAL (12, 2)) pay_amount,
+		CONVERT (cou.face_amount / 100,DECIMAL (12, 2)) face_amount,
+		w.pay_no,
+		w.pay_way,
+		o.discount_activity_id
+		FROM
+		     t_e_register_order r
+		LEFT JOIN t_e_order o on r.order_no = o.order_no
+		LEFT JOIN t_e_coupons_issue_record cour on cour.id = r.coupons_issue_id
+		LEFT JOIN t_e_coupons cou on cou.id = cour.coupons_id
+		LEFT JOIN t_e_pay_water w on r.order_no = w.order_no and w.pay_status = 2 and w.pay_water_type != 5
+		WHERE r.order_no = #{orderNo}
+	</select>
+
+	<select id="getBusinessAddress" resultType="string">
+		select r.business_address
+		from
+		t_e_park_business_address_rules pb
+		left join t_e_order o on o.park_id = pb.park_id
+		left join t_e_register_order r on r.order_no = o.order_no
+		where pb.park_id = #{parkId} and o.order_type = 5
+		and r.business_address is not null order by o.add_time desc limit 1
+	</select>
+
+	<resultMap id="RegisterOrderOfAccessPartyMap" type="com.yuqian.itax.order.entity.vo.RegisterOrderOfAccessPartyVO">
+		<result column="registered_name" property="registerName"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="add_time" property="createTime"/>
+		<result column="park_name" property="parkName"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="contact_phone" property="memberPhone"/>
+		<result column="payer_name" property="payerName"/>
+		<result column="is_self_paying" property="isSelfPaying"/>
+		<result column="remark" property="remark"/>
+		<result column="company_id" property="companyId"/>
+		<result column="payment_voucher" property="paymentVoucher"/>
+		<result column="ein" property="ein"/>
+	</resultMap>
+	<select id="listByMemberId" resultMap="RegisterOrderOfAccessPartyMap">
+		select
+		r.registered_name,
+		r.operator_name,
+		o.order_status,
+		o.add_time,
+		p.park_name,
+		o.pay_amount,
+		o.order_no,
+		r.contact_phone,
+		o.payer_name,
+		o.is_self_paying,
+		r.remark,
+		c.id company_id,
+		r.payment_voucher,
+		c.ein
+		from
+		t_e_register_order r
+		inner join t_e_order o on r.order_no = o.order_no
+		inner join t_e_park p on p.id = o.park_id
+		left join t_e_member_company c on c.member_id = o.user_id and c.order_no = o.order_no
+		<where>
+		o.oem_code = #{oemCode}
+			<if test="userId != null">
+				and o.user_id = #{userId}
+			</if>
+			<if test="userId == null and accessPartyCode != null and accessPartyCode.trim() != null">
+				and o.user_id IN(SELECT id FROM t_e_member_account WHERE access_party_id = (SELECT id FROM t_e_oem_access_party WHERE access_party_code = #{accessPartyCode}))
+			</if>
+			<if test="orderStatisticsStatus != null and orderStatisticsStatus == 2">
+				and o.`order_status` in(0,1,3)
+			</if>
+			<if test="orderStatisticsStatus != null and orderStatisticsStatus == 3">
+				and o.`order_status` not in(0,1,3,5,6,7)
+			</if>
+			<if test="orderNo != null and orderNo.trim() != ''">
+				and o.`order_no` = #{orderNo}
+			</if>
+			<if test="externalOrderNo != null and externalOrderNo.trim() != ''">
+				and o.`external_order_no` = #{externalOrderNo}
+			</if>
+			<if test="phone != null and phone.trim() != ''">
+				and r.`contact_phone` = #{phone}
+			</if>
+			<if test="userName != null and userName.trim() != ''">
+				and r.`operator_name` = #{userName}
+			</if>
+		</where>
+		order by o.`add_time` DESC
+	</select>
+
+	<select id="getRegisterOrderByBusinessContent" resultMap="baseEntityMap">
+		select r.order_no
+		from
+		t_e_register_order r
+		left join t_e_order o on r.order_no = r.order_no
+		where CONCAT('@',REPLACE(r.business_scope,';','@'),'@') like CONCAT('%@',#{content},'@%')
+		and o.park_id = #{parkId}
+	</select>
+</mapper>

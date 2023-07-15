@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.CommonProblemsMapper">
+    <resultMap type="com.yuqian.itax.system.entity.CommonProblemsEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="problem" property="problem"/>
+			<result column="answer" property="answer"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="order_num" property="orderNum"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, problem, answer, oem_code,order_num, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="getCommomProbleListByOemCode" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from t_e_common_problems
+		where oem_code = #{oemCode}
+		order by order_num,id
+	</select>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.CommonProblemsVO" id="commonProblemsVOMap">
+
+		<id column="id" property="id"/>
+		<result column="problem" property="problem"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+	<select id="getCommomProbleList" resultMap="commonProblemsVOMap" parameterType="com.yuqian.itax.system.entity.query.CommonProblemsQuery">
+			SELECT
+			c.id,
+			c.order_num,
+			c.problem,
+			c.add_time,
+			c.update_time,
+			c.update_user,
+			o.oem_name
+		FROM
+			t_e_common_problems c
+		LEFT JOIN t_e_oem o ON c.oem_code=o.oem_code
+		<where>
+			<if test="orderNum != null and orderNum != ''">
+				and c.order_num like concat('%',#{orderNum},'%')
+			</if>
+			<if test="problem != null and problem != ''">
+				and c.problem like concat('%',#{problem},'%')
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and c.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and c.oem_code =#{oemCode}
+			</if>
+		</where>
+		order by c.order_num ASC
+	</select>
+
+	<select id="findCommonProblemsEntityByorderNumNotId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from
+			t_e_common_problems
+		where
+			id  not in(#{id})
+			and order_num=#{orderNum}
+			and oem_code=#{oemCode}
+	</select>
+
+
+    <insert id="batchInsertCommonProblems">
+        insert into t_e_common_problems
+        ( problem, answer, oem_code, order_num, add_time,add_user, remark)
+        values
+        <foreach collection ="list" item="item" index= "index" separator =",">
+            (
+            #{item.problem},
+            #{item.answer},
+            #{oemCode},
+            #{item.orderNum},
+            #{addTime},
+            #{account},
+            #{item.remark}
+            )
+        </foreach>
+    </insert>
+
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.CommonProblemsVO" id="commonProblemsDetailVOMap">
+
+		<id column="id" property="id"/>
+		<result column="problem" property="problem"/>
+		<result column="answer" property="answer"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="add_time" property="addTime"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+	</resultMap>
+	<select id="getCommonProblemsById" resultMap="commonProblemsDetailVOMap">
+		select c.id,o.oem_name,o.oem_code ,c.order_num ,c.problem ,c.answer
+		from  t_e_common_problems c
+		LEFT join  t_e_oem o ON o.oem_code=c.oem_code
+		where c.id=#{id}
+	</select>
+</mapper>

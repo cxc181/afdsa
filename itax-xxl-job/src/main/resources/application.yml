@@ -1,0 +1,31 @@
+server:
+  servlet:
+    context-path: /itax-xxljob
+  port: 8090
+  max-http-header-size: 100000
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  freemarker:
+    request-context-attribute: rc
+  profiles:
+    active: @profileActive@
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10Mb
+      max-request-size: 10Mb
+  mvc:
+    view:
+      prefix: classpath:/webapp/
+      suffix : .html
+
+  #公共配置与profiles选择无关
+mybatis:
+  config-location: classpath:/mybatis-config.xml
+  mapper-locations: classpath*:/mapper/*/*.xml
+  type-aliases-package: com.yuqian.itax
+mapper:
+  not-empty: false
+  identity: MYSQL

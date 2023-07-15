@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.capital.dao.UserCapitalAccountMapper">
+    <resultMap type="com.yuqian.itax.capital.entity.UserCapitalAccountEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="user_id" property="userId"/>
+			<result column="user_type" property="userType"/>
+			<result column="capital_account" property="capitalAccount"/>
+			<result column="total_amount" property="totalAmount"/>
+			<result column="available_amount" property="availableAmount"/>
+			<result column="block_amount" property="blockAmount"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="outstanding_amount" property="outstandingAmount"/>
+			<result column="wallet_type" property="walletType"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, user_id, user_type, capital_account, total_amount, available_amount, block_amount, status, add_time, add_user, update_time, update_user, remark,outstanding_amount, wallet_type
+    </sql>
+
+
+	<sql id="Account_Columns">
+		a.id,  a.capital_account, a.total_amount, a.available_amount,a.outstanding_amount,u.username,u.nickname
+    </sql>
+	<resultMap type="com.yuqian.itax.capital.entity.vo.UserCapitalAccountVO" id="UserCapitalAccountEntityMap">
+
+		<result column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="nickname" property="nickname"/>
+		<result column="available_amount" property="availableAmount"/>
+		<result column="total_amount" property="totalAmount"/>
+		<result column="block_amount" property="blockAmount"/>
+		<result column="outstanding_amount" property="outstandingAmount"/>
+		<result column="oem_name" property="oemName"/>
+
+	</resultMap>
+	<select id="getUserCapitalAccountByUserId" resultMap="UserCapitalAccountEntityMap" parameterType="java.lang.Long">
+		select <include refid="Account_Columns"/>
+		from t_e_user_capital_account a,sys_e_user u
+		where
+			a.user_id=u.id and
+			user_id=#{userId}
+	</select>
+	<select id="queryByUserIdAndType" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_user_capital_account
+		where
+			user_id = #{userId}
+			and user_type = #{userType}
+			and oem_code = #{oemCode}
+			and wallet_type = #{walletType}
+	</select>
+	<update id="addBalance">
+		update t_e_user_capital_account
+		set
+			total_amount = total_amount + #{amount},
+			available_amount = available_amount + #{amount},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			user_id = #{userId}
+			and user_type = #{userType}
+			and wallet_type = #{walletType}
+	</update>
+
+	<update id="minusBalance">
+		update t_e_user_capital_account
+		set
+			total_amount = total_amount - #{amount},
+			available_amount = available_amount - #{amount},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			user_id = #{userId}
+			and user_type = #{userType}
+			and wallet_type = #{walletType}
+	</update>
+
+	<select id="listAccountBalance" parameterType="com.yuqian.itax.capital.entity.query.UserCapitalAccountQuery" resultMap="UserCapitalAccountEntityMap">
+		select a.id, ifnull(a.available_amount,0)available_amount, ifnull(a.outstanding_amount,0)outstanding_amount, oem.oem_name
+		from t_e_user_capital_account a
+		inner join t_e_oem oem on a.oem_code = oem.oem_code
+		<where>
+			<if test="oemCode != null">
+				and a.oem_code = #{oemCode}
+			</if>
+			<if test="userId != null">
+				and a.user_id = #{userId}
+			</if>
+			<if test="userType != null">
+				and a.user_type = #{userType}
+			</if>
+			<if test="userTypeNotIn != null">
+				and a.user_type not in (${userTypeNotIn})
+			</if>
+		</where>
+
+	</select>
+
+	<select id="listPlatformAccountBalance" parameterType="com.yuqian.itax.capital.entity.query.UserCapitalAccountQuery" resultMap="UserCapitalAccountEntityMap">
+		select a.id, ifnull(a.available_amount,0)available_amount, ifnull(a.outstanding_amount,0)outstanding_amount, oem.oem_name
+		from t_e_user_capital_account a
+		left join t_e_oem oem on a.oem_code = oem.oem_code
+		inner join sys_e_user u on u.id = a.user_id
+		<where>
+			<if test="platformType != null">
+				and u.platform_type = #{platformType}
+			</if>
+			<if test="userTypeNotIn != null">
+				and a.user_type not in (${userTypeNotIn})
+			</if>
+			<if test="accountType != null">
+				and u.account_type  = #{accountType}
+			</if>
+		</where>
+
+	</select>
+
+
+	<resultMap type="com.yuqian.itax.capital.entity.vo.UserCapitalAccountVO" id="userCapitalAccountListMap">
+
+		<id column="id" property="id"/>
+		<result column="capital_account" property="capitalAccount"/>
+		<result column="username" property="username"/>
+		<result column="phone" property="phone"/>
+		<result column="nickname" property="nickname"/>
+		<result column="role_name" property="roleName"/>
+		<result column="user_id" property="userId"/>
+		<result column="user_type" property="userType"/>
+		<result column="total_amount" property="totalAmount"/>
+		<result column="available_amount" property="availableAmount"/>
+		<result column="block_amount" property="blockAmount"/>
+		<result column="outstanding_amount" property="outstandingAmount"/>
+		<result column="wallet_type" property="walletType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="status" property="status"/>
+	</resultMap>
+	<select id="queryUserCapitalAccountList" resultMap="userCapitalAccountListMap">
+		select
+		uca.id,
+		uca.capital_account,
+		u.username,
+		ue.phone,
+		u.nickname,
+		r.role_name,
+		uca.user_id,
+		uca.user_type,
+		convert(uca.total_amount/100, decimal(12,2)) total_amount,
+		convert(uca.available_amount/100, decimal(12,2))  available_amount,
+		convert(uca.block_amount/100, decimal(12,2))  block_amount,
+		convert(uca.outstanding_amount/100, decimal(12,2))  outstanding_amount,
+		uca.wallet_type,
+		uca.status,
+		ifnull(o.oem_name, '云财税平台') oem_name,
+		uca.add_time
+		from t_e_user_capital_account uca
+		LEFT JOIN sys_e_user u ON u.id=uca.user_id
+		LEFT JOIN t_e_oem o ON o.oem_code = uca.oem_code or (o.oem_code = "" and uca.oem_code is null)
+		LEFT JOIN sys_e_user_extend ue ON ue.user_id=uca.user_id
+		LEFT JOIN sys_r_user_role ur ON ur.user_id=uca.user_id
+		LEFT JOIN sys_e_roles r ON r.id=ur.role_id
+		LEFT join t_e_user_rela ure  on ure.user_id=uca.user_id
+		<where>
+			uca.user_type=2 and u.account_type=1
+			<if test="oemCode != null and oemCode != ''">
+				and u.oem_code =#{oemCode}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="tree != null and tree != ''">
+				and ure.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="username != null and username != ''">
+				and u.username like concat('%',#{username},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and ue.phone like concat('%',#{phone},'%')
+			</if>
+			<if test="nickname != null and nickname != ''">
+				and u.nickname like concat('%',#{nickname},'%')
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and r.role_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="walletType != null and walletType != ''">
+				and uca.wallet_type =#{walletType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and uca.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="capitalAccount != null and capitalAccount != ''">
+				and uca.capital_account like concat('%',#{capitalAccount},'%')
+			</if>
+		</where>
+		GROUP BY uca.user_id,uca.wallet_type, o.oem_code
+		UNION
+		select
+		uca.id,
+		uca.capital_account,
+		ma.member_account username,
+		ma.member_phone phone,
+		IFNULL(MA.real_name,MA.member_name) nickname,
+		ma.level_name role_name,
+		uca.user_id,
+		uca.user_type,
+		convert(uca.total_amount/100, decimal(12,2)) total_amount,
+		convert(uca.available_amount/100, decimal(12,2))  available_amount,
+		convert(uca.block_amount/100, decimal(12,2))  block_amount,
+		convert(uca.outstanding_amount/100, decimal(12,2))  outstanding_amount,
+		uca.wallet_type,
+		uca.status,
+		o.oem_name,
+		uca.add_time
+		from t_e_user_capital_account uca
+		LEFT JOIN t_e_member_account ma ON ma.id=uca.user_id
+		LEFT JOIN t_e_oem o ON o.oem_code=ma.oem_code
+		LEFT join t_e_user_rela ure  on ure.user_id=uca.user_id
+		<where>
+			uca.user_type=1
+			<if test="oemCode != null and oemCode != ''">
+				and ma.oem_code =#{oemCode}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and o.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="tree != null and tree != ''">
+				and ure.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="username != null and username != ''">
+				and ma.member_account like concat('%',#{username},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and ma.member_phone like concat('%',#{phone},'%')
+			</if>
+			<if test="nickname != null and nickname != ''">
+				AND (ma.member_name LIKE concat('%' ,#{nickname}, '%') or ma.real_name LIKE concat('%' ,#{nickname}, '%'))
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and ma.level_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="walletType != null and walletType != 0">
+				and uca.wallet_type =#{walletType}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and uca.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="capitalAccount != null and capitalAccount != ''">
+				and uca.capital_account like concat('%',#{capitalAccount},'%')
+			</if>
+		</where>
+		GROUP BY uca.user_id,uca.wallet_type, o.oem_code
+		order by add_time desc
+	</select>
+
+	<resultMap id="profitDetailMap" type="com.yuqian.itax.capital.entity.vo.ProfitDetailVO">
+		<result column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="user_id" property="userId"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="profits_amount" property="profitsAmount"/>
+		<result column="profits_status" property="profitsStatus"/>
+		<result column="wallet_type" property="walletType"/>
+		<result column="withdraw_order_no" property="withdrawOrderNo"/>
+		<result column="profits_type" property="profitsType"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+    <select id="getProfitDetailListForWithdraw" resultMap="profitDetailMap">
+		SELECT id, order_no, user_id, oem_code, profits_amount, profits_status, wallet_type, withdraw_order_no, profits_type, add_time
+		FROM t_e_profits_detail
+		WHERE `user_id` = #{userId} AND `oem_code` = #{oemCode} AND `profits_amount` <![CDATA[ > ]]> 0 AND `wallet_type` = 2 AND `profits_status` IN(2,3) AND `withdraw_order_no` IS NULL
+		ORDER BY id DESC
+	</select>
+
+    <!-- 添加分润金额 -->
+	<update id="addBalanceByProfits">
+		update t_e_user_capital_account
+		set
+		<if test="amount != null and amount > 0">
+			<if test="isAdd != null and isAdd == 1">
+				total_amount = total_amount + #{amount},
+			</if>
+			<if test="isAdd != null and isAdd == 0">
+				total_amount = total_amount - #{amount},
+			</if>
+		</if>
+		<if test="availableAmount != null and availableAmount > 0">
+			<if test="isAdd != null and isAdd == 1">
+				available_amount = available_amount + #{availableAmount},
+			</if>
+			<if test="isAdd != null and isAdd == 0">
+				available_amount = available_amount - #{availableAmount},
+			</if>
+		</if>
+		<if test="outstandingAmount != null and outstandingAmount > 0">
+			outstanding_amount = outstanding_amount + #{outstandingAmount},
+		</if>
+		<if test="blockAmount != null and blockAmount > 0">
+			<if test="amount != null and amount > 0 and isAdd != null and isAdd == 0">
+				block_amount = block_amount - #{blockAmount},
+			</if>
+			<if test="availableAmount != null and availableAmount > 0 and isAdd != null and isAdd == 0">
+				block_amount = block_amount + #{blockAmount},
+			</if>
+			<if test="isAdd != null and isAdd == 1">
+				block_amount = block_amount - #{blockAmount},
+			</if>
+		</if>
+		update_user = #{updateUser},
+		update_time = #{updateTime}
+		where
+		user_id = #{userId}
+		and user_type = #{userType}
+		and oem_code =#{oemCode}
+		and wallet_type = #{walletType}
+	</update>
+
+	<update id="updateAmount" parameterType="com.yuqian.itax.capital.entity.dto.UserCapitalAccountDTO">
+		update t_e_user_capital_account
+		set
+			<if test="addTotalAmount != null and addTotalAmount > 0">
+				total_amount = total_amount + #{addTotalAmount},
+			</if>
+			<if test="addAvailableAmount != null and addAvailableAmount > 0">
+				available_amount = available_amount + #{addAvailableAmount},
+			</if>
+			<if test="addBlockAmount != null and addBlockAmount > 0">
+				block_amount = block_amount + #{addBlockAmount},
+			</if>
+			<if test="addOutstandingAmount != null and addOutstandingAmount > 0">
+				outstanding_amount = outstanding_amount + #{addOutstandingAmount},
+			</if>
+			<if test="delTotalAmount != null and delTotalAmount > 0">
+				total_amount = total_amount - #{delTotalAmount},
+			</if>
+			<if test="delAvailableAmount != null and delAvailableAmount > 0">
+				available_amount = available_amount - #{delAvailableAmount},
+			</if>
+			<if test="delBlockAmount != null and delBlockAmount > 0">
+				block_amount = block_amount - #{delBlockAmount},
+			</if>
+			<if test="delOutstandingAmount != null and delOutstandingAmount > 0">
+				outstanding_amount = outstanding_amount - #{delOutstandingAmount},
+			</if>
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		where
+			<choose>
+				<when test="userId != null and userType != null">
+					user_id = #{userId}
+					and user_type = #{userType}
+					and wallet_type = #{walletType}
+				</when>
+				<otherwise>
+					id = #{id}
+				</otherwise>
+			</choose>
+	</update>
+
+</mapper>

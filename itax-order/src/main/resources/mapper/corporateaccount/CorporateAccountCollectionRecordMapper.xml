@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.corporateaccount.dao.CorporateAccountCollectionRecordMapper">
+    <resultMap type="com.yuqian.itax.corporateaccount.entity.CorporateAccountCollectionRecordEntity" id="baseEntityMap">
+        <id column="id" property="id"/>
+        <result column="corporate_account_id" property="corporateAccountId"/>
+        <result column="bank_collection_record_no" property="bankCollectionRecordNo"/>
+        <result column="smy" property="smy"/>
+        <result column="dhamt" property="dhamt"/>
+        <result column="cr_hpnam" property="crHpnam"/>
+        <result column="hpn_amt" property="hpnAmt"/>
+        <result column="acba" property="acba"/>
+        <result column="trading_time" property="tradingTime"/>
+        <result column="other_party_bank_account" property="otherPartyBankAccount"/>
+        <result column="other_party_bank_name" property="otherPartyBankName"/>
+        <result column="other_party_bank_number" property="otherPartyBankNumber"/>
+        <result column="trading_status" property="tradingStatus"/>
+        <result column="trading_remark" property="tradingRemark"/>
+        <result column="remaining_withdrawal_amount" property="remainingWithdrawalAmount"/>
+        <result column="add_time" property="addTime"/>
+        <result column="add_user" property="addUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CorporateAccountCollectionRecordVO" id="corpAccColRcdMap">
+		<id column="id" property="id"/>
+		<result column="bank_collection_record_no" property="bankCollectionRecordNo"/>
+		<result column="dhamt" property="dhamt"/>
+		<result column="cr_hpnam" property="crHpnam"/>
+		<result column="hpn_amt" property="hpnAmt"/>
+		<result column="acba" property="acba"/>
+		<result column="trading_time" property="tradingTime"/>
+		<result column="other_party_bank_account" property="otherPartyBankAccount"/>
+		<result column="other_party_bank_name" property="otherPartyBankName"/>
+		<result column="other_party_bank_number" property="otherPartyBankNumber"/>
+		<result column="remark" property="remark"/>
+		<result column="trading_status" property="tradingStatus"/>
+		<result column="trading_remark" property="tradingRemark"/>
+		<result column="remaining_withdrawal_amount" property="remainingWithdrawalAmount"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.IncomeAndExpenseVO" id="incomeAndExpenseMap">
+		<result column="incomes" property="incomes"/>
+		<result column="expenses" property="expenses"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, corporate_account_id, bank_collection_record_no, smy, dhamt, cr_hpnam, hpn_amt, acba, trading_time, other_party_bank_account, other_party_bank_name, other_party_bank_number, trading_status, trading_remark, remaining_withdrawal_amount, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!--查询对公户银行收款记录 add by Kaven 2020-09-08 -->
+	<select id="queryCorpAccountCollectionRecords" parameterType="com.yuqian.itax.user.entity.query.CorporateAccountCollectionRecordQuery" resultMap="corpAccColRcdMap">
+		SELECT
+			t.id,
+			t.bank_collection_record_no,
+			t.trading_remark,
+			t.dhamt,
+			t.cr_hpnam,
+			t.hpn_amt,
+			t.acba,
+			t.trading_time,
+			t.other_party_bank_account,
+			t.other_party_bank_name,
+			t.other_party_bank_number,
+			t.remark,
+			t.trading_status,
+			t.remaining_withdrawal_amount remaining_withdrawal_amount
+		FROM
+			t_e_corporate_account_collection_record t
+		<where>
+			<if test="bankCollectionRecordNo != null and bankCollectionRecordNo != ''">
+				and t.bank_collection_record_no like concat('%',#{bankCollectionRecordNo},'%')
+			</if>
+			<if test="smy != null and smy != ''">
+				and t.smy like concat('%',#{smy},'%')
+			</if>
+			<if test="corporateAccountId != null ">
+				and t.corporate_account_id =#{corporateAccountId}
+			</if>
+			<if test="otherPartyBankAcount != null and otherPartyBankAcount != ''">
+				and replace(replace(t.other_party_bank_account,'（','('),'）',')') like concat('%',replace(replace(#{otherPartyBankAcount},'（','('),'）',')'),'%')
+			</if>
+			<if test="remark != null and remark != ''">
+				and t.smy like concat('%',#{remark},'%')
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and t.other_party_bank_account like concat('%',#{companyName},'%')
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.trading_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.trading_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and t.trading_time between #{startDate} and #{endDate}
+			</if>
+			<!-- 从选择收款记录入口进来，需满足剩余可提现额度大于0-->
+			<if test="isChoose == '1'.toString()">
+				and t.remaining_withdrawal_amount <![CDATA[>]]> 0
+			</if>
+			<if test="tradingStatus != null ">
+				and t.trading_status =#{tradingStatus}
+			</if>
+		</where>
+		ORDER BY t.trading_time DESC
+	</select>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CorporateAccountVOAdmin" id="corpAccAdminMap">
+
+		<result column="corporate_account_id" property="corporateAccountId"/>
+		<result column="bank_collection_record_no" property="bankCollectionRecordNo"/>
+		<result column="dhamt" property="dhamt"/>
+		<result column="cr_hpnam" property="crHpnam"/>
+		<result column="hpn_amt" property="hpnAmt"/>
+		<result column="acba" property="acba"/>
+		<result column="trading_time" property="tradingTime"/>
+		<result column="other_party_bank_account" property="otherPartyBankAccount"/>
+		<result column="other_party_bank_name" property="otherPartyBankName"/>
+		<result column="other_party_bank_number" property="otherPartyBankNumber"/>
+		<result column="remark" property="remark"/>
+		<result column="trading_remark" property="tradingRemark"/>
+		<result column="smy" property="smy"/>
+		<result column="remaining_withdrawal_amount" property="remainingWithdrawalAmount"/>
+	</resultMap>
+
+	<select id="queryCorpAccountCollectionRecordsAdmin" parameterType="com.yuqian.itax.user.entity.query.CorporateAccountCollectionRecordQuery" resultMap="corpAccAdminMap">
+		SELECT
+			t.id,
+			t.corporate_account_id,
+			t.bank_collection_record_no,
+			t.smy,
+			t.trading_remark,
+			IFNULL(convert(t.dhamt/100, decimal(12,2)),0)dhamt,
+			IFNULL(convert(t.cr_hpnam/100, decimal(12,2)),0) cr_hpnam,
+			IFNULL(convert(t.hpn_amt/100, decimal(12,2)),0) hpn_amt,
+			IFNULL(convert(t.acba/100, decimal(12,2)),0) acba,
+			t.trading_time,
+			t.other_party_bank_account,
+			t.other_party_bank_name,
+			t.other_party_bank_number,
+			t.remark,
+			IFNULL(convert(t.remaining_withdrawal_amount/100, decimal(12,2)),0) remaining_withdrawal_amount
+		FROM
+			t_e_corporate_account_collection_record t
+		<where>
+			<if test="bankCollectionRecordNo != null and bankCollectionRecordNo != ''">
+				and t.bank_collection_record_no like concat('%',#{bankCollectionRecordNo},'%')
+			</if>
+			<if test="otherPartyBankNumber != null and otherPartyBankNumber != ''">
+				and t.other_party_bank_number like concat('%',#{otherPartyBankNumber},'%')
+			</if>
+			<if test="tradingRemark != null and tradingRemark != ''">
+				and t.trading_remark like concat('%',#{tradingRemark},'%')
+			</if>
+			<if test="smy != null and smy != ''">
+				and t.smy like concat('%',#{smy},'%')
+			</if>
+			<if test="corporateAccountId != null ">
+				and t.corporate_account_id =#{corporateAccountId}
+			</if>
+			<if test="otherPartyBankAcount != null and otherPartyBankAcount != ''">
+				and t.other_party_bank_account like concat('%',#{otherPartyBankAcount},'%')
+			</if>
+			<if test="remark != null and remark != ''">
+				and t.remark like concat('%',#{remark},'%')
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.trading_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.trading_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		ORDER BY t.trading_time DESC
+	</select>
+
+
+	<!--对公户银行收款记录收支统计 add by Kaven 2020-09-08 -->
+	<select id="queryIncomeAndExpense" parameterType="com.yuqian.itax.user.entity.query.CorporateAccountCollectionRecordQuery" resultMap="incomeAndExpenseMap">
+		SELECT
+			ifnull( sum( CASE WHEN t.trading_status = 1 THEN t.hpn_amt ELSE 0 END ), 0 ) AS expenses,
+			ifnull( sum( CASE WHEN t.trading_status = 2 THEN t.hpn_amt ELSE 0 END ), 0 ) AS incomes
+		FROM
+			t_e_corporate_account_collection_record t
+		<where>
+			t.corporate_account_id = #{corporateAccountId}
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.trading_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.trading_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.trading_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.trading_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="tradingStatus != null ">
+				and t.trading_status =#{tradingStatus}
+			</if>
+		</where>
+	</select>
+
+	<!--更新剩余可提现额度 add by Kaven 2020-09-09 -->
+	<update id="updateRemainingWithdrawAmount">
+		update
+			t_e_corporate_account_collection_record
+		set
+			update_time = now(),
+			<if test="flag != null and flag == 1">
+				remaining_withdrawal_amount = remaining_withdrawal_amount + #{withdrawalAmount},
+			</if>
+			<if test="flag != null and flag == 0">
+				remaining_withdrawal_amount = remaining_withdrawal_amount - #{withdrawalAmount},
+			</if>
+			update_user = 'admin'
+		<where>
+			id = #{recordId}
+		</where>
+	</update>
+</mapper>

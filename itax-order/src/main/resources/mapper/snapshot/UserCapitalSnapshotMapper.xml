@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.UserCapitalSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.UserCapitalSnapshotEntity" id="baseEntityMap">
+
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_type" property="userType"/>
+        <result column="oem_code" property="oemCode"/>
+        <result column="total_amount_consumption" property="totalAmountConsumption"/>
+        <result column="available_amount_consumption" property="availableAmountConsumption"/>
+        <result column="block_amount_consumption" property="blockAmountConsumption"/>
+        <result column="outstanding_amount_consumption" property="outstandingAmountConsumption"/>
+        <result column="total_amount_commission" property="totalAmountCommission"/>
+        <result column="available_amount_commission" property="availableAmountCommission"/>
+        <result column="block_amount_commission" property="blockAmountCommission"/>
+        <result column="add_revenue" property="addRevenue"/>
+        <result column="snapshot_time" property="snapshotTime"/>
+        <result column="add_time" property="addTime"/>
+        <result column="add_user" property="addUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id,user_type, oem_code, total_amount_consumption, available_amount_consumption, block_amount_consumption, outstanding_amount_consumption, total_amount_commission, available_amount_commission, block_amount_commission, add_revenue, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+    <!-- 保存资金变动快照（有资金变动记录） -->
+    <insert id="saveUserCapitalSnapshotByChanges">
+        INSERT INTO `t_e_user_capital_snapshot` (`user_id`,`user_type`, `oem_code`, `total_amount_consumption`,
+        `available_amount_consumption`,
+        `block_amount_consumption`, `outstanding_amount_consumption`, `total_amount_commission`,
+        `available_amount_commission`, `block_amount_commission`,
+        `add_revenue`, `snapshot_time`, `add_time`, `add_user`, `update_time`, `update_user`, `remark`)
+        select a.user_id,a.`user_type`, a.`oem_code`,
+        case when r.wallet_type = 1 then (select changes_after_amount from t_e_user_capital_change_record where id =
+        max(r.id))
+        when r.wallet_type = 2 then IFNULL((select changes_after_amount from t_e_user_capital_change_record
+        where id = (select max(id) from t_e_user_capital_change_record where user_id = a.user_id and user_type =
+        a.user_type and oem_code = a.oem_code
+        and wallet_type = 1 and DATE_FORMAT(add_time,'%Y-%m-%d') <![CDATA[<=]]>
+        DATE_FORMAT(max(r.add_time),'%Y-%m-%d'))),0) end `total_amount_consumption`,
+        null `available_amount_consumption`, null `block_amount_consumption`, null `outstanding_amount_consumption`,
+        case when r.wallet_type = 2 then (select changes_after_amount from t_e_user_capital_change_record where id =
+        max(r.id))
+        when r.wallet_type = 1 then IFNULL((select changes_after_amount from t_e_user_capital_change_record
+        where id = (select max(id) from t_e_user_capital_change_record where user_id = a.user_id and user_type =
+        a.user_type and oem_code = a.oem_code
+        and wallet_type = 2 and DATE_FORMAT(add_time,'%Y-%m-%d') <![CDATA[<= ]]>
+        DATE_FORMAT(max(r.add_time),'%Y-%m-%d'))),0) end `total_amount_commission`,
+        null `available_amount_commission`, null `block_amount_commission`,
+        case when r.user_type = 2 and r.user_id not in (select id from sys_e_user where platform_type = 2 and
+        account_type = 1)
+        then IFNULL((select sum(profits_amount) from t_e_profits_detail where user_id = r.user_id and user_type != 1
+        and profits_status in (2,3) and DATE_FORMAT(profits_time ,'%Y-%m-%d')= DATE_FORMAT(r.add_time,'%Y-%m-%d')),0)
+        when r.user_type = 1 then IFNULL((select sum(profits_amount) from t_e_profits_detail where user_id = r.user_id
+        and user_type = 1
+        and profits_status in (2,3) and DATE_FORMAT(profits_time ,'%Y-%m-%d')= DATE_FORMAT(r.add_time,'%Y-%m-%d')),0)
+        when r.user_type = 2 and r.user_id in (select id from sys_e_user where platform_type = 2 and account_type = 1)
+        then ((select sum(changes_amount) from t_e_user_capital_change_record where user_id = r.user_id and user_type =
+        r.user_type and changes_type = 1 and order_type > 2 and oem_code = a.oem_code and DATE_FORMAT(add_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')) -
+        (select sum(changes_amount) from t_e_user_capital_change_record where user_id = r.user_id and user_type =
+        r.user_type and changes_type = 2 and order_type > 4 and DATE_FORMAT(add_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')) -
+        (select IFNULL(sum(`vat_fee`+`vat_payment`+`personal_income_tax`+`income_tax_payment`+`surcharge`+`surcharge_payment` -
+        IFNULL(`refund_tax_fee`,0)),0)
+        from t_e_invoice_order where order_no in (select order_no from t_e_order where order_type = 6 and order_status =
+        7) and oem_code = a.oem_code and DATE_FORMAT(complete_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')))
+        end `add_revenue`,
+        max(r.add_time) `snapshot_time`, now() `add_time`, null `add_user`, null `update_time`, null `update_user`,
+        '历史数据处理'`remark`
+        from t_e_user_capital_account a left join t_e_user_capital_change_record r
+        on a.user_id = r.user_id and a.user_type = r.user_type and a.wallet_type = r.wallet_type and a.oem_code = r.oem_code
+        where DATE_FORMAT(r.add_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')
+        and a.oem_code is not null
+        <if test="oemCode != null ">
+            AND a.oem_code=#{oemCode}
+        </if>
+        group by r.user_id,r.user_type,r.oem_code
+    </insert>
+
+    <!-- 保存资金变动快照（没有变动） -->
+    <insert id="saveUserCapitalSnapshotByNotChange">
+        INSERT INTO `t_e_user_capital_snapshot` (`user_id`,`user_type`, `oem_code`, `total_amount_consumption`,
+        `available_amount_consumption`,
+        `block_amount_consumption`, `outstanding_amount_consumption`, `total_amount_commission`,
+        `available_amount_commission`, `block_amount_commission`,
+        `add_revenue`, `snapshot_time`, `add_time`, `add_user`, `update_time`, `update_user`, `remark`)
+        select a.`user_id`,a.`user_type`, a.`oem_code`,
+        IFNULL((select total_amount_consumption from t_e_user_capital_snapshot where user_id = a.user_id and user_type =
+        a.user_type order by id desc limit 1),0) `total_amount_consumption`,
+        null `available_amount_consumption`,null `block_amount_consumption`, null `outstanding_amount_consumption`,
+        IFNULL((select total_amount_commission from t_e_user_capital_snapshot where user_id = a.user_id and user_type =
+        a.user_type order by id desc limit 1),0) `total_amount_commission`,
+        null `available_amount_commission`, null `block_amount_commission`,
+        0 `add_revenue`, #{snapshotTime} `snapshot_time`, a.`add_time`, null `add_user`, null `update_time`, null
+        `update_user`, '历史数据处理' `remark`
+        from t_e_user_capital_account a
+        where (a.user_id,a.user_type,a.oem_code) not in (select user_id,user_type,oem_code from t_e_user_capital_snapshot where
+        DATE_FORMAT(snapshot_time,'%Y-%m-%d') = DATE_FORMAT(#{snapshotTime},'%Y-%m-%d'))
+        and DATE_FORMAT(a.add_time,'%Y-%m-%d') <![CDATA[<=]]> DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')
+        and ((DATE_FORMAT(a.update_time,'%Y-%m-%d') <![CDATA[>=]]> DATE_FORMAT(#{snapshotTime},'%Y-%m-%d')) or
+        a.update_time is null)
+        and oem_code is not null
+        <if test="oemCode != null ">
+            AND a.oem_code=#{oemCode}
+        </if>
+    </insert>
+
+    <delete id="deleteUserCapitalSnapshotSnapshotByDate">
+        DELETE from t_e_user_capital_snapshot
+        <where>
+            <if test="startDate != null and startDate != ''  ">
+                AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            </if>
+            <if test="endDate != '' and endDate != null  ">
+                AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+            </if>
+            <if test="oemCode != null ">
+                AND oem_code=#{oemCode}
+            </if>
+        </where>
+    </delete>
+</mapper>

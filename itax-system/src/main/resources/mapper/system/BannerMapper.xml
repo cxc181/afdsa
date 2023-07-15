@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.BannerMapper">
+    <resultMap type="com.yuqian.itax.system.entity.BannerEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="banner_address" property="bannerAddress"/>
+			<result column="title" property="title"/>
+			<result column="order_num" property="orderNum"/>
+			<result column="is_show" property="isShow"/>
+			<result column="is_share" property="isShare"/>
+			<result column="banner_link" property="bannerLink"/>
+			<result column="position" property="position"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="share_title" property="shareTitle"/>
+			<result column="share_image_address" property="shareImageAddress"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, banner_address, title, order_num, is_show, banner_link, position,oem_code, add_time, add_user, update_time, update_user, remark,is_share,share_title,share_image_address
+    </sql>
+
+    <sql id="Query_Base_Columns">
+		banner.id, banner.banner_address, banner.title, banner.order_num, banner.is_show, banner.banner_link,
+		banner.position, banner.oem_code, banner.add_time, banner.add_user, banner.update_time, banner.update_user, banner.remark,
+		banner.is_share, banner.share_title, banner.share_image_address
+    </sql>
+	<resultMap type="com.yuqian.itax.system.entity.vo.BannerListVO" id="baseListEntityMap">
+		<id column="id" property="id"/>
+		<result column="banner_address" property="bannerAddress"/>
+		<result column="title" property="title"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="is_show" property="isShow"/>
+		<result column="is_share" property="isShare"/>
+		<result column="banner_link" property="bannerLink"/>
+		<result column="position" property="position"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="share_title" property="shareTitle"/>
+		<result column="share_image_address" property="shareImageAddress"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="pv" property="pv"/>
+		<result column="uv" property="uv"/>
+	</resultMap>
+	<select id="listBanner" parameterType="com.yuqian.itax.system.entity.query.BannerQuery" resultMap="baseListEntityMap">
+		select
+		<include refid="Query_Base_Columns"/>, oem.oem_name,
+		(select IFNULL(COUNT(bp.id),0) from  t_e_buried_point bp  where bp.source_id = banner.id ) pv,
+		(select IFNULL(COUNT( DISTINCT bp.user_type,bp.user_id),0) from  t_e_buried_point bp  where bp.source_id = banner.id and bp.user_id is not null) uv
+
+		from
+		t_e_banner banner
+		left join t_e_oem oem on oem.oem_code = banner.oem_code
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+			<if test="likeTitle != null and likeTitle != ''">
+				and banner.title like concat('%',#{likeTitle},'%')
+			</if>
+			<if test="likeOemName != null and likeOemName != ''">
+				and oem.oem_name like concat('%',#{likeOemName},'%')
+			</if>
+			<if test="position != null">
+				and banner.position = #{position}
+			</if>
+			<if test="addTimeBeg != null">
+				and banner.add_time >= #{addTimeBeg}
+			</if>
+			<if test="addTimeEnd != null">
+				and banner.add_time &lt;= #{addTimeEnd}
+			</if>
+			<if test="likeAddUser != null and likeAddUser != ''">
+				and banner.add_user like concat('%',#{likeAddUser},'%')
+			</if>
+		</where>
+		order by oem.id desc, banner.order_num asc
+	</select>
+
+	<select id="orderNumIsExist" resultType="boolean">
+		select
+			count(1)
+		from
+		t_e_banner
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code = #{oemCode}
+			</if>
+			<if test="orderNum != null">
+				and order_num = #{orderNum}
+			</if>
+			<if test="notId != null">
+				and id != #{notId}
+			</if>
+		</where>
+	</select>
+
+	<insert id="addBatch">
+		insert into t_e_banner
+		( banner_address, title, order_num, is_show, banner_link,position, oem_code,is_share,share_title,share_image_address,add_time,add_user,remark)
+		values
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(
+			#{item.bannerAddress},
+			#{item.title},
+			#{item.orderNum},
+			#{item.isShow},
+			#{item.bannerLink},
+			#{item.position},
+			#{oemCode},
+			#{item.isShare},
+			#{item.shareTitle},
+			#{item.shareImageAddress},
+			#{addTime},
+			#{account},
+			#{item.remark}
+			)
+		</foreach>
+	</insert>
+</mapper>

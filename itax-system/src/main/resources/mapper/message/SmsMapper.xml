@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.message.dao.SmsMapper">
+    <resultMap type="com.yuqian.itax.message.entity.SmsEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="user_type" property="userType"/>
+			<result column="user_phone" property="userPhone"/>
+			<result column="sms_content" property="smsContent"/>
+			<result column="sms_tmpl_id" property="smsTmplId"/>
+			<result column="reserve_send_time" property="reserveSendTime"/>
+			<result column="send_time" property="sendTime"/>
+			<result column="send_status" property="sendStatus"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="ret_code" property="retCode"/>
+			<result column="ret_msg" property="retMsg"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id, user_type, user_phone, sms_content, sms_tmpl_id, reserve_send_time, send_time, send_status, oem_code, ret_code, ret_msg, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

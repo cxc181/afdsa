@@ -1,0 +1,9 @@
+diff a/itax-common/src/main/java/com/yuqian/itax/common/base/vo/ResultVo.java b/itax-common/src/main/java/com/yuqian/itax/common/base/vo/ResultVo.java	(rejected hunks)
+@@ -1,6 +1,7 @@
+ package com.yuqian.itax.common.base.vo;
+ 
+ import com.yuqian.itax.common.constants.ResultConstants;
++import io.swagger.annotations.ApiModelProperty;
+ 
+ /**
+  * @ClassName ResultVo

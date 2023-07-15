@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.UserExtendMapper">
+    <resultMap type="com.yuqian.itax.user.entity.UserExtendEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<!--<result column="user_type_code" property="userTypeCode"/>-->
+			<result column="parent_user_id" property="parentUserId"/>
+			<result column="phone" property="phone"/>
+			<result column="wechat" property="wechat"/>
+			<result column="email" property="email"/>
+			<result column="user_tree" property="userTree"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id,  parent_user_id, phone, wechat, email, user_tree, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+	<select id="getUserExtendByUserId" resultMap="baseEntityMap" parameterType="java.lang.Long">
+		select <include refid="Base_Columns"/>
+		from sys_e_user_extend
+		<where>
+			user_id=#{userId}
+		</where>
+	</select>
+
+	<select id="getUserExtendByPhoneAndOemCode" resultMap="baseEntityMap" parameterType="java.lang.Long">
+		select 		e.id, e.user_id,  e.parent_user_id, e.phone, e.wechat, e.email, e.user_tree, e.add_time, e.add_user, e.update_time, e.update_user, e.remark
+		from sys_e_user_extend  e
+		LEFT JOIN  sys_e_user  u on e.user_id=u.id
+		<where>
+			e.phone=#{phone} and u.oem_code=#{oemCode}
+		</where>
+	</select>
+
+	<select id="getUserExtendByPhoneAndOemCodeNotId" resultMap="baseEntityMap" parameterType="java.lang.Long">
+		select 		e.id, e.user_id,  e.parent_user_id, e.phone, e.wechat, e.email, e.user_tree, e.add_time, e.add_user, e.update_time, e.update_user, e.remark
+		from sys_e_user_extend  e
+		LEFT JOIN  sys_e_user  u on e.user_id=u.id
+		<where>
+			e.phone=#{phone}
+			and u.id not in (${id})
+			<if test="oemCode != null and oemCode != ''">
+				and u.oem_code like concat('%',#{oemCode},'%')
+			</if>
+			<if test="oemCode == null or oemCode == ''">
+				and (u.oem_code is null or u.oem_code='')
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.InvoiceRecordDetailMapper">
+    <resultMap type="com.yuqian.itax.order.entity.InvoiceRecordDetailEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="invoice_record_no" property="invoiceRecordNo"/>
+			<result column="request_no" property="requestNo"/>
+			<result column="invoice_trade_no" property="invoiceTradeNo"/>
+			<result column="invoice_code" property="invoiceCode"/>
+			<result column="invoice_no" property="invoiceNo"/>
+			<result column="invoice_check_code" property="invoiceCheckCode"/>
+			<result column="invoice_date" property="invoiceDate"/>
+			<result column="invoice_qr_code" property="invoiceQrCode"/>
+			<result column="tax_control_code" property="taxControlCode"/>
+			<result column="invoice_type_code" property="invoiceTypeCode"/>
+			<result column="eInvoice_url" property="einvoiceUrl"/>
+			<result column="eInvoice_oss_pdf_url" property="einvoiceOssPdfUrl"/>
+			<result column="eInvoice_oss_img_url" property="einvoiceOssImgUrl"/>
+			<result column="invoice_total_price" property="invoiceTotalPrice"/>
+			<result column="invoice_total_tax" property="invoiceTotalTax"/>
+			<result column="invoice_total_price_tax" property="invoiceTotalPriceTax"/>
+			<result column="invoice_details_list" property="invoiceDetailsList"/>
+			<result column="detail_desc" property="detailDesc"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="is_format_create" property="IsFormatCreate"/>
+
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceDetailVO" id="InvoiceDetailVOMap">
+			<result column="invoice_no" property="invoiceNo"/>
+			<result column="eInvoice_oss_img_url" property="eInvoiceOssImgUrl"/>
+	</resultMap>
+    <sql id="Base_Columns">
+		id, invoice_record_no,request_no, invoice_trade_no, invoice_code, invoice_no, invoice_check_code, invoice_date, invoice_qr_code, tax_control_code, invoice_type_code, eInvoice_url,eInvoice_oss_pdf_url,eInvoice_oss_img_url, invoice_total_price, invoice_total_tax, invoice_total_price_tax, invoice_details_list,
+			detail_desc, status, add_time, add_user, update_time, update_user, remark,is_format_create
+    </sql>
+
+	<select id="findByInvoiceRecordNo" resultMap="baseEntityMap" flushCache="true">
+		select <include refid="Base_Columns"/> from t_e_invoice_record_detail where invoice_record_no = #{invoiceRecordNo}
+	</select>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceRecordDetailVO" id="invoiceRecordDetailVoMap">
+		<id column="id" property="id"/>
+		<result column="invoice_record_no" property="invoiceRecordNo"/>
+		<result column="request_no" property="requestNo"/>
+		<result column="invoice_trade_no" property="invoiceTradeNo"/>
+		<result column="invoice_code" property="invoiceCode"/>
+		<result column="invoice_no" property="invoiceNo"/>
+		<result column="tax_control_code" property="taxControlCode"/>
+		<result column="invoice_type_code" property="invoiceTypeCode"/>
+		<result column="eInvoice_url" property="einvoiceUrl"/>
+		<result column="eInvoice_oss_img_url" property="eInvoiceOssImgUrl"/>
+		<result column="invoice_total_price_tax" property="invoiceTotalPriceTax"/>
+		<result column="detail_desc" property="detailDesc"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="record_status" property="recordStatus"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="is_print_detail" property="isPrintDetail"/>
+	</resultMap>
+
+	<!-- 开票记录明细列表-->
+	<select id="invoiceRecordDetailList" resultMap="invoiceRecordDetailVoMap">
+			SELECT
+				d.id, d.invoice_record_no,d.request_no, d.invoice_trade_no, d.invoice_code, d.invoice_no, d.tax_control_code, d.invoice_type_code, d.eInvoice_url,d.eInvoice_oss_img_url,
+				d.invoice_total_price_tax, d.detail_desc, d.status, d.add_time, d.add_user, d.update_time, d.update_user, d.remark, r.`status` record_status,is_print_detail,
+				CASE
+			WHEN d.invoice_type_code = '026'
+			OR d.invoice_type_code = '028' THEN
+				2
+			ELSE
+				1
+			END invoice_way
+			FROM
+				t_e_invoice_record r,
+				t_e_invoice_record_detail d
+			WHERE
+				r.invoice_record_no = d.invoice_record_no
+			  and d.invoice_record_no =  #{invoiceRecordNo}
+			  and r.order_no = #{orderNo}
+			ORDER BY
+				d.invoice_no DESC,
+				d.`status`
+	</select>
+
+	<!--根据订单编号查询-->
+	<select id="queryByOrderNo" resultMap="InvoiceDetailVOMap">
+		select rd.invoice_no,rd.eInvoice_oss_img_url
+		from t_e_invoice_record_detail rd
+		INNER JOIN t_e_invoice_record r on r.invoice_record_no = rd.invoice_record_no
+		<where>
+			<if test="orderNo != null and orderNo != ''">
+				and r.order_no = #{orderNo}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询开票中的开票记录明细 -->
+	<select id="queryDetailStatusNumByIng" resultType="Map">
+		select invoice_record_no invoiceRecordNo,(select order_no from t_e_invoice_record where invoice_record_no = d.invoice_record_no) orderNo,
+			count(1) totalNum,
+			sum(case when `status` = 0 or `status` = 1 then 1 else 0 end) successNum,
+			sum(case when `status` = 3 or `status` = 5 then 1 else 0 end) failNum,
+			sum(case when `status` = 4 then 1 else 0 end) ingNum,
+		    sum(case when `is_format_create` = 1 then 1 else 0 end) formatCreateNum
+			 from t_e_invoice_record_detail d
+			where invoice_record_no in (select invoice_record_no from t_e_invoice_record where `status` = 9
+			<if test="invoiceRecordNo != null and invoiceRecordNo != ''">
+				and invoice_record_no = #{invoiceRecordNo}
+			</if>
+			)
+			group by invoice_record_no
+	</select>
+
+	<!-- 根据开票记录编号修改开票明细状态 -->
+	<update id="updateByInvoiceRecordNo">
+		update t_e_invoice_record_detail set status = #{status},update_time = now() where invoice_record_no = #{invoiceRecordNo} and status = 4
+	</update>
+</mapper>

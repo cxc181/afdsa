@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.MemberAccountChangeMapper">
+    <resultMap type="com.yuqian.itax.user.entity.MemberAccountChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="account_id" property="accountId"/>
+			<result column="member_account" property="memberAccount"/>
+			<result column="member_name" property="memberName"/>
+			<result column="head_img" property="headImg"/>
+			<result column="real_name" property="realName"/>
+			<result column="alipay_user_id" property="alipayUserId"/>
+			<result column="open_id" property="openId"/>
+			<result column="member_phone" property="memberPhone"/>
+			<result column="phone_new" property="phoneNew"/>
+			<result column="email" property="email"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="member_level" property="memberLevel"/>
+			<result column="level_name" property="levelName"/>
+			<result column="status" property="status"/>
+			<result column="parent_member_id" property="parentMemberId"/>
+			<result column="parent_member_account" property="parentMemberAccount"/>
+			<result column="member_tree" property="memberTree"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="member_type" property="memberType"/>
+			<result column="pay_password" property="payPassword"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="id_card_no" property="idCardNo"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_back" property="idCardBack"/>
+			<result column="id_card_addr" property="idCardAddr"/>
+			<result column="auth_status" property="authStatus"/>
+			<result column="expire_date" property="expireDate"/>
+			<result column="invite_code" property="inviteCode"/>
+			<result column="employees_limit" property="employeesLimit"/>
+			<result column="extend_type" property="extendType"/>
+			<result column="attribution_employees_id" property="attributionEmployeesId"/>
+			<result column="attribution_employees_account" property="attributionEmployeesAccount"/>
+			<result column="up_diamond_id" property="upDiamondId"/>
+			<result column="up_diamond_account" property="upDiamondAccount"/>
+			<result column="super_diamond_id" property="superDiamondId"/>
+			<result column="super_diamond_account" property="superDiamondAccount"/>
+			<result column="super_employees_id" property="superEmployeesId"/>
+			<result column="super_employees_account" property="superEmployeesAccount"/>
+			<result column="is_pay_upgrade" property="isPayUpgrade"/>
+			<result column="source_type" property="sourceType"/>
+			<result column="sign" property="sign"/>
+			<result column="file_url" property="fileUrl"/>
+			<result column="channel_service_id" property="channelServiceId"/>
+			<result column="channel_employees_id" property="channelEmployeesId"/>
+			<result column="channel_code" property="channelCode"/>
+			<result column="is_demotion" property="isDemotion"/>
+			<result column="channel_product_code" property="channelProductCode"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, account_id, member_account, member_name, head_img, real_name, alipay_user_id, open_id, member_phone, phone_new, email, oem_code, member_level, level_name, status, parent_member_id,
+		parent_member_account, member_tree, province_code, city_code, member_type, pay_password, add_time, add_user, update_time, update_user, remark, id_card_no, id_card_front,
+		id_card_back, id_card_addr, auth_status, expire_date, invite_code, employees_limit, extend_type, attribution_employees_id, attribution_employees_account, up_diamond_id,
+		up_diamond_account, super_diamond_id, super_diamond_account, super_employees_id, super_employees_account, is_pay_upgrade, source_type,sign,file_url,channel_service_id,channel_employees_id,channel_code,channel_product_code,is_demotion
+    </sql>
+
+	<select id="queryMemberPhoneChange" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from
+		t_e_member_account_change
+		where phone_new is not null and account_id=#{id}
+	</select>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.OemParamsMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.OemParamsEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="params_type" property="paramsType"/>
+			<result column="account" property="account"/>
+			<result column="sec_key" property="secKey"/>
+			<result column="url" property="url"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="params_values" property="paramsValues"/>
+			<result column="public_key" property="publicKey"/>
+			<result column="private_key" property="privateKey"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, params_type, account, sec_key, url, status, add_time, add_user, update_time,
+		update_user, remark, params_values, public_key, private_key
+    </sql>
+
+	<select id="getParams" parameterType="java.util.Map" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			sys_e_oem_params
+		<where>
+			params_type = #{paramsType} and status = 1
+		<if test="oemCode!=null and oemCode!=''">
+			AND	oem_code = #{oemCode}
+		</if>
+		<if test="oemCode == null or oemCode ==''">
+			AND	(oem_code is null or oem_code='')
+		</if>
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.agent.entity.vo.OemParamsVO" id="emParamsVOMap">
+
+		<id column="id" property="id"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="params_type" property="paramsType"/>
+		<result column="account" property="account"/>
+		<result column="sec_key" property="secKey"/>
+		<result column="url" property="url"/>
+		<result column="params_values" property="paramsValues"/>
+		<result column="public_key" property="publicKey"/>
+		<result column="private_key" property="privateKey"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="remark" property="remark"/>
+
+	</resultMap>
+	<select id="querySysOemParamsList"  resultMap="emParamsVOMap">
+		SELECT
+		p.id,p.oem_code,o.oem_name,p.params_type,p.account,p.sec_key,p.url,p.params_values,p.public_key,p.private_key,p.status,p.add_time,p.update_time,p.remark
+		FROM
+		sys_e_oem_params p
+		LEFT JOIN t_e_oem o ON p.oem_code=o.oem_code
+		<where>
+			<if test="id != null ">
+				and p.id =#{id}
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and p.oem_code =#{oemCode}
+			</if>
+			<if test="paramsType != null ">
+				and p.params_type =#{paramsType}
+			</if>
+			<if test="account != null and account != ''">
+				and p.account =#{account}
+			</if>
+			<if test="status != null ">
+				and p.status =#{status}
+			</if>
+		</where>
+	</select>
+
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.MemberConsumptionRecordMapper">
+    <resultMap type="com.yuqian.itax.order.entity.MemberConsumptionRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="order_type" property="orderType"/>
+			<result column="member_id" property="memberId"/>
+			<result column="consumption_amount" property="consumptionAmount"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="is_open_invoice" property="isOpenInvoice"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.ConsumptionRecordVO" id="consumptionRecordMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="consumption_amount" property="consumptionAmount"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, order_type, member_id, consumption_amount, oem_code, is_open_invoice, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.MemberConsumptionRecordVO" id="pageMap">
+
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="consumption_amount" property="consumptionAmount"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+	<select id="queryMemberConsumptionRecordList" resultMap="pageMap">
+		SELECT
+			m.id,m.oem_code,m.order_type,m.order_no,convert(m.consumption_amount/100, decimal(12,2)) consumption_amount,m.add_time
+		FROM
+			t_e_member_consumption_record m
+		<where>
+			m.order_no in (${orderNo})
+		</where>
+		order by add_time desc
+		</select>
+
+	<!-- 选择消费订单 add by Kaven 20200-09-27 -->
+	<select id="listConsumptionRecord" parameterType="com.yuqian.itax.order.entity.query.ConsumptionRecordQuery" resultMap="consumptionRecordMap">
+		SELECT
+			t.id,
+			t.consumption_amount,
+			t.order_no,
+			t.order_type,
+			t.add_time
+		FROM
+			t_e_member_consumption_record t
+		<where>
+			t.member_id = #{currUserId} and t.oem_code = #{oemCode} and t.consumption_amount <![CDATA[>]]> 0
+			AND t.is_open_invoice = 0
+			<if test="orderType != null and orderType != 15">
+				and t.order_type = #{orderType}
+			</if>
+			<if test="orderType != null and orderType == 15">
+				and t.order_type in(15,16)
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!--根据订单号批量更新会员消费记录（是否已开票） add by Kaven 2020-09-29-->
+	<update id="updateRecordByOrderNo" parameterType="java.lang.String">
+		UPDATE
+			t_e_member_consumption_record t
+		SET
+			t.is_open_invoice = 1,
+			t.update_time = NOW()
+		<where>
+			t.order_no IN
+			<foreach item="orderNo" collection="orderNos.split(',')" open="(" separator="," close=")">
+				#{orderNo}
+			</foreach>
+		</where>
+	</update>
+</mapper>

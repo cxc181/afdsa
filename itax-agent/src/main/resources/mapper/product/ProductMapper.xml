@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.ProductMapper">
+    <resultMap type="com.yuqian.itax.product.entity.ProductEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="prod_name" property="prodName"/>
+			<result column="prod_code" property="prodCode"/>
+			<result column="prod_type" property="prodType"/>
+			<result column="prod_amount" property="prodAmount"/>
+			<result column="amount_name" property="amountName"/>
+			<result column="amount_way" property="amountWay"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="prod_desc" property="prodDesc"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="cancel_total_limit" property="cancelTotalLimit"/>
+			<result column="companyType" property="company_type"/>
+			<result column="agreementTemplateId" property="agreement_template_id"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, prod_name, prod_code, prod_type, prod_amount, amount_name, amount_way, oem_code, prod_desc, status, add_time, add_user,
+		 update_time, update_user, remark,cancel_total_limit
+    </sql>
+
+	<!--查询当前OEM机构下开通的产品列表 add by Kaven 2910-12-10 -->
+	<select id="queryProductList" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns"/>
+		from
+			t_e_product
+		where oem_code = #{oemCode} and status = '1' and prod_type in(1,2,3,4)
+	</select>
+
+	<select id="queryProductListByOemCodeAndType" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from
+		t_e_product
+		where oem_code = #{oemCode} and status = '1' and prod_type in(1,5,11,15,16)
+	</select>
+
+	<sql id="Query_Base_Columns">
+		pro.id, pro.prod_name, pro.prod_code, pro.prod_type, pro.prod_amount, pro.amount_name, pro.amount_way, pro.oem_code, pro.prod_desc, pro.status, pro.add_time, pro.add_user, pro.update_time, pro.update_user, pro.remark
+    </sql>
+
+	<resultMap type="com.yuqian.itax.product.entity.vo.ProductOemVO" id="oemMap">
+		<result column="prod_name" property="prodName"/>
+		<result column="prod_code" property="prodCode"/>
+		<result column="prod_type" property="prodType"/>
+		<result column="prod_desc" property="prodDesc"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="remark" property="remark"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+	<select id="listProduct" parameterType="com.yuqian.itax.product.entity.query.ProductQuery" resultMap="oemMap">
+		select
+			<include refid="Query_Base_Columns"/>, oem.oem_name
+		from
+			t_e_product pro
+			inner join t_e_oem oem on oem.oem_code = pro.oem_code
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and pro.oem_code = #{oemCode}
+			</if>
+			<if test="oemName != null and oemName.trim() != ''">
+				and oem.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="status != null">
+				and pro.status = #{status}
+			</if>
+			<if test="oemStatus != null">
+				and oem.oem_status = #{oemStatus}
+			</if>
+			<if test="prodType != null">
+				and pro.prod_type = #{prodType}
+			</if>
+			<if test="prodName != null">
+				and pro.prod_name like concat('%',#{prodName},'%')
+			</if>
+		</where>
+		order by pro.add_time desc
+	</select>
+	<update id="updateStatus">
+		update t_e_product
+		set
+		status = #{status},
+		update_user = #{updateUser},
+		update_time = #{updateTime}
+		where id = #{id}
+	</update>
+	<select id="queryProductByProdType" resultMap="baseEntityMap">
+		select p.`id`, p.`prod_name`, p.`prod_code`, p.`prod_type`, IFNULL(pp.`prod_amount`,p.`prod_amount`) prod_amount, p.`amount_name`, p.`amount_way`, p.`oem_code`, p.`prod_desc`, p.`status`, p.`processing_fee`,
+			p.`add_time`, p.`add_user`, p.`update_time`, p.`update_user`, p.`remark`, p.`cancel_total_limit`
+		from t_e_product p
+		left join t_e_product_by_park pp on pp.`product_id` = p.`id` and pp.`is_delete` = 0 and pp.`park_id` = #{parkId}
+		where p.oem_code = #{oemCode}
+		and p.prod_type = #{prodType}
+		and p.status != #{status}
+		limit 1
+	</select>
+
+	<select id="queryProductByRelation" resultType="com.yuqian.itax.product.entity.ProductEntity">
+		SELECT DISTINCT <include refid="Query_Base_Columns"/>
+		FROM t_e_product pro
+		INNER JOIN t_r_product_park pp ON pp.`product_id` = pro.`id`
+		INNER JOIN t_e_park park ON park.`id` = pp.`park_id`
+		INNER JOIN t_r_oem_park op ON op.`park_id` = park.`id`
+		INNER JOIN t_e_oem o ON o.`oem_code` = op.`oem_code`
+		WHERE o.`oem_status` = 1 AND pro.`status` = 1 AND park.`status` = 1
+		<if test="memberId != null">
+			AND park.`id` IN(SELECT DISTINCT mc.`park_id` FROM t_e_member_company mc INNER JOIN
+			t_e_park_corporate_account_config conf ON conf.`park_id` = mc.`park_id` WHERE mc.`member_id` = #{memberId}
+			AND mc.`status` = 1)
+		</if>
+		<if test="oemCode != null and oemCode.trim() != ''">
+			AND o.`oem_code` = #{oemCode}
+			AND pro.`oem_code` = #{oemCode}
+		</if>
+		<if test="prodType != null">
+			AND pro.`prod_type` = #{prodType}
+		</if>
+	</select>
+
+	<resultMap id="ProductOfTaxCalculatorMap" type="com.yuqian.itax.product.entity.vo.ProductOfTaxCalculatorVO">
+		<result column="product_id" property="productId"/>
+		<result column="company_type" property="companyType"/>
+		<result column="company_business_nature" property="companyBusinessNature"/>
+	</resultMap>
+	<select id="getTaxCalculatorProductList" resultMap="ProductOfTaxCalculatorMap">
+		SELECT p.`id` product_id, p.`company_type`, (CASE p.`company_type` WHEN 2 THEN '个人独资企业' WHEN 3 THEN '有限合伙公司' ELSE '有限责任公司' END) company_business_nature
+		FROM t_e_product p
+		WHERE p.`oem_code` = #{oemCode} AND p.`status` = 1 AND p.`prod_type` IN(2,3,4)
+	</select>
+</mapper>

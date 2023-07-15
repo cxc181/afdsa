@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.RegisterPreOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.RegisterPreOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="member_id" property="memberId"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="operator_name" property="operatorName"/>
+			<result column="contact_phone" property="contactPhone"/>
+			<result column="email" property="email"/>
+			<result column="id_card_front" property="idCardFront"/>
+			<result column="id_card_reverse" property="idCardReverse"/>
+			<result column="id_card_number" property="idCardNumber"/>
+			<result column="id_card_addr" property="idCardAddr"/>
+			<result column="expire_date" property="expireDate"/>
+			<result column="shop_name" property="shopName"/>
+			<result column="shop_name_one" property="shopNameOne"/>
+			<result column="shop_name_two" property="shopNameTwo"/>
+			<result column="organization_form" property="organizationForm"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="business_address" property="businessAddress"/>
+			<result column="ratify_tax" property="ratifyTax"/>
+			<result column="business_scope" property="businessScope"/>
+			<result column="registered_name" property="registeredName"/>
+			<result column="pay_order_no" property="payOrderNo"/>
+			<result column="sign_img" property="signImg"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="discount_amount" property="discountAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="alert_number" property="alertNumber"/>
+			<result column="regist_file" property="registFile"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="customer_service_phone" property="customerServicePhone"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="company_type" property="companyType"/>
+			<result column="video_addr" property="videoAddr"/>
+			<result column="is_other" property="isOther"/>
+			<result column="is_wechat_authorization" property="isWechatAuthorization"/>
+			<result column="wechat_message_notice_result" property="wechatMessageNoticeResult"/>
+			<result column="wechat_message_error_cause" property="wechatMessageErrorCause"/>
+			<result column="wechat_message_notice_time" property="wechatMessageNoticeTime"/>
+			<result column="example_name" property="exampleName"/>
+			<result column="wechat_message_template_id" property="wechatMessageTemplateId"/>
+			<result column="is_open_authentication" property="isOpenAuthentication"/>
+			<result column="coupons_issue_id" property="couponsIssueId"/>
+			<result column="rejected_item" property="rejectedItem"/>
+			<result column="payment_voucher" property="paymentVoucher"/>
+			<result column="pay_type" property="payType"/>
+			<result column="is_all_codes" property="isAllCodes"/>
+			<result column="industry_business_scope" property="industryBusinessScope"/>
+			<result column="own_business_scope" property="ownBusinessScope"/>
+			<result column="taxcode_business_scope" property="taxcodeBusinessScope"/>
+			<result column="registered_capital" property="registeredCapital"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, member_id, order_no, oem_code, operator_name, contact_phone, email, id_card_front, id_card_reverse, id_card_number, id_card_addr, expire_date, shop_name, shop_name_one, shop_name_two, organization_form, industry_id, business_address, ratify_tax, business_scope, registered_name, pay_order_no, sign_img, order_amount, discount_amount, pay_amount, alert_number, regist_file, agent_account, customer_service_phone, add_time, add_user, update_time, update_user, remark, company_type, video_addr, is_other, is_wechat_authorization, wechat_message_notice_result, wechat_message_error_cause, wechat_message_notice_time, example_name, wechat_message_template_id, is_open_authentication, coupons_issue_id, rejected_item, payment_voucher, pay_type, is_all_codes, industry_business_scope, own_business_scope, taxcode_business_scope, registered_capital, taxpayer_type
+    </sql>
+</mapper>

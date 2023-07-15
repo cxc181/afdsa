@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.BankInfoMapper">
+    <resultMap type="com.yuqian.itax.system.entity.BankInfoEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="bank_code" property="bankCode"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="bank_abbreviation" property="bankAbbreviation"/>
+			<result column="bank_logo_url" property="bankLogoUrl"/>
+			<result column="background_image" property="backgroundImage"/>
+			<result column="single_limit_cash" property="singleLimitCash"/>
+			<result column="daily_limit_cash" property="dailyLimitCash"/>
+			<result column="single_limit_credit" property="singleLimitCredit"/>
+			<result column="daily_limit_credit" property="dailyLimitCredit"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.system.entity.vo.BankInfoVO" id="voMap">
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_logo_url" property="bankLogoUrl"/>
+		<result column="single_limit_cash" property="singleLimitCash"/>
+		<result column="daily_limit_cash" property="dailyLimitCash"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, bank_code, bank_name, bank_abbreviation, bank_logo_url, background_image, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="listBankInfo" resultMap="voMap">
+		SELECT distinct bank_name,bank_logo_url,single_limit_cash,daily_limit_cash
+		FROM sys_e_bank_info
+	</select>
+</mapper>

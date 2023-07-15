@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agent.dao.InvoiceInfoByOemMapper">
+    <resultMap type="com.yuqian.itax.agent.entity.InvoiceInfoByOemEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="company_name" property="companyName"/>
+			<result column="company_address" property="companyAddress"/>
+			<result column="ein" property="ein"/>
+			<result column="phone" property="phone"/>
+			<result column="regist_address" property="registAddress"/>
+			<result column="bank_name" property="bankName"/>
+			<result column="bank_number" property="bankNumber"/>
+			<result column="recipient" property="recipient"/>
+			<result column="recipient_phone" property="recipientPhone"/>
+			<result column="recipient_address" property="recipientAddress"/>
+			<result column="status" property="status"/>
+			<result column="province_code" property="provinceCode"/>
+			<result column="province_name" property="provinceName"/>
+			<result column="city_code" property="cityCode"/>
+			<result column="city_name" property="cityName"/>
+			<result column="district_code" property="districtCode"/>
+			<result column="district_name" property="districtName"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="email" property="email"/>
+			<result column="tax_disc_type" property="taxDiscType"/>
+			<result column="tax_disc_code" property="taxDiscCode"/>
+			<result column="face_amount_type" property="faceAmountType"/>
+			<result column="face_amount" property="faceAmount"/>
+			<result column="channel" property="channel"/>
+			<result column="hosting_status" property="hostingStatus"/>
+			<result column="is_immediately_invoice" property="isImmediatelyInvoice"/>
+			<result column="vat_rate" property="vatRate"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, status, province_code, province_name, city_code, city_name, district_code, district_name, add_time, add_user, update_time, update_user, remark,email,
+		tax_disc_type, tax_disc_code,face_amount_type,face_amount, channel, hosting_status,is_immediately_invoice,vat_rate
+    </sql>
+
+	<select id="queryInvoiceInfoByOemEntityByOemCode" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from t_e_invoice_info_by_oem
+		where oem_code=#{oemCode}
+	</select>
+</mapper>

@@ -1,0 +1,32 @@
+spring:
+  redis:
+    database: 6
+    host: r-bp1ghgemm09r4jlrx1.redis.rds.aliyuncs.com
+    port: 6379
+    password: sd2@jhs722djke1411y3
+
+#生产配置mysql
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://rm-bp1ai1aw92y2pj341.mysql.rds.aliyuncs.com:3306/itax
+    username: itax
+    password: DB#ITax@#2020
+  rabbitmq:
+    host: 192.168.0.94
+    port: 5672
+    username: itax
+    password: 123456
+    virtual-host: /itax
+
+# log config
+xxl:
+  job:
+    admin:
+      addresses: http://192.168.0.94:8080/xxl-job-admin
+    executor:
+      appname: itax-xxl-job
+      ip: 192.168.0.104
+      port: 6666
+      logpath: /app/logs/itax-xxl-job/jobhandler
+      logretentiondays: -1
+    accessToken:

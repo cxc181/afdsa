@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'PROJECT_ENV', defaultValue: 'prod', description: '项目部署环境')
+        string(name: 'REGISTRY_HOST', defaultValue: 'registry.cn-hangzhou.aliyuncs.com', description: 'Harbor仓库地址')
+        string(name: 'REGISTRY_CREDS', defaultValue: 'jenkins-aliyunharbor-creds', description: 'Harbor仓库认证标识')
+        string(name: 'TARGET_HOST', defaultValue: '8.130.91.153', description: '运行主机IP，多个主机以逗号分隔')
+        string(name: 'TARGET_INNER_HOST', defaultValue: '8.130.91.153', description: '运行主机内网地址，多个主机以逗号分隔')
+        string(name: 'TARGET_PORT', defaultValue: '22', description: '运行主机SSH端口，多个主机以逗号分隔')
+    }
+
+   environment {
+        PROJECT_ENV = "${params.PROJECT_ENV}"
+        REGISTRY_HOST = "${params.REGISTRY_HOST}"
+        REGISTRY_AUTH = credentials("${params.REGISTRY_CREDS}")
+        TARGET_HOST = "${params.TARGET_HOST}"
+        TARGET_INNER_HOST = "${params.TARGET_INNER_HOST}"
+        TARGET_PORT = "${params.TARGET_PORT}"
+        GIT_TAG = sh(returnStdout: true,script: 'git describe --tags').trim()
+    }
+    
+    stages {
+        stage('Maven Build') {
+            when { expression { env.GIT_TAG != null } }
+            agent {
+                docker {
+                    image 'harbor.db-inc.com/dbops/maven:3.6-jdk-8-v4'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                sh "mvn clean install -P ${PROJECT_ENV} -Dfile.encoding=UTF-8 -Dmaven.test.skip=true"
+                stash includes: 'itax-mq/target/*.war', name: 'app'
+                archiveArtifacts 'itax-mq/target/*.war'
+            }
+        }
+        stage('Docker Build') {
+            when { allOf { expression { env.GIT_TAG != null } } }
+            agent any
+            steps {
+                unstash 'app'
+                sh "docker login -u ${REGISTRY_AUTH_USR} -p ${REGISTRY_AUTH_PSW} ${REGISTRY_HOST}"
+                sh "docker build --build-arg WAR_FILE=`ls itax-mq/target/*.war|cut -d'/' -f3` -t ${REGISTRY_HOST}/itax/itax-mq:${GIT_TAG} -f itax-mq/Dockerfile ."
+                sh "docker push ${REGISTRY_HOST}/itax/itax-mq:${GIT_TAG}"
+                sh "docker rmi ${REGISTRY_HOST}/itax/itax-mq:${GIT_TAG}"
+            }
+        }
+
+        stage('Deploy') {
+            when { expression { env.GIT_TAG != null } }
+            steps {
+                script {
+                    for (int i=0; i<TARGET_HOST.tokenize(',').size(); i++) {
+                        target_host = TARGET_HOST.tokenize(',')[i].trim()
+                        target_inner_host = TARGET_INNER_HOST.tokenize(',')[i].trim()
+                        target_port = TARGET_PORT.tokenize(',')[i].trim()
+                        sshagent(credentials:[]) {
+                             sh "ssh -o StrictHostKeyChecking=no root@${target_host} -p ${target_port} '\
+                                 set +e; \
+                                 docker login -u ${REGISTRY_AUTH_USR} -p ${REGISTRY_AUTH_PSW} ${REGISTRY_HOST}; \
+                                 docker stop -t 30 itax-mq;docker rm -f itax-mq; \
+                                 docker run -itd --name itax-mq -v /etc/localtime:/etc/localtime -v /data/logs:/app/logs -v /usr/share/fonts:/usr/share/fonts/ --restart=on-failure:3 -p 6005:8080 ${REGISTRY_HOST}/itax/itax-mq:${GIT_TAG}; \
+                                 check_status=\'000\';check_cnt=0;check_cnt_total=60; \
+                                 while [ \${check_status} -eq \'000\' -a \${check_cnt} -lt \${check_cnt_total} ];do let check_cnt+=1;echo 'Waiting itax-mq startup...';sleep 5; \
+                                 check_status=`curl -I -X GET --connect-timeout 1 -m 1 -o /dev/null -s -w %{http_code} \"http://${target_inner_host}:6011/\"`;done; \
+                                 if [ \${check_cnt} -lt \${check_cnt_total} ]; then echo 'Service Startup Successful!';else echo 'Service Startup Timeout!';fi; '"
+                        }
+                        echo "URL:  http://${target_inner_host}:6005/itax-mq/  "
+                    }
+                }
+                echo '#### Docker Deploy Finished ####'
+            }
+        }
+    }
+}

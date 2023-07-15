@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.ProductDiscountActivityChangeMapper">
+    <resultMap type="com.yuqian.itax.product.entity.ProductDiscountActivityChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="discount_activity_id" property="discountActivityId"/>
+			<result column="activity_name" property="activityName"/>
+			<result column="product_type" property="productType"/>
+			<result column="special_price_amount" property="specialPriceAmount"/>
+			<result column="status" property="status"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="activity_start_date" property="activityStartDate"/>
+			<result column="activity_end_date" property="activityEndDate"/>
+			<result column="crowd_label_ids" property="crowdLabelIds"/>
+			<result column="park_ids" property="parkIds"/>
+			<result column="industry_ids" property="industryIds"/>
+			<result column="charge_standard_json" property="chargeStandardJson"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, discount_activity_id, activity_name, product_type, special_price_amount, status, oem_code, activity_start_date, activity_end_date, crowd_label_ids, park_ids, industry_ids, charge_standard_json, add_time, add_user, update_time, update_user, remark
+    </sql>
+</mapper>

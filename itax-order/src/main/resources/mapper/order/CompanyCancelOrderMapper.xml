@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.CompanyCancelOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.CompanyCancelOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="company_id" property="companyId"/>
+			<result column="cancel_total_limit" property="cancelTotalLimit"/>
+			<result column="cancel_service_charge" property="cancelServiceCharge"/>
+			<result column="company_type" property="companyType"/>
+			<result column="company_name" property="companyName"/>
+			<result column="attachment_addr" property="attachmentAddr"/>
+			<result column="agent_account" property="agentAccount"/>
+			<result column="oper_user_type" property="operUserType"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, company_id, cancel_total_limit, cancel_service_charge, company_type, company_name, attachment_addr, agent_account, oper_user_type, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap id="comCancelOrderMap" type="com.yuqian.itax.order.entity.vo.ComCancelOrderVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="regPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="parent_member_account" property="inviteCode"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="add_time" property="createTime"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="park_name" property="parkName"/>
+	</resultMap>
+
+	<!--推广明细订单列表结果集 -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendMemberVO" id="extendOrderMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="register_time" property="registTime"/>
+		<result column="member_fee" property="memberFee"/>
+		<result column="finish_time" property="finishTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_service_fee" property="invoiceServiceFee"/>
+		<result column="cancel_fee" property="cancelFee"/>
+		<result column="create_time" property="createTime"/>
+		<result column="regist_fee" property="registFee"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_status_name" property="orderStatusName"/>
+	</resultMap>
+
+	<resultMap id="comCancelStatMap" type="com.yuqian.itax.user.entity.vo.ComCancelExtendDetailVO">
+		<result column="to_be_pay_count" property="toBePayCount"/>
+		<result column="to_be_handle_count" property="toBeHandleCount"/>
+		<result column="cancel_success_count" property="cancelSuccessCount"/>
+	</resultMap>
+
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"></include>
+		FROM
+		t_e_company_cancel_order
+		where order_no = #{orderNo}
+	</select>
+
+	<!-- 企业注销订单查询-拓展宝 add by Kaven 2020-03-25-->
+	<select id="queryComCancelOrderList" parameterType="com.yuqian.itax.order.entity.query.TZBOrderQuery" resultMap="comCancelOrderMap">
+		SELECT
+			t.order_no,
+			m.member_account,
+			m.real_name,
+			l.level_no,
+			m.parent_member_account,
+			c.company_name,
+			c.company_type,
+			o.pay_amount,
+			t.add_time,
+			o.order_status,
+			pk.park_name
+		FROM
+			t_e_company_cancel_order t
+			LEFT JOIN t_e_order o ON t.order_no = o.order_no
+			LEFT JOIN t_e_member_account m ON o.user_id = m.id
+			LEFT JOIN t_e_member_level l ON m.member_level = l.id
+			LEFT JOIN t_e_member_company c ON t.company_id = c.id
+			LEFT JOIN t_e_park pk ON o.park_id = pk.id
+		<where>
+			t.oem_code = #{oemCode}
+			<if test="orderNo != null and orderNo !=''">
+				and t.order_no = #{orderNo}
+			</if>
+			<if test="createTimeStart != null">
+				and t.add_time >= #{createTimeStart,jdbcType=TIMESTAMP}
+			</if>
+			<if test="createTimeEnd != null">
+				and t.add_time <![CDATA[<=]]> #{createTimeEnd,jdbcType=TIMESTAMP}
+			</if>
+			<if test="regPhone != null and regPhone != ''">
+				and m.member_account = #{regPhone}
+			</if>
+			<if test="inviteCode != null and inviteCode != ''">
+				and m.parent_member_account = #{inviteCode}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and c.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="companyType != null">
+				and c.company_type = #{companyType}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!-- 查询企业注销订单统计信息（推广明细）add by Kaven 2020-06-08 -->
+	<select id="queryComCancelStat" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comCancelStatMap">
+		SELECT
+			ifnull( sum( CASE WHEN t.order_status = 0 THEN 1 ELSE 0 END ), 0 ) AS to_be_pay_count,
+			ifnull( sum( CASE WHEN t.order_status = 1 THEN 1 ELSE 0 END ), 0 ) AS to_be_handle_count,
+			ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS cancel_success_count
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_member_account m ON t.user_id = m.id
+			AND t.user_type = 1
+			AND m.oem_code = t.oem_code
+		<where>
+            t.oem_code = #{oemCode} and t.order_type = 8
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+				AND (m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and m.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and m.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+	<select id="queryComCancelStatByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comCancelStatMap">
+		SELECT
+		ifnull( sum( CASE WHEN t.order_status = 0 THEN 1 ELSE 0 END ), 0 ) AS to_be_pay_count,
+		ifnull( sum( CASE WHEN t.order_status = 1 THEN 1 ELSE 0 END ), 0 ) AS to_be_handle_count,
+		ifnull( sum( CASE WHEN t.order_status = 2 THEN 1 ELSE 0 END ), 0 ) AS cancel_success_count
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id
+		AND t.user_type = 1
+		AND m.oem_code = t.oem_code
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 8
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((m.member_account  like  concat('%',#{memberAccount},'%'))or (   case when m.real_name is null or m.real_name = ''	then m.member_name like concat('%',#{name},'%')		else		m.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and m.id=#{memberId}
+			</if>
+		</where>
+	</select>
+	<!-- 根据订单状态查询企业注销订单列表（推广明细）add by Kaven 2020-06-08 -->
+	<select id="queryCancelOrderListByStatus" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			m.id,
+			m.member_name,
+			m.real_name,
+			m.member_account,
+			c.company_name,
+			c.add_time AS create_time,
+			IFNULL(c.cancel_total_limit,0) AS total_invoice_amount,
+			IFNULL(c.cancel_service_charge,0) AS cancel_fee,
+			t.order_status,
+			CASE t.order_status
+			WHEN 0 THEN '待付款'
+			WHEN 1 THEN '注销处理中'
+			WHEN 2 THEN '注销成功'
+			WHEN 3 THEN '已取消'
+			END AS order_status_name,
+			t.update_time
+		FROM
+			t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+		LEFT JOIN t_e_company_cancel_order c ON t.order_no = c.order_no
+        <where>
+            t.oem_code = #{oemCode} and t.order_type = 8 and t.order_status = #{orderStatus}
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+				AND (m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId})
+				and m.member_type != 2
+			</if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and m.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and m.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(c.add_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(c.add_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(c.add_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(c.add_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		ORDER BY create_time DESC,t.update_time desc
+	</select>
+	<select id="queryCancelOrderListByStatusByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			m.id,
+			m.member_name,
+			m.real_name,
+			m.member_account,
+			m.member_phone,
+			c.company_name,
+			c.add_time AS create_time,
+			IFNULL(c.cancel_total_limit,0) AS total_invoice_amount,
+			IFNULL(c.cancel_service_charge,0) AS cancel_fee,
+			t.order_status,
+			CASE t.order_status
+			WHEN 0 THEN '待付款'
+			WHEN 1 THEN '注销处理中'
+			WHEN 2 THEN '注销成功'
+			WHEN 3 THEN '已取消'
+			END AS order_status_name,
+			t.update_time
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+		LEFT JOIN t_e_company_cancel_order c ON t.order_no = c.order_no
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 8 and t.order_status = #{orderStatus}
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((m.member_account  like  concat('%',#{memberAccount},'%'))or (   case when m.real_name is null or m.real_name = ''	then m.member_name like concat('%',#{name},'%')		else		m.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and m.id=#{memberId}
+			</if>
+		</where>
+		ORDER BY create_time DESC,t.update_time desc
+	</select>
+	<!-- 根据订单状态查询总注销服务费（推广明细）add by Kaven 2020-06-08 -->
+	<select id="queryTotalCancelFee" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+			IFNULL( SUM( CASE WHEN c.cancel_service_charge > 0 THEN c.cancel_service_charge ELSE 0 END ), 0 ) AS total_cancel_fee
+		FROM
+			t_e_order t
+			LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+			LEFT JOIN t_e_company_cancel_order c ON t.order_no = c.order_no
+        <where>
+            t.oem_code = #{oemCode} and t.order_type = 8 and t.order_status = #{orderStatus}
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+				AND (m.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+				member_type = 2)
+				or m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (m.parent_member_id = #{userId} or m.id = #{userId}) and m.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and m.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and m.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+	</select>
+	<select id="queryTotalCancelFeeByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultType="java.lang.Long">
+		SELECT
+			IFNULL( SUM( CASE WHEN c.cancel_service_charge > 0 THEN c.cancel_service_charge ELSE 0 END ), 0 ) AS total_cancel_fee
+		FROM
+		t_e_order t
+		LEFT JOIN t_e_member_account m ON t.user_id = m.id AND t.user_type = 1 AND m.oem_code = t.oem_code
+		LEFT JOIN t_e_company_cancel_order c ON t.order_no = c.order_no
+		<where>
+			t.oem_code = #{oemCode} and t.order_type = 8 and t.order_status = #{orderStatus}
+			<if test="userId != null ">
+				and (t.channel_service_id = #{userId} or t.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and t.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(t.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(t.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((m.member_account  like  concat('%',#{memberAccount},'%'))or (   case when m.real_name is null or m.real_name = ''	then m.member_name like concat('%',#{name},'%')		else		m.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and m.id=#{memberId}
+			</if>
+		</where>
+	</select>
+    <select id="queryByCompanyId" resultMap="comCancelOrderMap">
+		select cco.order_no, o.order_status
+		from t_e_company_cancel_order cco
+		inner join t_e_order o on o.order_no = cco.order_no
+		where
+			<if test="companyId != null">
+				cco.company_id = #{companyId}
+			</if>
+	</select>
+</mapper>

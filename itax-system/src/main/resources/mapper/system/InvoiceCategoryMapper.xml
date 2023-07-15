@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.InvoiceCategoryMapper">
+    <resultMap type="com.yuqian.itax.system.entity.InvoiceCategoryEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="category_name" property="categoryName"/>
+			<result column="category_base_id" property="categoryBaseId"/>
+			<result column="park_id" property="parkId"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, industry_id, category_name,category_base_id,park_id, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="listInvoiceCategory" resultMap="baseEntityMap">
+		SELECT ic.id, ic.industry_id, ic.category_name, ic.add_time, ic.add_user, ic.update_time, ic.update_user, ic.remark, ic.category_base_id
+		FROM t_e_member_company c
+		LEFT JOIN t_e_company_invoice_category ic ON ic.company_id = c.id
+		WHERE c.id = #{companyId} and c.oem_code = #{oemCode}
+		order by ic.add_time desc
+	</select>
+
+	<insert id="addBatch" parameterType="com.yuqian.itax.system.entity.dto.IndustryInfoDTO">
+		insert into t_e_invoice_category
+		( industry_id,park_id,category_base_id, category_name, add_time, add_user)
+		values
+		<foreach collection ="categoryList" item="item" index= "index" separator =",">
+			(
+			#{industryId},
+			#{parkId},
+			#{item.id},
+			concat(#{item.taxClassificationAbbreviation}, '*', #{item.goodsName}),
+			#{addTime},
+			#{addUser}
+			)
+		</foreach>
+	</insert>
+	<delete id="delByIndustryId">
+		delete from t_e_invoice_category
+		where industry_id = #{industryId}
+	</delete>
+	<delete id="deleteByCategoryBaseId">
+		delete from t_e_invoice_category
+		where category_base_id = #{categoryBaseId}
+	</delete>
+	<update id="batchUpdateByCategoryBaseId">
+		UPDATE t_e_invoice_category
+			SET category_name = (
+				SELECT
+					CONCAT(
+						tax_classification_abbreviation,
+						"*",
+						goods_name
+					)
+				FROM
+					t_e_invoice_category_base
+				WHERE
+					id = #{categoryBaseId}
+			)
+			WHERE
+				category_base_id = #{categoryBaseId}
+	</update>
+
+	<select id="queryCategoryNameByIndustryId" resultType="java.lang.String">
+		SELECT ic.`category_name`
+		FROM `t_e_invoice_category` ic
+		WHERE ic.`industry_id` = #{industryId}
+	</select>
+</mapper>

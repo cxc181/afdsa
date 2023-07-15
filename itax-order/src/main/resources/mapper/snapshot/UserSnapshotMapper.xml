@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.snapshot.dao.UserSnapshotMapper">
+    <resultMap type="com.yuqian.itax.snapshot.entity.UserSnapshotEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="user_type" property="userType"/>
+			<result column="username" property="username"/>
+			<result column="binding_account" property="bindingAccount"/>
+			<result column="status" property="status"/>
+			<result column="regist_time" property="registTime"/>
+			<result column="snapshot_time" property="snapshotTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, user_id, oem_code, user_type, username, binding_account, status, regist_time, snapshot_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<insert id="updateOrInsertUserSnapshot">
+		INSERT INTO sys_e_user_snapshot (user_id, oem_code, user_type, username, binding_account, status, regist_time, snapshot_time, 	add_time, add_user, update_time, update_user, remark)
+		select u.id user_id, u.oem_code, u.platform_type user_type, u.username, u.binding_account, '1' status,u.add_time regist_time, u.add_time snapshot_time,
+		 now() add_time, null add_user,null update_time,null update_user, '历史数据处理'remark
+		from sys_e_user u
+		<where> u.account_type = 1
+			<if test="startDate != null and startDate != ''  ">
+				AND  DATE_FORMAT(u.add_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(u.add_time,'%Y-%m-%d')   <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="oemCode != '' and oemCode != null ">
+				AND U.oem_code=#{oemCode}
+			</if>
+		</where>
+		union all
+		select u.id user_id, u.oem_code, u.platform_type user_type, u.username, u.binding_account, u.status,u.add_time regist_time,
+		u.update_time snapshot_time,now() add_time, null add_user,null update_time,null update_user, '历史数据处理'remark
+		 from sys_e_user u
+		<where> u.account_type = 1 and
+		 	update_time is not null
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(u.update_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(u.update_time,'%Y-%m-%d')   <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if><if test="oemCode != '' and oemCode != null ">
+				AND u.oem_code=#{oemCode}
+			</if>
+		</where>
+		union all
+		select u.id user_id, u.oem_code, u.platform_type user_type, u.username, u.binding_account, u.status,u.add_time regist_time,
+		#{endDate} snapshot_time, now() add_time, null add_user,null update_time,null update_user, '历史数据处理'remark
+		from sys_e_user u
+		<where>  u.account_type = 1 and
+			((u.update_time is not null and (DATE_FORMAT(u.update_time,'%Y-%m-%d') <![CDATA[<]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			 or DATE_FORMAT(u.update_time,'%Y-%m-%d') <![CDATA[>]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')))
+			or update_time is null)
+			and u.status != 2 and u.id not in (select user_id from sys_e_user_snapshot where snapshot_time = DATE_FORMAT(#{endDate},'%Y-%m-%d'))
+			<if test="oemCode != '' and oemCode != null ">
+				AND u.oem_code=#{oemCode}
+			</if>
+		</where>
+	</insert>
+
+	<delete id="deleteUserSnapshotByDate">
+		DELETE from sys_e_user_snapshot
+		<where>
+			<if test="startDate != null and startDate != ''  ">
+				AND DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[>=]]> DATE_FORMAT(#{startDate},'%Y-%m-%d')
+			</if>
+			<if test="endDate != '' and endDate != null  ">
+				AND  DATE_FORMAT(snapshot_time,'%Y-%m-%d')  <![CDATA[<=]]> DATE_FORMAT(#{endDate},'%Y-%m-%d')
+			</if>
+			<if test="oemCode != '' and oemCode != null ">
+				AND oem_code=#{oemCode}
+			</if>
+		</where>
+	</delete>
+</mapper>

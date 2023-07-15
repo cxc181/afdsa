@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.RatifyTaxMapper">
+    <resultMap type="com.yuqian.itax.system.entity.RatifyTaxEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="tax_name" property="taxName"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, industry_id, tax_name, status, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<!--根据行业ID获取核定税种列表 add by Kaven 2019-12-11 -->
+	<select id="listRatifyTax" parameterType="java.lang.Long" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_ratify_tax
+		where industry_id = #{industryId}
+	</select>
+
+	<delete id="delByIndustryId">
+		delete from t_e_ratify_tax
+		where industry_id = #{industryId}
+	</delete>
+</mapper>

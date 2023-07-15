@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.roles.dao.MenuMapper">
+	<resultMap type="com.yuqian.itax.roles.entity.MenuEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="name" property="name"/>
+		<result column="url" property="url"/>
+		<result column="type" property="type"/>
+		<result column="icon" property="icon"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="level" property="level"/>
+		<result column="status" property="status"/>
+		<result column="create_time" property="createTime"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user_id" property="updateUserId"/>
+	</resultMap>
+
+	<resultMap id="menuTreeVO" type="com.yuqian.itax.roles.entity.vo.MenuTreeVO">
+		<result column="id" property="id"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="name" property="name"/>
+		<result column="icon" property="icon"/>
+		<result column="order_num" property="orderNum"/>
+	</resultMap>
+
+	<resultMap id="menuDetailVO" type="com.yuqian.itax.roles.entity.vo.MenuDetailVO" >
+		<id column="id" property="id"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="name" property="name"/>
+		<result column="url" property="url"/>
+		<result column="type" property="type"/>
+		<result column="icon" property="icon"/>
+		<result column="order_num" property="orderNum"/>
+		<result column="component" property="component"/>
+		<result column="redirect" property="redirect"/>
+		<result column="title" property="title"/>
+		<result column="hidden" property="hidden"/>
+		<result column="parent_name" property="parentName"/>
+		<collection property="apiIdList" ofType="java.lang.Long" >
+		</collection>
+	</resultMap>
+	<sql id="Base_Columns">
+		id, parent_id, name, url, type, icon, order_num, level, status, add_time, add_user, update_time, update_user
+    </sql>
+
+	<sql id="Detail_Columns" >
+		m.id, m.parent_id, m.name as title, m.url, m.type, m.icon, m.order_num, v.component, v.redirect, v.name, v.hidden,
+		pm.name as parent_name
+	</sql>
+	<select id="queryMenuList" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/> from sys_e_menu
+		<where>
+			<if test="id != null ">
+				and parent_id = #{id}
+			</if>
+		</where>
+		order by order_num
+	</select>
+
+	<insert id="insertMenu" >
+        insert into sys_e_menu (parent_id, name, url, type, icon, order_num, level, add_time, add_user )
+        values (#{parentId},#{title},#{url},#{type},#{icon},#{orderNum},#{level}, #{addTime},#{addUser} )
+    </insert>
+
+	<select id="queryAllMenu" resultMap="menuTreeVO">
+        select id, parent_id, name, icon, order_num  from sys_e_menu
+        order by order_num
+    </select>
+
+	<select id="queryAllMenuWithoutButton" resultMap="menuTreeVO">
+		select id, parent_id, name, icon, order_num from sys_e_menu
+		<where>
+			type != 2
+		</where>
+		order by order_num
+	</select>
+
+	<select id="queryMenuByUrl" resultMap="baseEntityMap" parameterType="string">
+		select <include refid="Base_Columns"/> from sys_e_menu
+		<where>
+			<if test="url != null and '' != url">
+				and url = #{url} and parent_id=#{parentId}
+			</if>
+		</where>
+	</select>
+
+	<select id="queryMenuDetail" resultMap="menuDetailVO" >
+		select <include refid="Detail_Columns"/>
+		from sys_e_menu m left join sys_r_menu_vue v on m.id = v.menu_id
+		LEFT JOIN sys_e_menu pm on pm.id = m.parent_id
+		<where>
+			m.id = #{id}
+		</where>
+	</select>
+
+	<select id="queryLastInsertMenu" resultType="java.lang.Long">
+		select max(id) from sys_e_menu
+	</select>
+</mapper>

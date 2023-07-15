@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.DiscountActivityChargeStandardRelaMapper">
+    <resultMap type="com.yuqian.itax.product.entity.DiscountActivityChargeStandardRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="charge_type" property="chargeType"/>
+			<result column="charge_min" property="chargeMin"/>
+			<result column="charge_max" property="chargeMax"/>
+			<result column="charge_rate" property="chargeRate"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="discount_activity_id" property="discountActivityId"/>
+			<result column="order_sn" property="orderSn"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, charge_type, charge_min, charge_max, charge_rate, oem_code, discount_activity_id, order_sn, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="discountActivityInvoiceChargeStandard" resultMap="baseEntityMap">
+		select dacs.* from product_discount_activity_view v,
+			t_r_discount_activity_charge_standard dacs where v.id = dacs.discount_activity_id
+			and v.oem_code = dacs.oem_code and v.oem_code = #{oemCode} and activity_start_date <![CDATA[ <= ]]> date_format(now(), '%Y-%m-%d')
+			and activity_end_date <![CDATA[ >= ]]> date_format(now(), '%Y-%m-%d')
+			and member_id = #{memberId} and park_id = #{parkId} and industry_id = #{industryId} and product_type =  #{productType} and status = 1
+	</select>
+
+	<select id="queryChargeStandarById" resultMap="baseEntityMap">
+		select
+		id, charge_type,
+		CONVERT (charge_min / 100,DECIMAL (20, 2)) charge_min,
+		CONVERT (charge_max / 100,DECIMAL (20, 2)) charge_max,
+		charge_rate, oem_code, discount_activity_id, order_sn, add_time, add_user, update_time, update_user, remark
+		from t_r_discount_activity_charge_standard
+		where id in
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		order by charge_max asc
+	</select>
+
+	<insert id="addChargeStandard">
+		insert into t_r_discount_activity_charge_standard (charge_type,charge_min,charge_max,charge_rate,oem_code,discount_activity_id,add_time,add_user)
+		values
+		<foreach collection="list" item="item" separator=",">
+			(#{chargeType},#{item.chargeMin},#{item.chargeMax},#{item.chargeRate},#{oemCode},#{discountActivityId},#{addDate},#{addUser})
+		</foreach>
+	</insert>
+
+	<delete id="deleteBydiscountActivityId">
+		delete FROM t_r_discount_activity_charge_standard where discount_activity_id = #{discountActivityId}
+	</delete>
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.product.dao.ChargeStandardMapper">
+    <resultMap type="com.yuqian.itax.product.entity.ChargeStandardEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="charge_type" property="chargeType"/>
+			<result column="charge_min" property="chargeMin"/>
+			<result column="charge_max" property="chargeMax"/>
+			<result column="charge_rate" property="chargeRate"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="product_id" property="productId"/>
+			<result column="order_sn" property="orderSn"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="park_product_id" property="parkProductId"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, charge_type, charge_min, charge_max, charge_rate, oem_code, product_id, order_sn, add_time, add_user, update_time, update_user, remark,park_product_id
+    </sql>
+
+	<!--查询收费标准 add by Kaven 2019-12-10 -->
+	<select id="getChargeStandards" parameterType="java.lang.Long" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_charge_standard cs
+		LEFT JOIN (SELECT pp.`park_id`, pp.`product_id` prod_id
+				FROM t_e_product_by_park pp INNER JOIN t_e_product p ON p.`id` = pp.`product_id`
+				INNER JOIN t_r_product_park r ON r.`product_id` = pp.`product_id` AND r.`park_id` = pp.`park_id`
+				WHERE pp.`is_delete` = 0 AND p.`id` = #{productId} AND pp.`park_id` = #{parkId}) v ON v.`prod_id` = cs.`product_id`
+		WHERE cs.`product_id` = #{productId}
+		<if test="includeParkPricing == 0">
+			AND park_product_id is null
+		</if>
+		AND (CASE WHEN v.park_id IS NULL THEN cs.`park_id` IS NULL ELSE cs.`park_id` = v.park_id END)
+	</select>
+
+	<insert id="addBatch">
+		insert into t_e_charge_standard(charge_type, charge_min, charge_max, charge_rate,
+		oem_code, product_id, order_sn, add_time, add_user,park_product_id,park_id)
+		values
+		<foreach collection="charges" item="item" separator=",">
+			(#{item.chargeType}, #{item.chargeMin}, #{item.chargeMax}, #{item.chargeRate},
+			#{oemCode}, #{productId}, #{item.orderSn}, #{addTime}, #{addUser},#{parkProductId},#{parkId})
+		</foreach>
+	</insert>
+	<delete id="deleteByProductId">
+		delete from t_e_charge_standard where product_id = #{productId}
+	</delete>
+
+	<delete id="deleteByParkProductId">
+		delete from t_e_charge_standard where park_product_id = #{parkProductId}
+	</delete>
+	<select id="getChargeStandardsByParkProductId" resultMap="baseEntityMap">
+		select
+		id,charge_type,
+		CONVERT (charge_min / 100,DECIMAL (12, 2)) charge_min,
+		CONVERT (charge_max / 100,DECIMAL (12, 2)) charge_max,
+		charge_rate,
+		oem_code,
+		product_id,
+		order_sn,
+		add_time,
+		add_user,
+		remark,
+		park_id,
+		park_product_id
+		from t_e_charge_standard
+		where park_product_id = #{parkProductId}
+	</select>
+</mapper>

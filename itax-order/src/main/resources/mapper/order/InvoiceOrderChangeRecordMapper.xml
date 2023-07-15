@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.InvoiceOrderChangeRecordMapper">
+    <resultMap type="com.yuqian.itax.order.entity.InvoiceOrderChangeRecordEntity" id="baseEntityMap">
+
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="oem_code" property="oemCode"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="company_id" property="companyId"/>
+        <result column="invoice_amount" property="invoiceAmount"/>
+        <result column="VAT_fee" property="vatFee"/>
+        <result column="VAT_fee_rate" property="vatFeeRate"/>
+        <result column="VAT_payment" property="vatPayment"/>
+        <result column="VAT_fee_quota" property="vatFeeQuota"/>
+        <result column="personal_income_tax" property="personalIncomeTax"/>
+        <result column="personal_income_tax_rate" property="personalIncomeTaxRate"/>
+        <result column="income_tax_payment" property="incomeTaxPayment"/>
+        <result column="personal_income_tax_quota" property="personalIncomeTaxQuota"/>
+        <result column="surcharge" property="surcharge"/>
+        <result column="surcharge_rate" property="surchargeRate"/>
+        <result column="surcharge_payment" property="surchargePayment"/>
+        <result column="service_fee" property="serviceFee"/>
+        <result column="service_fee_discount" property="serviceFeeDiscount"/>
+        <result column="company_name" property="companyName"/>
+        <result column="company_address" property="companyAddress"/>
+        <result column="ein" property="ein"/>
+        <result column="phone" property="phone"/>
+        <result column="regist_address" property="registAddress"/>
+        <result column="bank_name" property="bankName"/>
+        <result column="bank_number" property="bankNumber"/>
+        <result column="recipient" property="recipient"/>
+        <result column="recipient_phone" property="recipientPhone"/>
+        <result column="recipient_address" property="recipientAddress"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="pay_amount" property="payAmount"/>
+        <result column="invoice_type" property="invoiceType"/>
+        <result column="invoice_type_name" property="invoiceTypeName"/>
+        <result column="account_statement" property="accountStatement"/>
+        <result column="postage_fees" property="postageFees"/>
+        <result column="add_time" property="addTime"/>
+        <result column="add_user" property="addUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="remark" property="remark"/>
+        <result column="alert_number" property="alertNumber"/>
+        <result column="invoice_way" property="invoiceWay"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="district_code" property="districtCode"/>
+        <result column="district_name" property="districtName"/>
+        <result column="is_after_upload_bank_water" property="isAfterUploadBankWater"/>
+        <result column="bank_water_status" property="bankWaterStatus"/>
+        <result column="audit_error_remark" property="auditErrorRemark"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="goods_name" property="goodsName"/>
+        <result column="wallet_type" property="walletType"/>
+        <result column="create_way" property="createWay"/>
+        <result column="business_contract_imgs" property="businessContractImgs"/>
+        <result column="invoice_remark" property="invoiceRemark"/>
+        <result column="risk_commitment" property="riskCommitment"/>
+        <result column="supplement_explain" property="supplementExplain"/>
+        <result column="achievement_imgs" property="achievementImgs"/>
+        <result column="achievement_video" property="achievementVideo"/>
+        <result column="achievement_status" property="achievementStatus"/>
+        <result column="achievement_error_remark" property="achievementErrorRemark"/>
+        <result column="pay_type" property="payType"/>
+        <result column="goods_details" property="goodsDetails"/>
+        <result column="payment_voucher" property="paymentVoucher"/>
+        <result column="cancellation_voucher" property="cancellationVoucher"/>
+        <result column="invoice_mark" property="invoiceMark"/>
+        <result column="cancellation_voucher" property="cancellationVoucher"/>
+        <result column="cancellation_time" property="cancellationTime"/>
+        <result column="cancellation_remark" property="cancellationRemark"/>
+        <result column="relevance_order_no" property="relevanceOrderNo"/>
+        <result column="is_recalculate_service_fee" property="isRecalculateServiceFee"/>
+        <result column="is_reopen" property="isReopen"/>
+        <result column="stamp_duty_rate" property="stampDutyRate"/>
+        <result column="stamp_duty_amount" property="stampDutyAmount"/>
+        <result column="water_conservancy_fund_rate" property="isRecalculateServiceFee"/>
+        <result column="water_conservancy_fund_amount" property="waterConservancyFundRate"/>
+        <result column="taxpayer_type" property="waterConservancyFundAmount"/>
+        <result column="receipt_payment_voucher" property="receiptPaymentVoucher"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, oem_code, order_status, company_id, invoice_amount, VAT_fee, VAT_fee_quota, personal_income_tax, personal_income_tax_quota,
+        service_fee, service_fee_discount, company_name, company_address, ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone,
+        recipient_address, category_id, category_name, pay_amount, invoice_type, invoice_type_name, account_statement, postage_fees, add_time, add_user,
+        update_time, update_user, remark, alert_number,invoice_way,province_code,province_name,city_code,city_name,district_code,district_name, VAT_payment,
+        surcharge, surcharge_payment, income_tax_payment, VAT_fee_rate, personal_income_tax_rate, surcharge_rate, is_after_upload_bank_water,
+        bank_water_status, audit_error_remark, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark,risk_commitment,
+        supplement_explain,achievement_imgs,achievement_video,achievement_status,achievement_error_remark,pay_type,goods_details,payment_voucher,
+		cancellation_voucher,invoice_mark,cancellation_time,cancellation_remark,relevance_order_no,is_recalculate_service_fee,is_reopen,stamp_duty_rate,stamp_duty_amount,
+		water_conservancy_fund_rate,water_conservancy_fund_amount,taxpayer_type,receipt_payment_voucher
+    </sql>
+
+    <select id="queryByOrderNo" parameterType="java.lang.String" resultMap="baseEntityMap">
+        select <include refid="Base_Columns"/>
+        from t_e_invoice_order_change_record
+        <where>
+            order_no = #{orderNo}
+        </where>
+    </select>
+    <insert id="batchAdd">
+        insert into t_e_invoice_order_change_record(
+            order_no, group_order_no, oem_code, order_status, company_id, invoice_amount, VAT_fee, personal_income_tax, service_fee, service_fee_discount, VAT_payment,
+            surcharge, surcharge_payment, income_tax_payment, is_after_upload_bank_water, bank_water_status, audit_error_remark, company_name, company_address,
+            ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name, city_code, city_name,
+            district_code, district_name, category_id, category_name, pay_amount, invoice_type, invoice_type_name, account_statement, postage_fees, customer_service_phone,
+            add_time, add_user, remark, alert_number, invoice_way, VAT_fee_quota, personal_income_tax_quota, invoice_imgs, VAT_fee_rate,
+            personal_income_tax_rate, surcharge_rate, complete_time, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark, remaining_withdrawal_amount,
+            taxable_income, refund_tax_fee, is_refund_postage_fee, tax_year, tax_seasonal, email, corporate_account, corporate_account_bank_name,risk_commitment,
+            supplement_explain,achievement_imgs,achievement_video,achievement_status,achievement_error_remark,pay_type,goods_details,payment_voucher,
+            cancellation_voucher,invoice_mark,cancellation_time,cancellation_remark,relevance_order_no,is_recalculate_service_fee,is_reopen,stamp_duty_rate,stamp_duty_amount,
+            water_conservancy_fund_rate,water_conservancy_fund_amount,taxpayer_type,receipt_payment_voucher
+        )
+        select
+            order_no, group_order_no, oem_code, #{orderStatus}, company_id, invoice_amount, VAT_fee, personal_income_tax, service_fee, service_fee_discount, VAT_payment,
+            surcharge, surcharge_payment, income_tax_payment, is_after_upload_bank_water, bank_water_status, audit_error_remark, company_name, company_address,
+            ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name, city_code, city_name,
+            district_code, district_name, category_id, category_name, pay_amount, invoice_type, invoice_type_name, account_statement, postage_fees, customer_service_phone,
+            #{addTime}, #{addUser}, #{remark}, alert_number, invoice_way, VAT_fee_quota, personal_income_tax_quota, invoice_imgs, VAT_fee_rate,
+            personal_income_tax_rate, surcharge_rate, complete_time, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark, remaining_withdrawal_amount,
+            taxable_income, refund_tax_fee, is_refund_postage_fee, tax_year, tax_seasonal, email, corporate_account, corporate_account_bank_name,risk_commitment,
+            supplement_explain,achievement_imgs,achievement_video,achievement_status,achievement_error_remark,pay_type,goods_details,payment_voucher,
+            cancellation_voucher,invoice_mark,cancellation_time,cancellation_remark,relevance_order_no,is_recalculate_service_fee,is_reopen,stamp_duty_rate,stamp_duty_amount,
+            water_conservancy_fund_rate,water_conservancy_fund_amount,taxpayer_type,receipt_payment_voucher
+        from t_e_invoice_order
+        where id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </insert>
+
+    <insert id="batchAddByGroupOrderNo">
+        insert into t_e_invoice_order_change_record(
+            order_no, group_order_no, oem_code, order_status, company_id, invoice_amount, VAT_fee, personal_income_tax, service_fee, service_fee_discount, VAT_payment,
+            surcharge, surcharge_payment, income_tax_payment, is_after_upload_bank_water, bank_water_status, audit_error_remark, company_name, company_address,
+            ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name, city_code, city_name,
+            district_code, district_name, category_id, category_name, pay_amount, invoice_type, invoice_type_name, account_statement, postage_fees, customer_service_phone,
+            add_time, add_user, remark, alert_number, invoice_way, VAT_fee_quota, personal_income_tax_quota, invoice_imgs, VAT_fee_rate,
+            personal_income_tax_rate, surcharge_rate, complete_time, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark, remaining_withdrawal_amount,
+            taxable_income, refund_tax_fee, is_refund_postage_fee, tax_year, tax_seasonal, email, corporate_account, corporate_account_bank_name
+        )
+        select
+            order_no, group_order_no, oem_code, #{orderStatus}, company_id, invoice_amount, VAT_fee, personal_income_tax, service_fee, service_fee_discount, VAT_payment,
+            surcharge, surcharge_payment, income_tax_payment, is_after_upload_bank_water, bank_water_status, audit_error_remark, company_name, company_address,
+            ein, phone, regist_address, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code, province_name, city_code, city_name,
+            district_code, district_name, category_id, category_name, pay_amount, invoice_type, invoice_type_name, account_statement, postage_fees, customer_service_phone,
+            #{addTime}, #{addUser}, #{remark}, alert_number, invoice_way, VAT_fee_quota, personal_income_tax_quota, invoice_imgs, VAT_fee_rate,
+            personal_income_tax_rate, surcharge_rate, complete_time, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark, remaining_withdrawal_amount,
+            taxable_income, refund_tax_fee, is_refund_postage_fee, tax_year, tax_seasonal, email, corporate_account, corporate_account_bank_name
+        from t_e_invoice_order
+        where group_order_no = #{groupOrderNo} and oem_code = #{oemCode}
+    </insert>
+</mapper>

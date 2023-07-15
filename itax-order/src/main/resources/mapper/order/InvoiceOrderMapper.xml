@@ -1,0 +1,1893 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.InvoiceOrderMapper">
+    <resultMap type="com.yuqian.itax.order.entity.InvoiceOrderEntity" id="baseEntityMap">
+
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="company_id" property="companyId"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="VAT_fee_quota" property="vatFeeQuota"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="personal_income_tax_rate" property="personalIncomeTaxRate"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="personal_income_tax_quota" property="personalIncomeTaxQuota"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_rate" property="surchargeRate"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="service_fee_discount" property="serviceFeeDiscount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="ein" property="ein"/>
+		<result column="phone" property="phone"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="category_id" property="categoryId"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="account_statement" property="accountStatement"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="customer_service_phone" property="customerServicePhone"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="alert_number" property="alertNumber"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="province_code" property="provinceCode"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_code" property="cityCode"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_code" property="districtCode"/>
+		<result column="district_name" property="districtName"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="is_after_upload_bank_water" property="isAfterUploadBankWater"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="audit_error_remark" property="auditErrorRemark"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="wallet_type" property="walletType"/>
+		<result column="create_way" property="createWay"/>
+		<result column="business_contract_imgs" property="businessContractImgs"/>
+		<result column="invoice_remark" property="invoiceRemark"/>
+		<result column="remaining_withdrawal_amount" property="remainingWithdrawalAmount"/>
+		<result column="taxable_income" property="taxableIncome"/>
+		<result column="refund_tax_fee" property="refundTaxFee"/>
+		<result column="is_refund_postage_fee" property="isRefundPostageFee"/>
+		<result column="tax_year" property="taxYear"/>
+		<result column="tax_seasonal" property="taxSeasonal"/>
+		<result column="email" property="email"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="risk_commitment" property="riskCommitment"/>
+		<result column="supplement_explain" property="supplementExplain"/>
+		<result column="achievement_imgs" property="achievementImgs"/>
+		<result column="achievement_video" property="achievementVideo"/>
+		<result column="achievement_status" property="achievementStatus"/>
+		<result column="achievement_error_remark" property="achievementErrorRemark"/>
+		<result column="pay_type" property="payType"/>
+		<result column="goods_details" property="goodsDetails"/>
+		<result column="payment_voucher" property="paymentVoucher"/>
+		<result column="cancellation_voucher" property="cancellationVoucher"/>
+		<result column="invoice_mark" property="invoiceMark"/>
+		<result column="cancellation_voucher" property="cancellationVoucher"/>
+		<result column="cancellation_time" property="cancellationTime"/>
+		<result column="cancellation_remark" property="cancellationRemark"/>
+		<result column="relevance_order_no" property="relevanceOrderNo"/>
+		<result column="is_recalculate_service_fee" property="isRecalculateServiceFee"/>
+		<result column="is_reopen" property="isReopen"/>
+		<result column="stamp_duty_rate" property="stampDutyRate"/>
+		<result column="stamp_duty_amount" property="stampDutyAmount"/>
+		<result column="water_conservancy_fund_rate" property="waterConservancyFundRate"/>
+		<result column="water_conservancy_fund_amount" property="waterConservancyFundAmount"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+		<result column="receipt_payment_voucher" property="receiptPaymentVoucher"/>
+	</resultMap>
+
+	<!--推广明细订单列表结果集 -->
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendMemberVO" id="extendOrderMap">
+		<id column="id" property="id"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="member_name" property="memberName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_name" property="levelName"/>
+		<result column="register_time" property="registTime"/>
+		<result column="member_fee" property="memberFee"/>
+		<result column="finish_time" property="finishTime"/>
+		<result column="company_name" property="companyName"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="invoice_service_fee" property="invoiceServiceFee"/>
+		<result column="cancel_fee" property="cancelFee"/>
+		<result column="create_time" property="createTime"/>
+		<result column="regist_fee" property="registFee"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_status_name" property="orderStatusName"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.OrderVO" id="orderMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="alert_number" property="alertNumber"/>
+		<result column="order_type" property="orderType"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.ExtendUserVO" id="extendUserMap">
+		<result column="id" property="userId"/>
+		<result column="real_name" property="userName"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="extend_company_count" property="extendCompanyCount"/>
+		<result column="year_invoice_amount" property="yearInvoiceAmount"/>
+		<result column="month_invoice_amount" property="monthInvoiceAmount"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="extendType" property="extendType"/>
+		<result column="remark" property="remark"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrderVO" id="invOrderVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="inv_head_company_name" property="invHeadCompanyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="customer_service_phone" property="customerServicePhone"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="product_name" property="productName"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="create_way" property="createWay"/>
+		<result column="email" property="email"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="invoice_mark" property="invoiceMark"/>
+		<result column="company_type" property="companyType"/>
+		<result column="is_show_resubmit" property="isShowResubmit"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrderDetailVO" id="invOrderDetailVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="user_id" property="userId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="VAT_fee_quota" property="vatFeeQuota"/>
+		<result column="all_vat_tax" property="allVatTax"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="personal_income_tax_rate" property="personalIncomeTaxRate"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="personal_income_tax_quota" property="personalIncomeTaxQuota"/>
+		<result column="taxable_income" property="personalIncomeTaxable"/>
+		<result column="refund_tax_fee" property="personalIncomeTaxRefund"/>
+		<result column="all_income_tax" property="allIncomeTax"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_rate" property="surchargeRate"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="all_surcharge_tax" property="allSurchargeTax"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="service_fee_discount" property="serviceFeeDiscount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="account_statement" property="accountStatement"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="audit_error_remark" property="auditErrorRemark"/>
+		<result column="remark" property="remark"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="all_tax" property="allTax"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="is_other" property="isOther"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="business_contract_imgs" property="businessContractImgs"/>
+		<result column="email" property="email"/>
+		<result column="paid_vat_fee" property="paidVatFee"/>
+		<result column="paid_surcharge" property="paidSurcharge"/>
+		<result column="paid_income_tax" property="paidIncomeTax"/>
+		<result column="paid_income_tax_year" property="paidIncomeTaxYear"/>
+        <result column="period_invoice_amount" property="periodInvoiceAmount"/>
+        <result column="historical_invoice_amount" property="historicalInvoiceAmount"/>
+        <result column="taxable_income_rate" property="taxableIncomeRate"/>
+		<result column="create_way" property="createWay"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrderCountVO" id="invOrderCountVoMap">
+		<result column="un_checked_count" property="unCheckedCount"/>
+		<result column="to_be_shipped_Count" property="toBeShippedCount"/>
+		<result column="to_be_received_Count" property="toBeReceivedCount"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrdVO" id="invOrderMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="regPhone"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="real_name" property="realName"/>
+		<result column="level_no" property="levelNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_type" property="companyType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="parent_member_account" property="inviteCode"/>
+		<result column="park_name" property="parkName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="postage_fees" property="postageFee"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceWaterOrderVO" id="invOrderWaterVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="audit_error_remark" property="auditErrorRemark"/>
+		<result column="add_time" property="addTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="waterTimeOut" property="waterTimeOut"/>
+		<result column="account_statement" property="accountStatement"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="risk_commitment" property="riskCommitment"/>
+		<result column="company_type" property="companyType"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceAchievementOrderInfoVO" id="invOrderAchievememtVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="add_time" property="addTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="waterTimeOut" property="waterTimeOut"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceAchievementOrderVO" id="invOrderAchievementVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="achievement_status" property="achievementStatus"/>
+		<result column="achievement_error_remark" property="achievementErrorRemark"/>
+		<result column="add_time" property="addTime"/>
+		<result column="complete_time" property="completeTime"/>
+		<result column="waterTimeOut" property="waterTimeOut"/>
+		<result column="achievement_imgs" property="achievementImgs"/>
+		<result column="achievement_video" property="achievementVideo"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="risk_commitment" property="riskCommitment"/>
+		<result column="company_type" property="companyType"/>
+	</resultMap>
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoicePayInfo" id="payInfoMap">
+		<result column="pay_no" property="payNo"/>
+		<result column="pay_way" property="payWay"/>
+		<result column="allTax" property="allTax"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="discount_amount" property="discountAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="discount_activity_id" property="discountActivityId"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceWaterOrderApiVO" id="invWaterOrderQuery">
+		<result column="order_no" property="orderNo"/>
+		<result column="company_name" property="companyName"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="audit_error_remark" property="auditErrorRemark"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrderSubpackageVO" id="invOrderSubpackageVoMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="user_id" property="userId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="VAT_fee_quota" property="vatFeeQuota"/>
+		<result column="all_vat_tax" property="allVatTax"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="personal_income_tax_rate" property="personalIncomeTaxRate"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="personal_income_tax_quota" property="personalIncomeTaxQuota"/>
+		<result column="taxable_income" property="personalIncomeTaxable"/>
+		<result column="refund_tax_fee" property="personalIncomeTaxRefund"/>
+		<result column="all_income_tax" property="allIncomeTax"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_rate" property="surchargeRate"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="all_surcharge_tax" property="allSurchargeTax"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="service_fee_discount" property="serviceFeeDiscount"/>
+		<result column="company_name" property="companyName"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="invoice_type_name" property="invoiceTypeName"/>
+		<result column="bank_water_status" property="bankWaterStatus"/>
+		<result column="account_statement" property="accountStatement"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="postage_fees" property="postageFees"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="audit_error_remark" property="auditErrorRemark"/>
+		<result column="remark" property="remark"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="all_tax" property="allTax"/>
+		<result column="operator_tel" property="operatorTel"/>
+		<result column="is_other" property="isOther"/>
+		<result column="goods_name" property="goodsName"/>
+		<result column="business_contract_imgs" property="businessContractImgs"/>
+		<result column="email" property="email"/>
+		<result column="historical_invoice_amount" property="historicalInvoiceAmount"/>
+		<result column="create_way" property="createWay"/>
+		<result column="invremark" property="invremark"/>
+		<result column="period_invoice_amount" property="taxFeeDetail.periodInvoiceAmount"/>
+		<result column="VAT_fee" property="taxFeeDetail.payableVatFee"/>
+		<result column="VAT_fee_rate" property="taxFeeDetail.vatFeeRate"/>
+		<result column="paid_VAT_fee" property="taxFeeDetail.paidVatFee"/>
+		<result column="surcharge" property="taxFeeDetail.payableSurcharge"/>
+		<result column="surcharge_rate" property="taxFeeDetail.surchargeRate"/>
+		<result column="paid_surcharge" property="taxFeeDetail.paidSurcharge"/>
+		<result column="personal_income_tax" property="taxFeeDetail.payableIncomeTax"/>
+		<result column="personal_income_tax_rate" property="taxFeeDetail.incomeTaxRate"/>
+		<result column="paid_income_tax" property="taxFeeDetail.paidIncomeTax"/>
+		<result column="taxable_income_rate" property="taxFeeDetail.taxableIncomeRate"/>
+		<result column="paid_income_tax_year" property="taxFeeDetail.paidIncomeTaxYear"/>
+		<result column="achievement_imgs" property="achievementImgs"/>
+		<result column="achievement_video" property="achievementVideo"/>
+		<result column="achievement_status" property="achievementStatus"/>
+		<result column="invoice_remark" property="invoiceRemark"/>
+		<result column="invoice_mark" property="invoiceMark"/>
+		<result column="taxpayer_type" property="taxFeeDetail.taxpayerType"/>
+		<result column="stamp_duty_amount" property="taxFeeDetail.stampDutyAmount"/>
+		<result column="water_conservancy_fund_amount" property="taxFeeDetail.waterConservancyFundAmount"/>
+		<result column="VAT_breaks_cycle" property="taxFeeDetail.vATBreaksCycle"/>
+		<result column="surcharge_breaks_cycle" property="taxFeeDetail.surchargeBreaksCycle"/>
+		<result column="stamp_duty_breaks_cycle" property="taxFeeDetail.stampDutyBreaksCycle"/>
+		<result column="water_conservancy_fund_breaks_cycle" property="taxFeeDetail.waterConservancyFundBreaksCycle"/>
+		<result column="income_tax_breaks_cycle" property="taxFeeDetail.incomeTaxBreaksCycle"/>
+	</resultMap>
+
+	<sql id="Base_Columns">
+		id, order_no, group_order_no, oem_code, company_id, invoice_amount, VAT_fee, personal_income_tax, service_fee, service_fee_discount,
+		VAT_payment, surcharge, surcharge_payment, income_tax_payment, is_after_upload_bank_water, bank_water_status, audit_error_remark,
+		company_name, company_address, ein, phone, bank_name, bank_number, recipient, recipient_phone, recipient_address, province_code,
+		province_name, city_code, city_name, district_code, district_name, category_id, category_name, pay_amount, invoice_type, invoice_type_name,
+		account_statement, courier_number, courier_company_name, postage_fees, customer_service_phone, add_time, add_user, update_time, update_user,
+		remark, alert_number, invoice_way, VAT_fee_quota, personal_income_tax_quota, invoice_imgs, VAT_fee_rate, personal_income_tax_rate, surcharge_rate,
+		complete_time, goods_name, wallet_type, create_way, business_contract_imgs, invoice_remark, remaining_withdrawal_amount, taxable_income, refund_tax_fee,
+		is_refund_postage_fee,tax_year,tax_seasonal,email, corporate_account, corporate_account_bank_name, confirm_invoice_time, refundable_VAT, refundable_surcharge,
+		refundable_tax, paid_VAT_fee, paid_surcharge, paid_income_tax, paid_income_tax_year, period_invoice_amount, historical_invoice_amount, taxable_income_rate,
+		risk_commitment,supplement_explain,achievement_imgs,achievement_video,achievement_status,achievement_error_remark,pay_type,goods_details,payment_voucher,
+		cancellation_voucher,invoice_mark,cancellation_time,cancellation_remark,relevance_order_no,is_recalculate_service_fee,is_reopen,stamp_duty_rate,stamp_duty_amount,
+		water_conservancy_fund_rate,water_conservancy_fund_amount,taxpayer_type,receipt_payment_voucher
+	</sql>
+
+	<!--开票订单查询-拓展宝  add by Kaven 2020-03-25 -->
+	<select id="queryInvoiceOrder" parameterType="com.yuqian.itax.order.entity.query.TZBOrderQuery" resultMap="invOrderMap">
+		SELECT
+			t.order_no,
+			m.member_account,
+			m.real_name,
+			c.company_name,
+			c.company_type,
+			l.level_no,
+			m.parent_member_account,
+			t.service_fee,
+			t.VAT_fee,
+			t.personal_income_tax,
+			t.postage_fees,
+			t.invoice_type,
+			t.invoice_amount,
+			o.discount_amount,
+			o.pay_amount,
+			t.add_time,
+			o.order_status,
+			pk.park_name
+		FROM
+			t_e_invoice_order t
+			LEFT JOIN t_e_order o ON t.order_no = o.order_no
+			LEFT JOIN t_e_member_account m ON o.user_id = m.id
+			LEFT JOIN t_e_member_level l ON m.member_level = l.id
+			LEFT JOIN t_e_member_company c ON t.company_id = c.id
+			LEFT JOIN t_e_park pk ON o.park_id = pk.id
+		<where>
+			t.oem_code = #{oemCode}
+			<if test="orderNo != null and orderNo !=''">
+				and t.order_no = #{orderNo}
+			</if>
+			<if test="createTimeStart != null">
+				and t.add_time >= #{createTimeStart,jdbcType=TIMESTAMP}
+			</if>
+			<if test="createTimeEnd != null">
+				and t.add_time <![CDATA[<=]]> #{createTimeEnd,jdbcType=TIMESTAMP}
+			</if>
+			<if test="invoiceType != null">
+				and t.invoice_type = #{invoiceType}
+			</if>
+			<if test="regPhone != null and regPhone != ''">
+				and m.member_account = #{regPhone}
+			</if>
+			<if test="inviteCode != null and inviteCode != ''">
+				and m.parent_member_account = #{inviteCode}
+			</if>
+			<if test="companyName != null and companyName != ''">
+				and c.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="companyType != null">
+				and c.company_type = #{companyType}
+			</if>
+			<if test="companyType != null">
+				and c.company_type = #{companyType}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+		</where>
+		ORDER BY t.add_time DESC
+	</select>
+
+	<!-- 查询待通知订单列表 add by Kaven 2019-12-09 -->
+	<select id="queryNoticeInvOrderList" parameterType="java.lang.Long" resultMap="orderMap">
+		SELECT
+			t.*,
+			o.alert_number
+		FROM
+			t_e_invoice_order t LEFT JOIN t_e_order o ON o.order_no = t.order_no
+			LEFT JOIN t_r_member_order r ON r.id = t.rela_id
+		WHERE r.member_id = #{userId} AND o.order_status = 6 AND t.alert_number is null
+	</select>
+
+	<select id="queryByOrderNo" parameterType="java.lang.String" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_invoice_order
+		<where>
+			order_no = #{orderNo}
+		</where>
+	</select>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvCourierVo" id="courierEntityMap">
+		<result column="order_no" property="orderNo"/>
+		<result column="recipient" property="recipient"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="company_name" property="companyName"/>
+	</resultMap>
+
+	<select id="queryCourierByOrderNo" parameterType="java.lang.String" resultMap="courierEntityMap">
+		select o.recipient,o.order_no,o.courier_number,o.courier_company_name,
+		c.company_name
+		from t_e_invoice_order o
+		LEFT JOIN t_e_member_company c ON o.company_id = c.id
+		<where>
+			o.order_no = #{orderNo}
+		</where>
+	</select>
+
+	<select id="listInvoiceOrder" parameterType="java.lang.Long" resultMap="invOrderVoMap">
+		SELECT i.order_no, o.order_status, i.company_id, c.company_name, i.invoice_amount, i.customer_service_phone,
+			   i.company_name inv_head_company_name, i.add_time, i.update_time, i.invoice_type, i.pay_amount,
+		       i.recipient, i.recipient_phone, i.recipient_address, i.group_order_no, o.product_name, i.create_way,
+			   i.invoice_way, account.email, i.invoice_mark, c.company_type
+			    <if test="pointTime != null and pointTime.trim() != ''">
+					,case when i.add_time <![CDATA[ > ]]> #{pointTime} then 1 else 0 end is_show_resubmit
+				</if>
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_member_account account on o.user_id = account.id
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		<if test="companyId != null">
+			and i.company_id = #{companyId}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(i.add_time,'%Y-%m') = #{month}
+		</if>
+		<if test="type != null">
+			<choose>
+				<when test="type == 1">
+					and o.order_status between 0 and 11
+				</when>
+				<when test="type == 2">
+					and o.order_status in(2,11)
+				</when>
+				<when test="type == 3">
+					and o.order_status between 3 and 5
+				</when>
+				<when test="type == 4">
+					and o.order_status = 6
+				</when>
+				<when test="type == 5">
+					and o.order_status = 7
+				</when>
+				<otherwise>
+					AND o.order_status = between 0 and 10
+				</otherwise>
+			</choose>
+		</if>
+		order by i.add_time desc
+	</select>
+
+	<select id="InvOrderListOfYear" resultMap="baseEntityMap">
+		SELECT i.*
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode} and o.order_status in(1,2,3,4,5,6,7,9)
+		and o.park_id = #{parkId} and i.company_id = #{companyId}
+		<if test="year != null and year.trim() != '' ">
+			and date_format(i.add_time,'%Y') = #{year}
+		</if>
+	</select>
+
+	<select id="InvOrderListOfDate" resultMap="baseEntityMap">
+		SELECT i.*
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE  o.oem_code = #{oemCode} and o.order_status in(0,1,2,3,4,5,6,7,9,11) and i.invoice_mark != 1
+			and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		<if test="month != null and month.trim() != '' ">
+				and (date_format(i.confirm_invoice_time,'%Y-%m') = #{month} or (((o.order_status >= 2 and o.order_status <![CDATA[<]]> 8) or o.order_status = 11) and i.confirm_invoice_time is null))
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate.trim() != '' and endDate != null  ">
+				and (date_format(i.confirm_invoice_time,'%Y-%m-%d') between #{startDate} and #{endDate} or (((o.order_status >= 2 and o.order_status <![CDATA[<]]> 8) or o.order_status = 11) and i.confirm_invoice_time is null))
+			</if>
+			<if test="orderNo != null and orderNo.trim() != '' ">
+				UNION
+				SELECT i.*
+				FROM t_e_invoice_order i
+				LEFT JOIN t_e_order o on o.order_no = i.order_no
+				WHERE  o.oem_code = #{oemCode} and o.order_status = 0
+				and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+				and i.order_no = #{orderNo}
+			</if>
+	</select>
+
+	<select id="cycInvoiceOrderAmountByDate" resultType="integer">
+		SELECT ifnull(sum(w.invoice_amount), 0)
+		FROM(
+			SELECT i.*
+			FROM t_e_invoice_order i
+			LEFT JOIN t_e_order o on o.order_no = i.order_no
+			WHERE  o.oem_code = #{oemCode} and o.order_status in(1,2,3,4,5,6,7)
+				and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+				<if test="month != null and month.trim() != '' ">
+					and date_format(i.add_time,'%Y-%m') = #{month}
+				</if>
+				<if test="startDate != null and startDate.trim() != '' and endDate.trim() != '' and endDate != null  ">
+					and i.add_time between #{startDate} and #{endDate}
+				</if>
+				<if test="invoiceType != null">
+					and i.invoice_type = #{invoiceType}
+				</if>
+				<if test="orderNo != null and orderNo.trim() != '' ">
+					UNION
+					SELECT i.*
+					FROM t_e_invoice_order i
+					LEFT JOIN t_e_order o on o.order_no = i.order_no
+					WHERE  o.oem_code = #{oemCode} and o.order_status = 9
+					and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+					and i.order_no != #{orderNo}
+				</if>
+		) w
+	</select>
+
+	<select id="cycInvoiceOrderListByDate" resultMap="baseEntityMap">
+		SELECT i.*
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.oem_code = #{oemCode} and o.order_status in(1,2,3,4,5,6,7)
+		and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		and i.invoice_type = 1
+		<if test="month != null and month.trim() != '' ">
+			and date_format(i.add_time,'%Y-%m') = #{month}
+		</if>
+		<if test="startDate != null and startDate.trim() != '' and endDate.trim() != '' and endDate != null  ">
+			and i.add_time between #{startDate} and #{endDate}
+		</if>
+		<if test="orderNo != null and orderNo.trim() != '' ">
+			UNION
+			SELECT i.*
+			FROM t_e_invoice_order i
+			LEFT JOIN t_e_order o on o.order_no = i.order_no
+			WHERE  o.oem_code = #{oemCode} and o.order_status = 9
+			and o.park_id = #{parkId} and ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN i.company_id =#{companyId} ELSE i.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+			and i.order_no != #{orderNo}
+		</if>
+	</select>
+
+	<select id="queryDetailByOrderNo" resultMap="invOrderDetailVoMap">
+		SELECT i.order_no, o.order_status, i.oem_code, i.company_id, c.company_name, i.invoice_amount,
+		        i.category_name, i.invoice_type, i.invoice_type_name,i.invoice_way,i.company_name inv_head_company_name,
+		       	i.account_statement, i.bank_water_status, i.pay_amount, i.VAT_fee, i.VAT_fee_quota, i.personal_income_tax,
+		       	i.personal_income_tax_quota, i.service_fee, i.service_fee_discount, i.postage_fees, i.recipient, i.recipient_phone,
+		       	i.taxable_income, i.refund_tax_fee, i.recipient_address, i.courier_number, i.courier_company_name, i.add_time, i.update_time,
+		       	i.goods_name, i.province_name, i.city_name, i.district_name, i.group_order_no, i.audit_error_remark, wo.remark, i.VAT_fee_rate,
+		       	i.VAT_payment, i.VAT_fee+i.VAT_payment all_vat_tax, i.personal_income_tax_rate, i.income_tax_payment, i.surcharge, i.surcharge_rate,
+		       	i.personal_income_tax+i.income_tax_payment all_income_tax, i.surcharge_payment, i.surcharge+i.surcharge_payment all_surcharge_tax,
+		        i.VAT_fee+i.VAT_payment+i.personal_income_tax+i.income_tax_payment+i.surcharge+i.surcharge_payment all_tax, i.business_contract_imgs,i.email,
+  				i.paid_vat_fee,i.paid_surcharge,i.paid_income_tax,i.paid_income_tax_year,i.period_invoice_amount,i.historical_invoice_amount,taxable_income_rate,i.create_way
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_work_order wo on wo.order_no = i.order_no and wo.order_type =2 and wo.work_order_type = 2 and wo.work_order_status = 3
+		WHERE o.user_id = #{memberId} and i.order_no = #{orderNo}
+	</select>
+
+	<select id="listInvoiceOrderDetailByStatus" resultMap="invOrderDetailVoMap">
+		SELECT i.order_no,o.order_status,i.oem_code,o.user_id,i.company_id,i.invoice_amount,
+			   i.invoice_type,i.invoice_type_name,i.invoice_way,i.company_name inv_head_company_name,i.account_statement,
+			   i.pay_amount,i.VAT_fee,i.VAT_fee_quota,i.personal_income_tax,i.personal_income_tax_quota,i.service_fee,
+		       i.service_fee_discount, i.VAT_fee+i.personal_income_tax all_tax,i.postage_fees,i.recipient,i.recipient_phone,
+		       i.recipient_address, i.courier_number,i.courier_company_name,i.remark,i.add_time,i.update_time,
+			   i.province_name,i.city_name,i.district_name,c.operator_tel,c.is_other
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_logistics_info l on l.order_no = i.order_no
+		WHERE o.order_type = 6 and o.order_status = 6 and i.invoice_way = 1 and l.order_no is null
+		order by i.add_time desc
+	</select>
+
+	<select id="queryNotFinishOrderByCompanyId" resultType="integer">
+		SELECT count(1)
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		<where>
+			 i.company_id = #{companyId}
+			 and o.order_type = 6 and o.order_status &gt;= 0 and o.order_status &lt; 7
+			<if test="oemCode != null and oemCode.trim() != '' ">
+				and i.oem_code = #{oemCode}
+			</if>
+		</where>
+	</select>
+	<select id="querySomeStatusOrderByCompanyId" resultType="integer">
+		SELECT count(1)
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		<where>
+			i.company_id = #{companyId}
+			and o.order_type = 6 and  o.order_status &lt;= 3
+			<if test="oemCode != null and oemCode.trim() != '' ">
+				and i.oem_code = #{oemCode}
+			</if>
+		</where>
+	</select>
+	<select id="invoiceAmountByDate" resultType="integer">
+		SELECT IFNULL(sum(i.invoice_amount), 0) invoice_amount
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode} and o.order_status = 7
+		<if test="companyId != null">
+			and i.company_id = #{companyId}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(i.complete_time,'%Y-%m') = #{month}
+		</if>
+	</select>
+
+	<select id="getInvOrderCount" parameterType="java.lang.Long" resultMap="invOrderCountVoMap">
+		SELECT
+			IFNULL(sum(case when o.order_status in(2,11) then 1 else 0 end),0) un_checked_count,
+			IFNULL(sum(case when o.order_status between 3 and 5 then 1 else 0 end),0) to_be_shipped_count,
+			IFNULL(sum(case when o.order_status = 6 then 1 else 0 end),0) to_be_received_count
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		<if test="companyId != null">
+			and i.company_id = #{companyId}
+		</if>
+		<if test="month != null and month.trim() != '' ">
+			and date_format(i.add_time,'%Y-%m') = #{month}
+		</if>
+		order by i.add_time desc
+	</select>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceOrderByGroupOrderNoVO" id="invOrderByGroupOrderNo">
+		<result column="group_order_no" property="groupOrderNo"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="company_name" property="companyName"/>
+		<result column="park_name" property="parkName"/>
+		<result column="agent_account" property="agentAccount"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+		<result column="company_id" property="companyId"/>
+	</resultMap>
+
+	<select id="listByGroupOrderNo" resultMap="invOrderByGroupOrderNo">
+		select
+			i.group_order_no,i.company_id, i.order_no,i.invoice_way, a.member_phone, c.company_name, p.park_name, c.agent_account,
+			convert(i.invoice_amount/100, decimal(12,2)) invoice_amount,
+			convert(i.VAT_fee/100, decimal(12,2)) VAT_fee,
+			convert(i.personal_income_tax/100, decimal(12,2)) personal_income_tax,
+			convert(i.VAT_payment/100, decimal(12,2)) VAT_payment,
+			convert(i.surcharge/100, decimal(12,2)) surcharge,
+			convert(i.surcharge_payment/100, decimal(12,2)) surcharge_payment,
+			convert(i.income_tax_payment/100, decimal(12,2)) income_tax_payment
+		from
+			t_e_invoice_order i
+			left join t_e_order o on o.order_no = i.order_no
+			left join t_r_member_order m on o.rela_id = m.id
+			left join t_e_member_account a on m.member_id = a.id
+			left join t_e_park p on o.park_id = p.id
+			left join t_e_member_company c on i.company_id = c.id
+		where
+			i.group_order_no = #{groupOrderNo}
+			and i.oem_code = #{oemCode}
+	</select>
+
+	<select id="listByGroupOrderNoInfo" resultMap="invOrderByGroupOrderNo">
+		select
+			i.group_order_no,i.company_id, i.order_no,i.invoice_way, a.member_phone, c.company_name, p.park_name, c.agent_account,
+			convert(i.invoice_amount/100, decimal(12,2)) invoice_amount,
+			convert(i.VAT_fee/100, decimal(12,2)) VAT_fee,
+			convert(i.personal_income_tax/100, decimal(12,2)) personal_income_tax,
+			convert(i.VAT_payment/100, decimal(12,2)) VAT_payment,
+			convert(i.surcharge/100, decimal(12,2)) surcharge,
+			convert(i.surcharge_payment/100, decimal(12,2)) surcharge_payment,
+			convert(i.income_tax_payment/100, decimal(12,2)) income_tax_payment
+		from
+			t_e_invoice_order i
+			left join t_e_order o on o.order_no = i.order_no
+			left join t_r_member_order m on o.rela_id = m.id
+			left join t_e_member_account a on m.member_id = a.id
+			left join t_e_park p on o.park_id = p.id
+			left join t_e_member_company c on i.company_id = c.id
+		where
+			i.group_order_no = #{groupOrderNo}
+	</select>
+
+	<sql id="Query_Base_Columns">
+		i.id, i.order_no, i.oem_code, i.company_id, i.invoice_amount, i.VAT_fee, i.VAT_fee_quota, i.personal_income_tax, i.personal_income_tax_quota, i.service_fee, i.service_fee_discount, i.company_name,
+		i.company_address, i.ein, i.phone, i.bank_name, i.bank_number, i.recipient, i.recipient_phone, i.recipient_address, i.category_id,
+		i.category_name, i.pay_amount, i.invoice_type, i.invoice_type_name, i.account_statement, i.courier_number, i.courier_company_name, i.postage_fees, i.customer_service_phone,
+		i.add_time, i.add_user, i.update_time, i.update_user, i.remark, i.alert_number, i.invoice_way, i.province_code, i.province_name, i.city_code, i.city_name, i.district_code, i.district_name,
+		i.group_order_no
+    </sql>
+	<select id="queryByGroupOrderNo" resultMap="baseEntityMap">
+		select
+			<include refid="Query_Base_Columns"/>
+		from
+			t_e_invoice_order i
+			inner join t_e_order o on o.order_no = i.order_no
+		where
+			i.group_order_no = #{groupOrderNo}
+			and i.oem_code = #{oemCode}
+			<if test="notOrderStatus != null">
+				and o.order_status not in (${notOrderStatus})
+			</if>
+	</select>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceSumInfoVO" id="InvoiceSumInfoVO">
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="service_fee_discount" property="serviceFeeDiscount"/>
+		<result column="VAT_payment" property="vatPayment"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="surcharge_payment" property="surchargePayment"/>
+		<result column="income_tax_payment" property="incomeTaxPayment"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceNoticeVO" id="noticeMap">
+		<result column="total_count" property="totalCount"/>
+		<result column="notice_count" property="noticeCount"/>
+		<result column="un_notice_count" property="unNoticeCount"/>
+		<result column="user_id" property="userId"/>
+		<result column="oem_code" property="oemCode"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.ComInvExtendDetailVO" id="comInvDetailMap">
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="total_service_fee" property="totalServiceFee"/>
+	</resultMap>
+
+	<select id="sumInvoiceInfo" resultMap="InvoiceSumInfoVO">
+		select
+			sum(i.invoice_amount) invoice_amount,
+			sum(i.VAT_fee) VAT_fee,
+			sum(i.personal_income_tax) personal_income_tax,
+			sum(i.service_fee) service_fee,
+			sum(i.service_fee_discount) service_fee_discount,
+			sum(i.VAT_payment) VAT_payment,
+			sum(i.surcharge) surcharge,
+			sum(i.surcharge_payment) surcharge_payment,
+			sum(i.income_tax_payment) income_tax_payment
+		from
+			t_e_invoice_order i
+			inner join t_e_order o on o.order_no = i.order_no
+		where
+			i.group_order_no = #{groupOrderNo}
+			and i.oem_code = #{oemCode}
+			<if test="orderStatus != null">
+				and o.order_status = (${orderStatus})
+			</if>
+	</select>
+
+	<update id="updateGroupOrderNo">
+		update
+			t_e_invoice_order
+		set
+			group_order_no = #{groupOrderNo}
+		where
+			order_no = #{orderNo}
+			and oem_code = #{oemCode}
+	</update>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.OrderNoVO" id="OrderNoVO">
+		<result column="order_no" property="orderNo"/>
+		<result column="invoice_mark" property="invoiceMark"/>
+	</resultMap>
+	<select id="getUnpaidList" resultMap="OrderNoVO">
+		SELECT i.order_no, i.invoice_mark
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+			and i.company_id = #{companyId} and o.order_status between 0 and 1
+		order by i.add_time desc
+	</select>
+
+	<select id="listInvoiceWaterOrder" parameterType="java.lang.Long" resultMap="invOrderWaterVoMap">
+		SELECT i.order_no, c.company_name, i.invoice_amount, i.update_time, i.bank_water_status, i.audit_error_remark, i.complete_time, c.company_type
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		and o.order_status = 7 and is_after_upload_bank_water = 0 and i.invoice_mark <![CDATA[ != ]]> 1
+		<if test="type != null">
+			<choose>
+				<when test="type == 1">
+					and i.bank_water_status between 0 and 3
+				</when>
+				<when test="type == 2">
+					and i.bank_water_status in (0,3)
+				</when>
+				<when test="type == 3">
+					and i.bank_water_status = 1
+				</when>
+				<when test="type == 4">
+					and i.bank_water_status = 2
+				</when>
+				<when test="type == 5">
+					and i.bank_water_status = 3
+				</when>
+				<when test="type == 6">
+					and i.bank_water_status = 4
+				</when>
+				<otherwise>
+					AND i.bank_water_status between 0 and 3
+				</otherwise>
+			</choose>
+		</if>
+		order by i.complete_time desc
+	</select>
+
+
+	<select id="listInvoiceAchievementOrder" parameterType="java.lang.Long" resultMap="invOrderAchievementVoMap">
+		SELECT i.order_no, c.company_name, i.invoice_amount, i.update_time, i.achievement_status, i.achievement_error_remark, i.complete_time, c.company_type
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		and o.order_status = 7 and i.invoice_mark <![CDATA[ != ]]> 1
+		<if test="type != null">
+			<choose>
+				<when test="type == 1">
+					and i.achievement_status in (2,3,4,5)
+				</when>
+				<when test="type == 2">
+					and i.achievement_status in (2,4)
+				</when>
+				<when test="type == 3">
+					and i.achievement_status = 3
+				</when>
+				<when test="type == 4">
+					and i.achievement_status = 5
+				</when>
+				<when test="type == 5">
+					and i.achievement_status = 4
+				</when>
+				<when test="type == 6">
+					and i.achievement_status = 1
+				</when>
+				<otherwise>
+					AND i.achievement_status in (2,3,5)
+				</otherwise>
+			</choose>
+		</if>
+		order by i.complete_time desc
+	</select>
+	<select id="getInvWaterDetail" resultMap="invOrderWaterVoMap">
+		SELECT i.order_no, c.company_name, i.invoice_amount, i.update_time,
+		       i.bank_water_status, i.audit_error_remark, wo.account_statement
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_work_order wo on wo.order_no = i.order_no and wo.work_order_type = 3
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		  and i.order_no = #{orderNo} and o.order_status = 7 and is_after_upload_bank_water = 0
+		  order by wo.add_time desc
+		  limit 1
+	</select>
+	<select id="getInvAchievementDetail" resultMap="invOrderAchievementVoMap">
+		SELECT i.order_no, c.company_name, i.invoice_amount, i.update_time,
+		       i.achievement_status, i.achievement_error_remark, wo.achievement_imgs, wo.achievement_video
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_work_order wo on wo.order_no = i.order_no and wo.work_order_type = 4
+		WHERE o.user_id = #{memberId} and o.oem_code = #{oemCode}
+		  and i.order_no = #{orderNo} and o.order_status = 7
+		  order by wo.add_time desc
+		  limit 1
+	</select>
+
+	<select id="getWaterOrder" parameterType="java.util.Map" resultMap="invOrderWaterVoMap">
+		SELECT
+		i.order_no, c.company_name, i.invoice_type_name, i.invoice_amount, i.add_time, i.complete_time,i.risk_commitment,
+		CASE WHEN date_sub(now(),interval #{timeOut} day) &lt; i.complete_time then 1 ELSE 2 end waterTimeOut
+		FROM
+		t_e_order o
+		INNER JOIN t_e_invoice_order i on o.order_no = i.order_no
+		INNER JOIN t_e_member_company c on c.id = i.company_id
+		WHERE i.is_after_upload_bank_water = #{isAfterUploadBankWater} and o.order_status = #{orderStatus}
+		and c.member_id = #{memberId}
+		and bank_water_status != #{notBankWaterStatus} and i.invoice_mark != 1
+		order by complete_time desc
+	</select>
+
+	<select id="getAchievementOrder" resultMap="invOrderAchievememtVoMap">
+		SELECT
+		i.order_no, c.company_name,i.invoice_type,i.invoice_amount, i.add_time, i.complete_time,
+		CASE WHEN date_sub(now(),interval #{timeOut} day) &lt; i.complete_time then 1 ELSE 2 end waterTimeOut
+		FROM
+		t_e_order o
+		INNER JOIN t_e_invoice_order i on o.order_no = i.order_no
+		INNER JOIN t_e_member_company c on c.id = i.company_id
+		WHERE o.order_status = #{orderStatus} and c.member_id = #{memberId} and i.invoice_mark != 1
+		and i.achievement_status in (2,4)
+		order by complete_time desc
+	</select>
+
+	<!--查询订单状态已签收超过overDays个自然日，但流水状态还是待补传或者审核未通过的开票订单 add by Kaven 2020-05-20 -->
+	<select id="selectUploadFlowTimeoutOrder" parameterType="java.util.Map" resultMap="noticeMap">
+		select
+			o.user_id,
+			count(1) as total_count,
+			ifnull(sum(case when i.alert_number=1 then 1 else 0 end ), 0) as notice_count,
+			ifnull(sum(case when i.alert_number=0 then 1 else 0 end ), 0) as un_notice_count,
+			i.oem_code
+		from
+			t_e_order o
+			inner join t_e_invoice_order i on o.order_no = i.order_no
+		<where>
+			((i.is_after_upload_bank_water = 0 	and bank_water_status != 2)  or (i.achievement_status not in (0,1,5)))
+			and o.order_status = 7
+			and i.complete_time <![CDATA[<]]> date_sub(now(), interval #{overDays} day)
+			and i.invoice_mark <![CDATA[ != ]]> 1
+		</where>
+		group by o.user_id
+	</select>
+
+	<!--更新开票订单通知状态 add by Kaven 2020-05-21-->
+	<update id="updateAlertNumber">
+		update
+			t_e_invoice_order t
+		set
+			t.alert_number = 1
+		<where>
+			t.order_no in (select order_no from t_e_order where user_id = #{userId} and order_status = 7)
+			and t.alert_number = 0  and t.oem_code = #{oemCode}  and t.is_after_upload_bank_water = 0
+			and t.complete_time <![CDATA[<]]> date_sub(now(), interval #{overDays} day)
+			and bank_water_status != 2
+		</where>
+	</update>
+	<select id="sumOrderAmountByCompanyId" resultType="java.lang.Long">
+		select sum(inv.invoice_amount) total_invoice_amount  from t_e_invoice_order inv where inv.company_id=#{companyId}
+	</select>
+	<select id="queryInvoiceReach" resultType="java.lang.Long">
+		SELECT
+		  company_id
+		FROM
+				t_e_order o,t_e_invoice_order i
+		WHERE
+				o.order_no = i.order_no
+		and        user_id IN (
+						SELECT
+								id
+						FROM
+								t_e_member_account
+						WHERE
+								parent_member_id = #{userId}
+				)
+		And o.oem_code =#{oemCode}
+		AND order_type = 6
+		AND order_status = 7
+		group by i.company_id
+		having sum(i.invoice_amount) >= #{minInvoiceAmount}
+	</select>
+
+	<select id="queryCompanyRegistReach" resultType="java.lang.Long">
+		SELECT
+		  i.id
+		FROM
+				t_e_order o,t_e_register_order i
+		WHERE
+				o.order_no = i.order_no
+		and        user_id IN (
+						SELECT
+								id
+						FROM
+								t_e_member_account
+						WHERE
+								parent_member_id = #{userId}
+				)
+		And o.oem_code =#{oemCode}
+		AND order_type = 5
+		AND order_status = 5
+		group by i.id
+	</select>
+
+
+	<!--推广中心-业绩总览-直推用户列表查询  add by Kaven 2020-06-05 -->
+	<select id="listDirectUsers" parameterType="com.yuqian.itax.user.entity.query.ExtendUserQuery" resultMap="extendUserMap">
+		SELECT
+			t.id,
+			t.real_name,
+			t.member_account,
+			t.extend_type,
+			t.remark,
+			ifnull(sum(CASE WHEN c.status != 4 THEN 1 ELSE 0 END ), 0 ) AS extend_company_count,
+			ifnull(sum(i.invoice_amount), 0) AS total_invoice_amount,
+			ifnull(sum(CASE WHEN DATE_FORMAT(i.complete_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m') THEN i.invoice_amount ELSE 0 END ), 0 ) AS month_invoice_amount,
+			ifnull(sum(CASE WHEN YEAR(i.complete_time) = YEAR(NOW()) THEN i.invoice_amount ELSE 0 END ), 0 ) AS year_invoice_amount
+		FROM
+			t_e_member_account t
+			LEFT JOIN t_e_member_company c ON t.id = c.member_id
+			LEFT JOIN t_e_order o ON t.id = o.user_id
+			LEFT JOIN t_e_invoice_order i ON o.order_no = i.order_no
+		<where>
+			t.oem_code = #{oemCode} AND o.order_status = 7
+			<if test="userId != null">
+				AND t.id = #{userId}
+			</if>
+			<!--顶级直客（钻石会员） -->
+			<if test="extendType == 3">
+				AND (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{currUserId} and member_type = 2)
+				or t.parent_member_id = #{currUserId}  or (t.id = #{currUserId} and t.extend_type = 3))
+				and t.member_type != 2
+			</if>
+			<!--非顶级直客（非钻石会员） -->
+			<if test="extendType != 3">
+				and t.parent_member_id = #{currUserId}
+			</if>
+		</where>
+		GROUP BY t.id
+	</select>
+
+	<!-- 根据订单状态查询企业开票订单列表（推广明细） add by Kaven 2020-06-08 -->
+	<select id="queryInvOrderListByStatus" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			t.id,
+			t.member_name,
+			t.real_name,
+			t.member_account,
+			c.company_name,
+			o.add_time AS create_time,
+			IFNULL(r.invoice_amount,0) AS invoice_amount,
+			IFNULL(r.service_fee - r.service_fee_discount,0) AS invoice_service_fee,
+			o.update_time,
+			o.order_status,
+			CASE o.order_status
+			WHEN 0 THEN '待创建'
+			WHEN 1 THEN '待付款'
+			WHEN 2 THEN '待审核'
+			WHEN 3 THEN '出票中'
+			WHEN 4 THEN '待发货'
+			WHEN 5 THEN '出库中'
+			WHEN 6 THEN '待收货'
+			WHEN 7 THEN '已签收'
+			WHEN 8 THEN '已取消'
+			END AS order_status_name
+		FROM
+			t_e_order o
+		LEFT JOIN t_e_invoice_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_company c ON r.company_id = c.id
+		<where>
+            o.oem_code = #{oemCode} and o.order_type = 6
+            <if test="orderStatus == 0">
+                and o.order_status in(0,1)
+            </if>
+            <if test="orderStatus == 3">
+                and o.order_status in(3,4,5,6)
+            </if>
+            <if test="orderStatus == 2 or orderStatus == 7">
+                and o.order_status = #{orderStatus}
+            </if>
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+                AND (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+                member_type = 2)
+                or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3)) and t.member_type != 2
+            </if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+                and t.parent_member_id = #{userId}
+            </if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and t.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+		</where>
+		ORDER BY create_time DESC,o.update_time desc
+	</select>
+
+
+	<select id="queryInvOrderListByStatusByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="extendOrderMap">
+		SELECT
+			t.id,
+			t.member_name,
+			t.real_name,
+			t.member_account,
+			t.member_phone,
+			c.company_name,
+			o.add_time AS create_time,
+			IFNULL(r.invoice_amount,0) AS invoice_amount,
+			IFNULL(r.service_fee - r.service_fee_discount,0) AS invoice_service_fee,
+			o.update_time,
+			o.order_status,
+			CASE o.order_status
+			WHEN 0 THEN '待创建'
+			WHEN 1 THEN '待付款'
+			WHEN 2 THEN '待审核'
+			WHEN 3 THEN '出票中'
+			WHEN 4 THEN '待发货'
+			WHEN 5 THEN '出库中'
+			WHEN 6 THEN '待收货'
+			WHEN 7 THEN '已签收'
+			WHEN 8 THEN '已取消'
+			END AS order_status_name
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_invoice_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		LEFT JOIN t_e_member_company c ON r.company_id = c.id
+		<where>
+			o.oem_code = #{oemCode} and o.order_type = 6
+			<if test="orderStatus == 0">
+				and o.order_status in(0,1)
+			</if>
+			<if test="orderStatus == 3">
+				and o.order_status in(3,4,5,6)
+			</if>
+			<if test="orderStatus == 2 or orderStatus == 7">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+		ORDER BY create_time DESC,o.update_time desc
+	</select>
+	<!-- 查询总开票金额和总服务费（推广明细） add by Kaven 2020-06-08 -->
+	<select id="queryTotalInvServiceFee" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comInvDetailMap">
+		SELECT
+			IFNULL(SUM( CASE WHEN r.service_fee > 0 THEN (r.service_fee - r.service_fee_discount) ELSE 0 END ),0) AS total_service_fee,
+			IFNULL(SUM( CASE WHEN r.invoice_amount > 0 THEN r.invoice_amount ELSE 0 END ),0) AS total_invoice_amount
+		FROM
+			t_e_order o
+		LEFT JOIN t_e_invoice_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		<where>
+            o.oem_code = #{oemCode} and o.order_type = 6
+            <if test="orderStatus == 0">
+                and o.order_status in(0,1,9)
+            </if>
+            <if test="orderStatus == 3">
+                and o.order_status in(3,4,5,6)
+            </if>
+            <if test="orderStatus == 2 or orderStatus == 7">
+                and o.order_status = #{orderStatus}
+            </if>
+            <!-- 钻石会员 -->
+            <if test="levelNo == 5">
+                AND (t.parent_member_id in (select id from t_e_member_account where parent_member_id = #{userId} and
+                member_type = 2)
+                or t.parent_member_id = #{userId} or (t.id = #{userId} and t.extend_type = 3))
+                and t.member_type != 2
+            </if>
+            <!-- 黄金会员 -->
+            <if test="levelNo == 3">
+				AND (t.parent_member_id = #{userId} or t.id = #{userId}) and t.member_type != 2
+			</if>
+            <!-- 非钻石和黄金会员 -->
+            <if test="levelNo != 3 and levelNo != 5">
+				and t.parent_member_id = #{userId}
+			</if>
+            <if test="extendUserId != null and extendUserId != '' ">
+                and t.id = #{extendUserId}
+            </if>
+            <if test="day != null and day.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m-%d') = #{day}
+            </if>
+            <if test="month != null and month.trim() != '' ">
+                and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' and endDate != null and endDate.trim() != ''">
+				and o.update_time between #{startDate} and #{endDate}
+			</if>
+		</where>
+	</select>
+
+	<!-- 查询总开票金额和总服务费（推广明细） add by HZ 2021-04-30 -->
+	<select id="queryTotalInvServiceFeeByChannelServiceId" parameterType="com.yuqian.itax.user.entity.query.MemberExtendQuery" resultMap="comInvDetailMap">
+		SELECT
+			IFNULL(SUM( CASE WHEN r.service_fee > 0 THEN (r.service_fee - r.service_fee_discount) ELSE 0 END ),0) AS total_service_fee,
+			IFNULL(SUM( CASE WHEN r.invoice_amount > 0 THEN r.invoice_amount ELSE 0 END ),0) AS total_invoice_amount
+		FROM
+		t_e_order o
+		LEFT JOIN t_e_invoice_order r ON o.order_no = r.order_no
+		LEFT JOIN t_e_member_account t ON o.user_id = t.id
+		<where>
+			o.oem_code = #{oemCode} and o.order_type = 6
+			<if test="orderStatus == 0">
+				and o.order_status in(0,1,9)
+			</if>
+			<if test="orderStatus == 3">
+				and o.order_status in(3,4,5,6)
+			</if>
+			<if test="orderStatus == 2 or orderStatus == 7">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="userId != null ">
+				and (o.channel_service_id = #{userId} or o.channel_employees_id=#{userId})
+			</if>
+			<if test="channelUserIds != null ">
+				and o.channel_user_id  in
+				<foreach collection="channelUserIds" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="day != null and day.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m-%d') = #{day}
+			</if>
+			<if test="month != null and month.trim() != '' ">
+				and date_format(o.update_time,'%Y-%m') = #{month}
+			</if>
+			<if test="startDate != null and startDate.trim() != '' ">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[>=]]>  #{startDate}
+			</if>
+			<if test=" endDate != null and endDate.trim() != ''">
+				and  date_format(o.update_time,'%Y-%m-%d') <![CDATA[<=]]>  #{endDate}
+			</if>
+			<if test="memberName != null and memberName.trim() != ''  ">
+				and ((t.member_account  like  concat('%',#{memberAccount},'%'))or (   case when t.real_name is null or t.real_name = ''	then t.member_name like concat('%',#{name},'%')		else		t.real_name like concat('%',#{name},'%')				end))
+			</if>
+			<if test="memberId != null ">
+				and t.id=#{memberId}
+			</if>
+		</where>
+	</select>
+	<update id="updateByGroupOrderNo"  parameterType="com.yuqian.itax.order.entity.InvoiceOrderEntity">
+		update
+			t_e_invoice_order
+		set
+			complete_time = #{completeTime},
+			update_user = #{updateUser},
+			update_time = #{updateTime}
+		WHERE
+			group_order_no = #{groupOrderNo}
+			and oem_code = #{oemCode}
+	</update>
+
+	<select id="getInvWaterOrderListByQuery" resultMap="invWaterOrderQuery">
+		SELECT i.order_no, c.company_name, i.bank_water_status, i.audit_error_remark
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_member_account a on a.id = c.member_id
+		WHERE o.oem_code = #{oemCode} and o.order_status = 7 and is_after_upload_bank_water = 0
+		<if test="orderNo != null and orderNo.trim() != '' ">
+			and o.order_no = #{orderNo}
+		</if>
+		<if test="companyName != null and companyName.trim() != ''">
+			and c.company_name LIKE concat('%',#{companyName},'%')
+		</if>
+		<if test="bankWaterStatus != null">
+			and i.bank_water_status = #{bankWaterStatus}
+		</if>
+		<if test="regPhone != null and regPhone.trim() != ''">
+			and a.member_account = #{regPhone}
+		</if>
+		order by i.complete_time desc
+	</select>
+
+	<!--更新剩余可提现额度 add by Kaven 2020-09-09 -->
+	<update id="updateRemainWithdrawAmount">
+		update
+			t_e_invoice_order
+		set
+			update_time = now(),
+			<if test="flag != null and flag == 1">
+				remaining_withdrawal_amount = remaining_withdrawal_amount + #{withdrawalAmount},
+			</if>
+			<if test="flag != null and flag == 0">
+				remaining_withdrawal_amount = remaining_withdrawal_amount - #{withdrawalAmount},
+			</if>
+			update_user = 'admin'
+		<where>
+			order_no = #{invoiceOrderNo}
+		</where>
+	</update>
+
+	<resultMap type="com.yuqian.itax.order.entity.vo.InvoiceStatisticsViewVO" id="companyInvoiceRecordStatisticsViewMap">
+		<result column="user_id" property="userId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="use_total_invoice_amount" property="useTotalInvoiceAmount"/>
+		<result column="use_invoice_amount_quarter_pp" property="useInvoiceAmountQuarterPp"/>
+		<result column="use_invoice_amount_quarter_zp" property="useInvoiceAmountQuarterZp"/>
+		<result column="use_invoice_amount_year" property="useInvoiceAmountYear"/>
+		<result column="end_time" property="endTime"/>
+	</resultMap>
+	<select id="queryCompanyInvoiceRecordStatisticsView" resultMap="companyInvoiceRecordStatisticsViewMap">
+		select
+			user_id, company_id, use_total_invoice_amount, use_invoice_amount_quarter_pp, use_invoice_amount_quarter_zp,
+			use_invoice_amount_year, end_time
+		from
+			company_invoice_record_statistics_view
+		where
+			user_id = #{userId}
+			and company_id = #{companyId}
+		LIMIT 1
+	</select>
+	<select id="sumByGroupOrderNo" resultType="map">
+		SELECT
+			invoice_way,
+			count(DISTINCT company_id) number
+		FROM
+			t_e_invoice_order
+		WHERE  group_order_no=#{groupOrderNo}
+		GROUP BY
+			invoice_way
+
+ 	</select>
+	<select id="queryTotaLInvoiceAmountByVat" resultType="java.util.Map" >
+		SELECT
+			IFNULL(sum(io.invoice_amount),0) invoice_amount,IFNULL(io.VAT_fee_rate,0) rate
+		FROM t_e_invoice_order io
+		INNER JOIN t_e_order o ON o.order_no = io.order_no
+		<where>
+			o.park_id=#{parkId}
+			AND io.confirm_invoice_time <![CDATA[>]]> #{start}
+			AND io.confirm_invoice_time <![CDATA[<]]> #{end}
+			AND io.company_id =#{companyId}
+			<if test="invoiceType != null">
+				and io.invoice_type = #{invoiceType}
+			</if>
+		</where>
+		GROUP BY io.VAT_fee_rate
+		ORDER BY  io.VAT_fee_rate DESC
+	</select>
+
+	<select id="queryTotaLInvoiceAmountByVatByTaxYear" resultType="java.util.Map" >
+		SELECT
+		IFNULL(sum(io.invoice_amount),0) invoice_amount,IFNULL(io.VAT_fee_rate,0) rate
+		FROM t_e_invoice_order io
+		INNER JOIN t_e_order o ON o.order_no = io.order_no
+		<where>
+			o.park_id=#{parkId} and o.order_status NOT IN (0,1,2,3,8,10)
+			<if test="year != null">
+				AND io.tax_year = #{year}
+			</if>
+			<if test="seasonal != null">
+				AND io.tax_seasonal= #{seasonal}
+			</if>
+			AND io.company_id =#{companyId}
+			<if test="invoiceType != null">
+				and io.invoice_type = #{invoiceType}
+			</if>
+		</where>
+		GROUP BY io.VAT_fee_rate
+		ORDER BY  io.VAT_fee_rate DESC
+	</select>
+	<select id="queryTotaLInvoiceAmountByIit" resultType="java.lang.Long" >
+		SELECT
+			IFNULL (sum(io.invoice_amount),0) invoice_amount
+		FROM
+		t_e_invoice_order io
+		INNER JOIN t_e_order o ON o.order_no = io.order_no
+		<where>
+			o.park_id=#{parkId} and o.order_status NOT IN (0,1,2,3,8,10)
+			<if test="year != null">
+				AND io.tax_year = #{year}
+			</if>
+			<if test="seasonal != null">
+				AND io.tax_seasonal= #{seasonal}
+			</if>
+			AND io.company_id =#{companyId}
+			<if test="invoiceType != null">
+				and io.invoice_type = #{invoiceType}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="queryTotaLInvoiceAmountByFj" resultType="java.lang.Long" >
+		SELECT
+			sum(io.invoice_amount) invoice_amount
+		FROM
+		t_e_invoice_order io
+		INNER JOIN t_e_order o ON o.order_no = io.order_no
+		<where>
+			 o.park_id=#{parkId} and o.order_status NOT IN (0,1,2,3,8,10)
+			<if test="year != null">
+				AND io.tax_year = #{year}
+			</if>
+			<if test="seasonal != null">
+				AND io.tax_seasonal= #{seasonal}
+			</if>
+			AND io.company_id =#{companyId}
+			<if test="invoiceType != null">
+				and io.invoice_type = #{invoiceType}
+			</if>
+		</where>
+	</select>
+
+	<resultMap id="countPeriodInvoiceAmountMap" type="com.yuqian.itax.order.entity.vo.CountPeriodInvoiceAmountVO">
+		<result column="count_amount_invoiced" property="countAmountInvoiced"/>
+		<result column="VAT_fee_rate" property="vATFeeRate"/>
+	</resultMap>
+
+	<select id="countPeriodInvoiceAmount" resultMap="countPeriodInvoiceAmountMap">
+		SELECT
+		  SUM(a.`countAmountInvoiced`) count_amount_invoiced,
+		  a.`VAT_fee_rate`
+		FROM
+		  (SELECT
+			io.`VAT_fee_rate`,
+			IF(io.`confirm_invoice_time` IS NOT NULL,
+				IF(io.`confirm_invoice_time` BETWEEN #{start} AND #{end}, io.`invoice_amount`, 0),
+				io.`invoice_amount`
+			) countAmountInvoiced
+		  FROM
+			`t_e_invoice_order` io
+			INNER JOIN `t_e_order` o
+			  ON o.`order_no` = io.`order_no`
+		  WHERE
+			( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN io.company_id =#{companyId} ELSE io.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)			AND io.`oem_code` = #{oemCode}
+			AND o.`order_status` NOT IN(0,8,9,10)
+			<if test="invoiceType != null">
+				AND io.`invoice_type` = #{invoiceType}
+			</if>
+		) a
+		GROUP BY a.`VAT_fee_rate`
+	</select>
+
+	<select id="periodPaidTax" resultType="long">
+		SELECT
+		  IFNULL(SUM(
+		  CASE
+			WHEN #{type} = 1 THEN IFNULL(io.`VAT_fee`, 0)+IFNULL(io.`VAT_payment`, 0) WHEN #{type} = 2 THEN IFNULL(io.`surcharge`, 0)+IFNULL(io.`surcharge_payment`, 0) WHEN #{type} = 3 THEN IFNULL(io.`personal_income_tax`, 0)+IFNULL(io.`income_tax_payment`, 0)-IFNULL(io.`refund_tax_fee`, 0) ELSE 0 END) ,0)
+		FROM `t_e_invoice_order` io
+		INNER JOIN `t_e_order` o  ON o.`order_no` = io.`order_no`
+		WHERE ( CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN io.company_id =#{companyId} ELSE io.company_id IN (   SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		AND io.`oem_code` = #{oemCode}
+		AND o.`order_status` NOT IN (0, 8, 9, 10)
+		AND ((io.`confirm_invoice_time` IS NOT NULL
+		AND io.`confirm_invoice_time` BETWEEN #{start} AND #{end}) or io.`confirm_invoice_time` IS NULL)
+	</select>
+
+	<select id="querySubpackageByOrderNo" resultMap="invOrderSubpackageVoMap">
+		SELECT i.order_no, o.order_status, i.oem_code, i.company_id, c.company_name, i.invoice_amount,(select inv.remark from t_e_invoice_record inv where inv.order_no = i.order_no order by add_time DESC limit 1 ) invremark,
+		        i.category_name, i.invoice_type, i.invoice_type_name,i.invoice_way,i.company_name inv_head_company_name,
+		       	i.account_statement, i.bank_water_status, i.pay_amount, i.VAT_fee, i.VAT_fee_quota, i.personal_income_tax,
+		       	i.personal_income_tax_quota, i.service_fee, i.service_fee_discount, i.postage_fees, i.recipient, i.recipient_phone,
+		       	i.taxable_income, i.refund_tax_fee, i.recipient_address, i.courier_number, i.courier_company_name, i.add_time, i.update_time,
+		       	i.goods_name, i.province_name, i.city_name, i.district_name, i.group_order_no, i.audit_error_remark, ifnull(wo.remark,i.remark) remark, IFNULL(i.VAT_fee_rate,0) VAT_fee_rate,
+		       	IFNULL(i.VAT_payment,0) VAT_payment, i.VAT_fee+IFNULL(i.VAT_payment,0) all_vat_tax, IFNULL(i.personal_income_tax_rate,0) personal_income_tax_rate,
+		       	IFNULL(i.income_tax_payment,0) income_tax_payment, i.surcharge, IFNULL(i.surcharge_rate,0) surcharge_rate, i.personal_income_tax+IFNULL(i.income_tax_payment,0) all_income_tax,
+		       	IFNULL(i.surcharge_payment,0) surcharge_payment, i.surcharge+IFNULL(i.surcharge_payment,0) all_surcharge_tax,
+		       	IFNULL(i.VAT_fee,0)+IFNULL(i.VAT_payment,0)+IFNULL(i.personal_income_tax,0)+IFNULL(i.income_tax_payment,0)+IFNULL(i.surcharge,0)+IFNULL(i.surcharge_payment,0) all_tax,
+		        i.business_contract_imgs, i.email,i.historical_invoice_amount, i.create_way, i.period_invoice_amount, i.paid_vat_fee, i.paid_surcharge,
+		        i.paid_income_tax, IFNULL(i.taxable_income_rate,0) taxable_income_rate,i.paid_income_tax_year,i.achievement_imgs,i.achievement_video,i.achievement_status,i.invoice_remark,i.invoice_mark,
+		        i.taxpayer_type, i.stamp_duty_amount, i.water_conservancy_fund_amount, i.VAT_breaks_cycle, i.surcharge_breaks_cycle, i.stamp_duty_breaks_cycle, i.water_conservancy_fund_breaks_cycle, i.income_tax_breaks_cycle
+		FROM t_e_invoice_order i
+		LEFT JOIN t_e_order o on o.order_no = i.order_no
+		LEFT JOIN t_e_member_company c on c.id = i.company_id
+		LEFT JOIN t_e_work_order wo on wo.order_no = i.order_no and wo.order_type =2 and wo.work_order_type = 2 and wo.work_order_status = 3
+		WHERE o.user_id = #{memberId} and i.order_no = #{orderNo}
+	</select>
+
+	<!--根据企业税号查询企业累计开票金额-->
+    <select id="queryCompanyInvoiceAmountByEin" resultMap="countPeriodInvoiceAmountMap">
+		SELECT
+		io.`VAT_fee_rate`,
+		SUM(io.`invoice_amount`) count_amount_invoiced
+		FROM
+		`t_e_invoice_order` io
+		INNER JOIN
+		`t_e_order` o
+		ON
+		o.`order_no` = io.`order_no`
+		WHERE
+		(CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN io.company_id =#{companyId} ELSE io.company_id IN (SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		<if test="type != null and type == 1">AND ((o.`order_status` <![CDATA[ >= ]]> 0 AND o.`order_status` <![CDATA[ <= ]]> 7) OR o.`order_status` = 9 OR o.`order_status` = 11)</if>
+		<if test="type != null and type == 2">AND o.`order_status` IN (4,5,6,7) AND io.`tax_year` IS NOT NULL AND io.`tax_seasonal` IS NOT NULL</if>
+		<if test="type != null and type == 3">AND ((o.`order_status` <![CDATA[ >= ]]> 2 AND o.`order_status` <![CDATA[ <= ]]> 7) OR o.`order_status` = 9 OR o.`order_status` = 11)</if>
+		AND
+		(<if test="isCurrentCycle != null and isCurrentCycle == 1">io.`confirm_invoice_time` IS NULL OR</if>
+		 (DATE_FORMAT(io.`confirm_invoice_time`,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(#{start},'%Y-%m-%d')
+		AND DATE_FORMAT(io.`confirm_invoice_time`,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#{end},'%Y-%m-%d')))
+		<if test="invoiceType != null">
+			AND io.`invoice_type` = #{invoiceType}
+		</if>
+		<if test="isAcrossQuarter != null and isAcrossQuarter == 1">
+			AND DATE_FORMAT(io.`add_time`,'%Y-%m-%d') <![CDATA[ < ]]> DATE_FORMAT(#{start},'%Y-%m-%d')
+		</if>
+		AND io.invoice_mark != 1
+		GROUP BY io.`VAT_fee_rate`
+		ORDER BY io.`VAT_fee_rate` DESC
+	</select>
+
+	<resultMap id="periodPaidTaxMap" type="com.yuqian.itax.order.entity.vo.PeriodPaidTaxVo">
+		<result column="paid_vat_fee" property="vatFee"/>
+		<result column="paid_surcharge" property="surcharge"/>
+		<result column="paid_income_tax" property="incomeTax"/>
+	</resultMap>
+	<!--根据企业税号查询企业累计已缴税费-->
+	<select id="paidTax" resultMap="periodPaidTaxMap">
+		SELECT
+		IFNULL(SUM(IFNULL(io.`VAT_fee`,0) + IFNULL(io.`VAT_payment`,0)), 0) paid_vat_fee,
+		IFNULL(SUM(IFNULL(io.`surcharge`,0) + IFNULL(io.`surcharge_payment`,0)), 0) paid_surcharge,
+		IFNULL(SUM(IFNULL(io.`personal_income_tax`,0)+IFNULL(io.`income_tax_payment`,0)-IFNULL(io.`refund_tax_fee`,0)), 0) paid_income_tax
+		FROM
+		`t_e_invoice_order` io
+		INNER JOIN `t_e_order` o ON o.`order_no` = io.`order_no`
+		WHERE
+		(CASE WHEN ((SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) is NULL or (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "") THEN io.company_id =#{companyId} ELSE io.company_id IN (SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		<if test="type != null and type == 1">AND ((o.`order_status` <![CDATA[ >= ]]> 2 AND o.`order_status` <![CDATA[ <= ]]> 7) OR o.`order_status` = 9 OR o.`order_status` = 11)</if>
+		<if test="type != null and type == 2">AND o.`order_status` IN (4,5,6,7) AND io.`tax_year` IS NOT NULL AND io.`tax_seasonal` IS NOT NULL</if>
+		<if test="type != null and type == 3">AND ((o.`order_status` <![CDATA[ >= ]]> 2 AND o.`order_status` <![CDATA[ <= ]]> 7) OR o.`order_status` = 9 OR o.`order_status` = 11)</if>
+		AND io.is_reopen = 0 AND
+		(io.`confirm_invoice_time` IS NULL OR (DATE_FORMAT(io.`confirm_invoice_time`,'%Y-%m-%d') <![CDATA[ >= ]]>
+		DATE_FORMAT(#{start},'%Y-%m-%d') AND DATE_FORMAT(io.`confirm_invoice_time`,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#{end},'%Y-%m-%d')))
+	</select>
+
+	<select id="queryInvoicePayInfo" resultMap="payInfoMap">
+		SELECT
+		CONVERT (inv.service_fee / 100,DECIMAL (12, 2)) service_fee,
+		CONVERT (inv.postage_fees / 100,DECIMAL (12, 2)) postage_fees,
+		CONVERT ((inv.personal_income_tax + inv.VAT_fee + inv.surcharge) / 100,DECIMAL (12, 2)) allTax,
+		CONVERT (o.discount_amount / 100,DECIMAL (12, 2)) discount_amount,
+		CONVERT (o.pay_amount / 100,DECIMAL (12, 2)) pay_amount,
+		o.discount_activity_id,w.pay_no,
+		w.pay_way
+		FROM
+		t_e_invoice_order inv
+		LEFT JOIN t_e_order o ON o.order_no = inv.order_no
+		LEFT JOIN t_e_pay_water w ON inv.order_no = w.order_no
+		WHERE inv.order_no = #{orderNo} and w.pay_status = 2 and w.pay_water_type != 5
+	</select>
+	<resultMap type="com.yuqian.itax.order.entity.vo.ThirdPartyQueryInoiveInfoVO" id="thirdPartyInvoiceListMap">
+		<result column="order_status" property="orderStatus"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="member_company_name" property="memberCompanyName"/>
+		<result column="invoice_amount" property="invoiceAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="VAT_fee" property="vatFee"/>
+		<result column="personal_income_tax" property="personalIncomeTax"/>
+		<result column="surcharge" property="surcharge"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="VAT_fee_rate" property="vatFeeRate"/>
+		<result column="invoice_way" property="invoiceWay"/>
+		<result column="invoice_type" property="invoiceType"/>
+		<result column="category_name" property="categoryName"/>
+		<result column="ein" property="ein"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_address" property="companyAddress"/>
+		<result column="bank_name" property="bankName"/>
+		<result column="bank_number" property="bankNumber"/>
+		<result column="recipient" property="recipient"/>
+		<result column="recipient_phone" property="recipientPhone"/>
+		<result column="province_name" property="provinceName"/>
+		<result column="city_name" property="cityName"/>
+		<result column="district_name" property="districtName"/>
+		<result column="recipient_address" property="recipientAddress"/>
+		<result column="email" property="email"/>
+		<result column="invoice_remark" property="invoiceRemark"/>
+		<result column="remark" property="remark"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="park_name" property="parkName"/>
+		<result column="invoice_imgs" property="invoiceImgs"/>
+		<result column="courier_number" property="courierNumber"/>
+		<result column="courier_company_name" property="courierCompanyName"/>
+		<result column="confirm_invoice_time" property="confirmInvoiceTime"/>
+		<collection property="goodsDetails" ofType="com.yuqian.itax.order.entity.vo.GoodsDetailVO">
+			<result column="goods_name" property="goodsName"/>
+			<result column="goods_price" property="goodsPrice"/>
+			<result column="goods_quantity" property="goodsQuantity"/>
+			<result column="goods_specification" property="goodsSpecification"/>
+			<result column="goods_tax_rate" property="goodsTaxRate"/>
+			<result column="goods_total_price" property="goodsTotalPrice"/>
+			<result column="goods_total_tax" property="goodsTotalTax"/>
+			<result column="goods_unit" property="goodsUnit"/>
+		</collection>
+	</resultMap>
+	<select id="thirdPartyQueryInvoiceList" resultMap="thirdPartyInvoiceListMap">
+		SELECT
+			o.order_status,
+			o.order_no,
+			mc.company_name member_company_name,
+			io.invoice_amount,io.pay_amount,
+			io.VAT_fee,io.personal_income_tax,io.surcharge,
+		 	io.service_fee,
+			io.VAT_fee_rate,
+			io.invoice_way,
+			io.invoice_type,
+			io.category_name,
+			io.ein,io.company_name,io.company_address,io.bank_name,io.bank_number,
+			io.recipient,io.recipient_phone,io.province_name,io.city_name,io.district_name,io.recipient_address,
+			io.email,
+			io.invoice_remark,
+			io.remark,
+			mc.operator_name,
+			p.park_name,
+			io.invoice_imgs,
+			io.courier_number,
+			io.courier_company_name,
+			ig.goods_name,
+			ig.goods_specification,
+			ig.goods_unit,
+			ig.goods_quantity,
+			ig.goods_price,
+			ig.goods_total_price,
+			ig.goods_tax_rate,
+			ig.goods_total_tax,
+			DATE_FORMAT(io.`confirm_invoice_time`, '%Y-%m-%d') confirm_invoice_time
+		FROM
+			t_e_order o
+		INNER JOIN t_e_invoice_order io ON o.order_no = io.order_no
+		INNER JOIN t_e_member_account ma ON ma.id = o.user_id
+		LEFT JOIN t_e_oem_access_party oap ON oap.id = ma.access_party_id
+		LEFT JOIN t_e_member_company mc ON io.company_id = mc.id
+		LEFT JOIN t_e_park p ON p.id = o.park_id
+		LEFT JOIN t_r_invoiceorder_goodsdetail ig ON ig.order_no = o.order_no
+		WHERE oap.access_party_code = #{accessPartyCode}
+		AND (o.order_no = #{orderNo} or o.external_order_no = #{externalOrderNo})
+	</select>
+
+	<select id="queryCancellationVoucher" resultType="java.lang.String">
+		SELECT cancellation_voucher
+		FROM t_e_invoice_order
+		WHERE order_no = #{orderNo} AND oem_code = #{oemCode}
+	</select>
+	<select id="queryExistPendingInvOrder" resultType="string">
+		SELECT io.`order_no`
+		FROM t_e_invoice_order io
+		INNER JOIN t_e_order o ON o.order_no = io.order_no
+		INNER JOIN t_e_work_order w ON w.order_no = io.order_no
+		<if test="serviceFeeRate != null">
+			INNER JOIN t_e_invoice_service_fee_detail d ON d.`order_no` = io.`order_no`
+		</if>
+		WHERE io.`company_id` = #{companyId}
+		AND o.order_status = 2
+		<if test="afterTheTime != null">
+			AND io.add_time <![CDATA[ > ]]> #{afterTheTime}
+		</if>
+		<if test="beforeTheTime != null">
+			AND io.add_time <![CDATA[ < ]]> #{beforeTheTime}
+		</if>
+		<if test="orderNo != null and orderNo.trim() != ''">
+			AND io.`order_no` <![CDATA[ != ]]> #{orderNo}
+		</if>
+		<if test="serviceFeeRate != null">
+			AND d.`phase_amount` > 0 AND d.`fee_rate` != #{serviceFeeRate}
+			GROUP BY io.`order_no`
+		</if>
+	</select>
+	<select id="queryCancellationAmount" resultType="java.lang.Long">
+		SELECT SUM(io.`invoice_amount`) cancellation_amount
+		FROM t_e_invoice_order io
+		WHERE io.`invoice_mark` = 1
+		AND (CASE
+			WHEN ((SELECT EIN FROM t_e_member_company WHERE ID = #{companyId}) IS NULL OR (SELECT EIN FROM t_e_member_company WHERE ID= #{companyId}) = "")
+			THEN io.company_id = #{companyId}
+			ELSE io.company_id IN (SELECT ID FROM t_e_member_company WHERE EIN =(SELECT EIN FROM t_e_member_company WHERE ID= #{companyId})) END)
+		AND DATE_FORMAT(io.`cancellation_time`,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(#{start},'%Y-%m-%d')
+		AND DATE_FORMAT(io.`cancellation_time`,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#{end},'%Y-%m-%d')
+	</select>
+
+	<select id="findExistPendingOrder" resultMap="baseEntityMap">
+		SELECT inv.order_no
+		FROM t_e_invoice_order inv
+		LEFT JOIN t_e_order o on o.order_no = inv.order_no
+		where inv.create_way in (1,2)  and o.order_status not in(8,10)
+		and DATE_FORMAT(inv.add_time,'%Y-%m-%d %H:%i:%s')  <![CDATA[ > ]]>  DATE_FORMAT(#{addTime},'%Y-%m-%d %H:%i:%s')
+		<if test="groupOrderNo != null">
+		and (inv.group_order_no != #{groupOrderNo} or group_order_no is null)
+		</if>
+		<if test="companyIdList != null and companyIdList.size() > 0">
+			and inv.company_id in <foreach collection="companyIdList" open="(" close=")" separator="," item="companyId"> #{companyId} </foreach>
+		</if>
+	</select>
+	<select id="queryByOrderStatus" resultType="string">
+		SELECT i.order_no
+		FROM t_e_invoice_order i
+		INNER JOIN t_e_order o ON o.order_no = i.order_no
+		WHERE i.company_id = #{companyId}
+		AND o.order_status = #{orderStatus}
+	</select>
+
+	<select id="getOrderNoByCreateWayAndCompanyId" resultType="String">
+		SELECT inv.order_no
+		FROM t_e_invoice_order inv
+		LEFT JOIN t_e_order o ON o.order_no = inv.order_no
+		where inv.company_id = #{companyId} and inv.create_way = 3 and o.order_status = 9
+	</select>
+
+	<select id="getquarterAmountByCompanyTypeAndParkId" resultType="long">
+		select IFNULL(sum(inv.invoice_amount),0) as quarterAmount from t_e_invoice_order inv
+		left join t_e_order o on inv.order_no = o.order_no
+		left join t_e_member_company c on inv.company_id = c.id
+		<where>
+			inv.invoice_mark = 0 and o.order_status !=8 and o.order_status !=10
+			and c.id = #{companyId} and
+			o.park_id = #{parkId} and QUARTER(o.add_time)=QUARTER(now()) AND YEAR (o.add_time) = YEAR (NOW())
+		</where>
+	</select>
+
+	<!-- 校验待财务审核开票订单数据 -->
+	<select id="checkInvoicePaymentReview" resultType="integer">
+		select count(1) from t_e_order o ,(select order_no from t_e_invoice_order where company_id = #{companyId}) i
+			where o.order_no = i.order_no and o.order_no != #{orderNo}
+			<if test="isBefore!=null and isBefore == 1">
+				and o.order_status = 11
+				and o.add_time <![CDATA[ < ]]>  #{updateTime}
+			</if>
+			<if test="isBefore!=null and isBefore == 2">
+				and o.order_status in (1,11)
+				and o.add_time <![CDATA[ > ]]>  #{updateTime}
+			</if>
+	</select>
+
+	<resultMap id="parkRewardMap" type="com.yuqian.itax.order.entity.vo.ParkRewardVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="all_award" property="allAward"/>
+		<result column="income_tax_award" property="incomeTaxAward"/>
+		<result column="vat_and_surcharge_award" property="vatAndSurchargeAward"/>
+	</resultMap>
+    <select id="queryParkReward" resultMap="parkRewardMap">
+		SELECT park.id park_id, park.park_name, IFNULL(#{allTax}*p.`reward_rate`/100,0) all_award,
+				IFNULL(#{vatTax}*p.`reward_rate`/100,0) vat_and_surcharge_award,
+				IFNULL(#{incomeTax}*p.`reward_rate`/100,0) income_tax_award
+		FROM t_e_park park
+		LEFT JOIN t_e_park_tax_refund_policy p ON park.id = p.park_id AND #{allTax} <![CDATA[ > ]]> p.`min_value` AND #{allTax} <![CDATA[ <= ]]> p.`max_value`
+		WHERE
+		<if test="parkIdList != null">
+			park.id in
+			<foreach collection="parkIdList" item="parkId" separator="," open="(" close=")">
+				#{parkId}
+			</foreach>
+		</if>
+		<choose>
+			<when test="sortOrder == 0">
+				order by all_award desc, park.id
+			</when>
+			<when test="sortOrder == 1">
+				order by all_award, park.id
+			</when>
+			<when test="sortOrder == 2">
+				order by vat_and_surcharge_award, all_award desc, park.id
+			</when>
+			<when test="sortOrder == 3">
+				order by vat_and_surcharge_award desc, all_award desc, park.id
+			</when>
+			<when test="sortOrder == 4">
+				order by income_tax_award, all_award desc, park.id
+			</when>
+			<when test="sortOrder == 5">
+				order by income_tax_award desc, all_award desc, park.id
+			</when>
+		</choose>
+
+	</select>
+</mapper>

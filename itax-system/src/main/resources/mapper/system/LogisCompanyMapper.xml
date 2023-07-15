@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.system.dao.LogisCompanyMapper">
+    <resultMap type="com.yuqian.itax.system.entity.LogisCompanyEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_code" property="companyCode"/>
+			<result column="company_name" property="companyName"/>
+			<result column="remark" property="remark"/>
+			<result column="add_date" property="addDate"/>
+			<result column="update_date" property="updateDate"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_code, company_name, remark, add_date, update_date
+    </sql>
+
+	<select id="logisCompanyList" resultMap="baseEntityMap">
+		SELECT <include refid="Base_Columns"/>
+		FROM
+		sys_e_logis_company
+	</select>
+	<select id="queryByCompanyName" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+			sys_e_logis_company
+		WHERE
+			company_name = #{companyName}
+		limit 1
+	</select>
+
+	<select id="queryByLikeCompanyName" resultMap="baseEntityMap">
+		SELECT
+		<include refid="Base_Columns"/>
+		FROM
+		sys_e_logis_company
+		<where>
+			<if test="companyName != null and companyName != ''">
+				and company_name  like concat('%', #{companyName}, '%')
+			</if>
+		</where>
+	</select>
+</mapper>

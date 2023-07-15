@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.CompanyTaxCostItemMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.CompanyTaxCostItemEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="company_tax_id" property="companyTaxId"/>
+			<result column="industry_id" property="industryId"/>
+			<result column="cost_item_name" property="costItemName"/>
+			<result column="cost_item_rate" property="costItemRate"/>
+			<result column="cost_item_amount" property="costItemAmount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, company_tax_id, industry_id, cost_item_name, cost_item_rate, cost_item_amount, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<delete id="deleteByCompanyTaxId">
+		DELETE FROM t_e_company_tax_cost_item WHERE company_tax_id = #{companyTaxId}
+	</delete>
+</mapper>

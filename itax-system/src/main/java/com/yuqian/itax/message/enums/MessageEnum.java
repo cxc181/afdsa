@@ -1,0 +1,114 @@
+package com.yuqian.itax.message.enums;
+
+/**
+ * @ClassName MessageEnum
+ * @Description 返回消息枚举类
+ * @Author Kaven
+ * Date 2019/8/8 16:56
+ * Version 1.0
+ **/
+public enum MessageEnum {
+    SUCCESS("0000","操作成功"),
+    REGISTER_IS_PASSED("0000","会员注册成功"),
+    REGISTER_IS_FAIL("1001","会员注册失败"),
+    MOBILE_NUMBER_HAS_BEEN_EXIST("MOBILE_NUMBER_HAS_BEEN_EXIST","手机号码已经注册，请使用其它手机号码进行注册"),
+    MOBILE_NUMBER_IS_NOT_EXIST("MOBILE_NUMBER_IS_NOT_EXIST","会员信息不存在！请确定后再试"),
+    REGISTER_MEMBERNO_IS_USED("REGISTER_MEMBERNO_IS_USED","注册失败，该会员号已经使用"),
+    CHECK_MEMBERNO_CAN_USE("CHECK_MEMBERNO_CAN_USE","该会员号可以使用"),
+    CHECK_MEMBERNO_CAN_NOT_USE("CHECK_MEMBERNO_CAN_NOT_USE","该会员号已经注册"),
+    MEMBER_NO_MUST_EQUALS_PHONE_NO("MEMBER_NO_MUST_EQUALS_PHONE_NO","会员号必须为手机号"),
+    CHECK_MEMBERNO_INPUT_NULL("CHECK_MEMBERNO_INPUT_NULL","会员号输入为空"),
+    LONGIN_MEMBERNO_IS_CANCELED("LONGIN_MEMBERNO_IS_CANCELED","会员已经注销"),
+    LONGIN_MEMBERNO_IS_NOT_ACTIVATION("LONGIN_MEMBERNO_IS_NOT_ACTIVATION","会员未激活"),
+    LONGIN_IS_NOT_PASSED("LONGIN_IS_NOT_PASSED","登录失败，密码或会员号错误"),
+    ACTIVATION_IS_PASSED("ACTIVATION_IS_PASSED","会员激活成功"),
+    ACTIVATION_MEMBERNO_OR_CODE_IS_NOT_EXIST("ACTIVATION_MEMBERNO_OR_CODE_IS_NOT_EXIST","会员激活失败，该会员号或验证码不正确"),
+    UPDATE_MEMBER_INFO_SUCCESS("UPDATE_MEMBER_INFO_SUCCESS","更新会员信息成功"),
+    UPDATE_MEMBER_INFO_FAILURE("UPDATE_MEMBER_INFO_FAILURE","更新会员信息失败"),
+    UPDATE_MEMBER_PAY_PSW_IS_NOT_PASSED("UPDATE_MEMBER_PAY_PSW_IS_NOT_PASSED","会员支付密码修改失败，原密码输入错误"),
+    UPDATE_MEMBER_PAY_PSW_SUCCESS("UPDATE_MEMBER_PAY_PSW_SUCCESS","会员支付密码修改成功"),
+    UPDATE_MEMBER_PAY_PSW_FAILURE("UPDATE_MEMBER_PAY_PSW_FAILURE","会员支付密码修改失败"),
+    REQUEST_PARAMETER_ERROR("0005", "请求参数错误"),
+    RFID_IS_NOT_EXIST("RFID_IS_NOT_EXIST", "卡号不存在"),
+    RFID_IS_BINDING("RFID_IS_BINDING", "该卡号已经绑定"),
+    QUERY_RFID_MERCHANT_ID_IS_NULL("QUERY_RFID_MERCHANT_ID_IS_NULL", "商户号不能为空"),
+    MEMBER_ALEADY_ACTIVACTION("MEMBER_ALEADY_ACTIVACTION", "会员已经激活"),
+    ACCESS_TOKEN_ERROR("ACCESS_TOKEN_ERROR", "accessToken不正确"),
+    SYSTEM_ERROR("9999","系统异常"),
+    PICTURE_UPLOAD_CROSS("PICTURE_UPLOAD_CROSS","图片已经上传过,无需继续上传"),
+    USER_IS_AUTH("USER_IS_AUTH","该身份证号码已经实名认证,无法再次认证！"),
+    MEMBER_USER_IS_AUTH("MEMBER_USER_IS_AUTH","您已经实名认证,无法再次认证！"),
+
+    PICTURE_UPLOAD_FAILURE("SYSTEM_ERROR","图片保存失败"),
+    ALLOW_OPT_LIMIT("ALLOW_OPT_LIMIT","该账号已被锁定，请明天再试"),
+    //验证码
+    CODE_SEND_SUCCESS("CODE_SEND_SUCCESS","验证码发送成功"),
+    CODE_SEND_FAIL("CODE_SEND_FAIL","验证码发送失败"),
+    CODE_SEND_TO_QUICK("CODE_SEND_TO_QUICK","验证码发送过于频繁"),
+    CODE_SEND_VAIL_FAIL("CODE_SEND_VAIL_FAIL","发送校验异常"),
+    CODE_VAIL_FAIL("CODE_SEND_VAIL_FAIL","验证码错误"),
+    CODE_VAIL_OUTTIME("CODE_VAIL_OUTTIME","验证码已过期，请重新获取验证码！"),
+
+
+
+    PICTURE_UPDATE_SUCCESS("PICTURE_UPDATE_SUCCESS","图片修改成功"),
+    PICTURE_UPDATE_FAIL("PICTURE_UPDATE_FAIL","图片修改失败"),
+    PICTURE_ISNOT_EXIST("PICTURE_ISNOT_EXIST","查询不到图片信息"),
+    WRONG_PHONE_NUMBER("WRONG_PHONE_NUMBER","请您输入正确的手机号码。"),
+    //账号
+    MEMBER_ACCOUNT_DISABLE("MEMBER_ACCOUNT_DISABLE","账号已经禁用，如有疑问请咨询客服。"),
+    MEMBER_ACCOUNT_CANCEL("MEMBER_ACCOUNT_CANCEL","账号已经注销，如有疑问请咨询客服。"),
+
+    //四要素验证
+    CARD_FOURPVF_LOCK("CARD_FOURPVF_LOCK", "已锁卡，请联系客服。"),
+    CARD_FOURPVF_FAIL("CARD_FOURPVF_FAIL", "持卡人四要素信息验证失败!"),
+    CARD_FOURPVF_EXCE("CARD_FOURPVF_EXCE", "四要素验证接口服务异常!"),
+    CARD_FOURPVF_CLOSE("CARD_FOURPVF_CLOSE", "四要素验证接口已关闭!"),
+    CARD_FOURPVF_CODEER("CARD_FOURPVF_CODEER", "验证码校验失败!"),
+
+    // 密码重置
+    PASSWORD_RESET_MEMBER_NO_IS_ERROR("PASSWORD_RESET_MEMBER_NO_IS_ERROR","会员不存在"),
+    PASSWORD_RESET_MEMBER_NO_OR_CODE_IS_ERROR("PASSWORD_RESET_MEMBER_NO_OR_CODE_IS_ERROR","会员号或验证码错误"),
+    PASSWORD_RESET_CODE_IS_EXPIRED("PASSWORD_RESET_CODE_IS_EXPIRED","验证码输入错误或验证码已过期"),
+    PASSWORD_RESET_MEMBER_STATUS_IS_ERROR("PASSWORD_RESET_MEMBER_STATUS_IS_ERROR","状态不正确，无法进行密码重置"),
+    PASSWORD_RESET_AFFIRM_ERROR("PASSWORD_RESET_AFFIRM_ERROR","密码和确认密码不一致，清确认后再提交"),
+
+    QUERY_MERCHANT_NONE("QUERY_MERCHANT_NONE","该会员无商户"),
+    //查询银行信息
+    QUERY_BANK_INFO_SUCCESS("QUERY_BANK_INFO_SUCCESS","查询银行信息成功"),
+    QUERY_BANK_INFO_NONE("QUERY_BANK_INFO_NONE","查询不到银行信息"),
+    QUERY_BANK_INFO_FAIL("QUERY_BANK_INFO_FAIL","查询银行信息失败"),
+    BANK_CARD_NOT_SUPPORT("BANK_CARD_NOT_SUPPORT","不支持的银行卡信息"),
+
+    QUERY_MEMBER_BASIC_INFO_SUCCESS("QUERY_MEMBER_BASIC_INFO_SUCCESS","操作成功"),
+    QUERY_MEMBER_BASIC_INFO_FAILURE("QUERY_MEMBER_BASIC_INFO_FAILURE","数据准备中，请联系相关人员"),
+    HANDLE_DATA_FAIL("HANDLE_DATA_FAIL","数据处理失败"),
+
+    REF_RECORD_HAS_BEEN_EXIST("REF_RECORD_HAS_BEEN_EXIST","已经存在相同会员业务关系，请检查数据"),
+    MEMBER_PEOPLE_ID_IS_EXIST("MEMBER_PEOPLE_ID_IS_EXIST","该商户身份信息已存在"), VIP_IS_NOT_EXISTS("VIP_IS_NOT_EXISTS", "VIP套餐信息不存在");
+
+    /** 结果枚举值 */
+    private String value;
+
+    /** 结果枚举信息*/
+    private String message;
+
+    /**
+     * 默认构造方法
+     *
+     * @param value   枚举值
+     * @param message 枚举信息
+     */
+    private MessageEnum(String value, String message) {
+        this.value = value;
+        this.message = message;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}

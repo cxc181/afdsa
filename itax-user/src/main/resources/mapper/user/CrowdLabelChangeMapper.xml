@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.user.dao.CrowdLabelChangeMapper">
+    <resultMap type="com.yuqian.itax.user.entity.CrowdLabelChangeEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="crowd_label_id" property="crowdLabelId"/>
+			<result column="crowd_label_name" property="crowdLabelName"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="status" property="status"/>
+			<result column="member_user_num" property="memberUserNum"/>
+			<result column="crowd_label_desc" property="crowdLabelDesc"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.user.entity.vo.CrowdLabelChangeVO" id="voMap">
+		<result column="status" property="status"/>
+		<result column="remark" property="remark"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+	</resultMap>
+    <sql id="Base_Columns">
+		id, crowd_label_id, crowd_label_name, oem_code, status, member_user_num, crowd_label_desc, add_time, add_user, update_time, update_user, remark
+    </sql>
+	<select id="listPageCrowdLabelChange" resultMap="voMap">
+		select status,add_time,add_user,remark from t_e_crowd_label_change
+		where crowd_label_id = #{crowdLabelId} order by add_time desc
+	</select>
+</mapper>

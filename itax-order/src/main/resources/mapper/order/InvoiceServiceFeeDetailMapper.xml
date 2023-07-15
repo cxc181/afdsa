@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.order.dao.InvoiceServiceFeeDetailMapper">
+    <resultMap type="com.yuqian.itax.order.entity.InvoiceServiceFeeDetailEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="company_id" property="companyId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="phase_amount" property="phaseAmount"/>
+			<result column="fee_rate" property="feeRate"/>
+			<result column="fee_amount" property="feeAmount"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, company_id, oem_code, phase_amount, fee_rate, fee_amount, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<resultMap id="invoiceServiceFeeDetailMap" type="com.yuqian.itax.order.entity.vo.InvoiceServiceFeeDetailVO">
+		<result column="fee_amount" property="feeAmount"/>
+		<result column="fee_rate" property="feeRate"/>
+		<result column="phase_amount" property="phaseAmount"/>
+	</resultMap>
+
+    <select id="queryDetailByOrderNo" resultMap="invoiceServiceFeeDetailMap">
+		SELECT phase_amount, fee_rate, fee_amount
+		FROM t_e_invoice_service_fee_detail
+		WHERE order_no = #{orderNo}
+	</select>
+	<select id="queryLeastServiceFeeRate" resultType="java.math.BigDecimal">
+		  SELECT fee_rate
+		  FROM t_e_invoice_service_fee_detail
+		  WHERE order_no = #{orderNo}
+		  AND phase_amount > 0
+		  LIMIT 1
+	</select>
+</mapper>

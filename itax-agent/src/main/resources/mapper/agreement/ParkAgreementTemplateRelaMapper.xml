@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.agreement.dao.ParkAgreementTemplateRelaMapper">
+    <resultMap type="com.yuqian.itax.agreement.entity.ParkAgreementTemplateRelaEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="agreement_template_id" property="agreementTemplateId"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="product_id" property="productId"/>
+			<result column="company_type" property="companyType"/>
+    </resultMap>
+
+
+	<resultMap type="com.yuqian.itax.agreement.entity.vo.AgreementTemplateInfoVO" id="infoMap">
+		<id column="id" property="id"/>
+		<id column="template_type" property="templateType"/>
+		<id column="template_name" property="templateName"/>
+		<id column="park_id" property="parkId"/>
+		<id column="template_code" property="templateCode"/>
+		<id column="template_html_url" property="templateHtmlUrl"/>
+		<id column="park_code" property="parkCode"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, agreement_template_id, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="getTemplateInfo" resultMap="infoMap">
+		select at.id,at.template_type,at.template_name,pt.park_id,at.template_code,at.template_html_url,p.park_code
+		from t_r_park_agreement_template pt
+		left join t_e_agreement_template at on pt.agreement_template_id = at.id
+		left join t_e_park p on p.id = pt.park_id
+		<where>
+			and pt.park_id = #{parkId}
+			and pt.product_id = #{productId}
+			<if test="templateType != null">
+				and at.template_type = #{templateType}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getTemplateInfoByParkIdAndProductId" resultMap="infoMap">
+		select at.id,at.template_type,at.template_name,pt.park_id,at.template_code,at.template_html_url,p.park_code
+		from t_r_park_agreement_template pt
+		left join t_e_agreement_template at on pt.agreement_template_id = at.id
+		left join t_e_park p on p.id = pt.park_id
+		<where>
+			and pt.park_id = #{parkId} and pt.product_id = #{productId}
+		</where>
+	</select>
+	
+	<insert id="batchInsert">
+		insert into t_r_park_agreement_template (park_id,agreement_template_id,add_time,add_user)
+		values
+		<foreach collection="list" item="item" separator=",">
+		(#{item.parkId},#{item.agreementTemplateId},#{item.addTime},#{item.addUser})
+		</foreach>
+	</insert>
+
+	<delete id="deleteByParkId">
+		delete from
+		t_r_park_agreement_template
+		where park_id = #{parkId}
+	</delete>
+
+	<delete id="deleteByParkIdAndProductId">
+		delete from
+		t_r_park_agreement_template
+		where park_id = #{parkId} and product_id = #{product}
+	</delete>
+
+	<select id="getParkAgreementIdByAgreementTemplateId" resultType="Long">
+		select pa.id from
+		t_r_park_agreement_template pa
+		left join t_e_park p on p.id = pa.park_id
+		where p.status != 2 and pa.agreement_template_id = #{agreementTemplateId}
+	</select>
+</mapper>

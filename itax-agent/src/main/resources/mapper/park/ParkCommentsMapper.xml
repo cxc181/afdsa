@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkCommentsMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkCommentsEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="member_id" property="memberId"/>
+			<result column="user_ratings" property="userRatings"/>
+			<result column="comments_content" property="commentsContent"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="status" property="status"/>
+			<result column="reply_content" property="replyContent"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, member_id, user_ratings, comments_content, oem_code, status, reply_content, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkCommentsVO" id="commentsVoMap">
+		<id column="id" property="id"/>
+		<id column="park_id" property="parkId"/>
+		<id column="park_name" property="parkName"/>
+		<id column="real_name" property="realName"/>
+		<id column="member_phone" property="memberPhone"/>
+		<result column="user_ratings" property="userRatings"/>
+		<result column="comments_content" property="commentsContent"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="status" property="status"/>
+		<result column="reply_content" property="replyContent"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+
+	<!--查询园区评价列表-->
+	<select id="queryCommentsList" resultMap="commentsVoMap">
+            select
+                  a.id,
+                  a.park_id,
+                  a.user_ratings,
+                  a.comments_content,
+                  a.status,
+                  a.reply_content,
+                  a.add_time,
+                  b.park_name,
+                  c.oem_name,
+                  d.real_name,
+                  d.member_phone
+            from t_e_park_comments a
+            left join t_e_park b on b.id = a.park_id
+            left join t_e_oem c on c.oem_code = a.oem_code
+            left join t_e_member_account d on d.id = a.member_id
+            <where>
+            	<if test="query.parkId != null">
+					and b.id = #{query.parkId}
+				</if>
+				<if test="query.parkName !=null and query.parkName !=''">
+					and b.park_name like concat('%',#{query.parkName},'%')
+				</if>
+				<if test="query.status !=null">
+					and a.status = #{query.status}
+				</if>
+				<if test="query.commentsContent !=null and query.commentsContent !=''">
+					and a.comments_content like concat('%',#{query.commentsContent},'%')
+				</if>
+			</where>
+			order by a.add_time desc
+	</select>
+
+	<!--根据主键id查询园区评价详情-->
+	<select id="getParkCommentsInfo" resultMap="commentsVoMap">
+		    select
+		          a.id,
+		          a.user_ratings,
+		          a.comments_content,
+		          a.reply_content,
+		          a.status,
+		          a.add_time,
+		          b.park_name,
+		          d.real_name,
+                  d.member_phone
+		    from t_e_park_comments a
+		    left join t_e_park b on b.id = a.park_id
+		    left join t_e_member_account d on d.id = a.member_id
+		    where a.id = #{id}
+	</select>
+
+
+	<select id="getSumCount" resultType="java.math.BigDecimal">
+		    select count(1) from t_e_park_comments
+		    <where>
+				park_id = #{parkId}
+				<if test="status != null">
+					and status = #{status}
+				</if>
+			</where>
+	</select>
+
+	<select id="getSumUserRatings" resultType="java.math.BigDecimal">
+		select
+		      IFNULL(sum(user_ratings),0)
+		from t_e_park_comments
+		<where>
+			park_id = #{parkId}
+			<if test="status != null">
+				and status = #{status}
+			</if>
+		</where>
+	</select>
+
+	<resultMap id="ParkCommentListMap" type="com.yuqian.itax.park.entity.vo.ParkCommentListVO">
+		<result column="id" property="id"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="user_ratings" property="userRatings"/>
+		<result column="comments_content" property="commentsContent"/>
+		<result column="reply_content" property="replyContent"/>
+		<result column="add_time" property="addTime"/>
+	</resultMap>
+	<select id="getCommentList" resultMap="ParkCommentListMap">
+		SELECT c.`id`, REPLACE(a.`member_phone`, MID(a.`member_phone`,4,4), '****') member_phone, c.`user_ratings`,
+				c.`comments_content`, c.`reply_content`, c.`add_time`
+		FROM t_e_park_comments c
+		INNER JOIN t_e_member_account a ON a.`id` = c.`member_id`
+		WHERE c.`park_id` = #{parkId} and c.`status` = 1
+		ORDER BY c.`add_time` desc
+	</select>
+
+</mapper>

@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.pay.dao.PayWaterMapper">
+    <resultMap type="com.yuqian.itax.pay.entity.PayWaterEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="pay_no" property="payNo"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="external_order_no" property="externalOrderNo"/>
+			<result column="member_id" property="memberId"/>
+			<result column="user_type" property="userType"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="oem_name" property="oemName"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="discount_amount" property="discountAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="order_type" property="orderType"/>
+			<result column="pay_way" property="payWay"/>
+			<result column="pay_channels" property="payChannels"/>
+			<result column="pay_time" property="payTime"/>
+			<result column="pay_status" property="payStatus"/>
+			<result column="pay_account" property="payAccount"/>
+			<result column="up_status_code" property="upStatusCode"/>
+			<result column="up_result_msg" property="upResultMsg"/>
+			<result column="pay_bank" property="payBank"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="wallet_type" property="walletType"/>
+			<result column="pay_water_type" property="payWaterType"/>
+			<result column="service_fee" property="serviceFee"/>
+			<result column="service_fee_rate" property="serviceFeeRate"/>
+			<result column="pay_pic" property="payPic"/>
+			<result column="refund_status" property="refundStatus"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, pay_no, order_no, user_type,external_order_no, member_id, oem_code, order_amount, discount_amount, pay_amount, order_type, pay_way, pay_time, pay_status, pay_account,
+		pay_bank, add_time, add_user, update_time, update_user, remark, up_status_code,up_result_msg,wallet_type,pay_water_type,service_fee,service_fee_rate,pay_pic,refund_status
+    </sql>
+
+
+
+	<resultMap type="com.yuqian.itax.pay.entity.vo.WithdrawVO" id="WithdrawEntityMap">
+
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="pay_account" property="payAccount"/>
+		<result column="pay_bank" property="payBank"/>
+		<result column="pay_status" property="payStatus"/>
+		<result column="role_name" property="roleName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="name" property="userName"/>
+		<result column="pay_way" property="payWay"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="level_name" property="levelName"/>
+		<result column="received_amount" property="receivedAmount"/>
+		<result column="id_card_no" property="idCardNo"/>
+
+	</resultMap>
+	<select id="getWithdrawPayWaterList" resultMap="WithdrawEntityMap" parameterType="com.yuqian.itax.pay.entity.query.WthdrawQuery">
+		select pw.id, pw.order_no, pw.order_type, pw.user_type, pw.add_time, case when pw.pay_status in(2,3,5) then pw.update_time end update_time, convert(pw.service_fee/100, decimal(12,2)) service_fee,
+		convert(pw.pay_amount/100, decimal(12,2)) pay_amount, convert((pw.pay_amount-pw.service_fee)/100, decimal(12,2)) received_amount,
+		pw.pay_account, pw.pay_bank, pw.pay_status, pw.oem_name, pw.wallet_type, pw.pay_way,
+		'会员' role_name, m.member_account account, m.member_phone phone,m.id_card_no,
+		lv.level_name,
+		case when m.real_name is null or m.real_name = '' then m.member_name else m.real_name end name
+		from t_e_pay_water pw
+		LEFT JOIN t_e_member_account m on pw.member_id = m.id
+		LEFT JOIN  t_e_order o  on pw.order_no = o.order_no
+		LEFT JOIN t_r_member_order r on o.rela_id = r.id
+		LEFT join t_e_user_rela ur  on ur.user_id = pw.member_id and ur.user_class = 5
+		LEFT JOIN t_e_member_level lv ON pw.oem_code = lv.oem_code and level_no = r.member_level
+		where pw.user_type = 1
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="userType != null ">
+				and pw.user_type =#{userType}
+			</if>
+			<if test="payWaterType != null ">
+				and pw.pay_water_type =#{payWaterType}
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and pw.oem_code =#{oemCode}
+			</if>
+
+			<if test="orderNo != null and orderNo != ''">
+				and pw.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="orderType != null ">
+				and pw.order_type =#{orderType}
+			</if>
+			<if test="payStatus != null ">
+				and pw.pay_status =#{payStatus}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and pw.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="startCompleteDate != null and startCompleteDate != '' and endCompleteDate != '' and endCompleteDate != null  ">
+				and pw.update_time between #{startCompleteDate} and #{endCompleteDate} and pw.pay_status =2
+			</if>
+			<if test="account != null and account != ''">
+				and m.member_account like concat('%',#{account},'%')
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and '会员'  like concat('%',#{roleName},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and m.member_phone like concat('%',#{phone},'%')
+			</if>
+			<if test="name != null and name != ''">
+                and case when
+                    m.real_name is null or m.real_name = ''
+                then
+                    m.member_name like concat('%',#{name},'%')
+                else
+                    m.real_name like concat('%',#{name},'%')
+                end
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and pw.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="walletType != null ">
+				and pw.wallet_type = #{walletType}
+			</if>
+			<if test="levelNo != null ">
+				and lv.level_no = #{levelNo}
+			</if>
+		UNION
+		select pw.id, pw.order_no, pw.order_type, pw.user_type, pw.add_time,case when pw.pay_status in(2,3,5) then pw.update_time end update_time , convert(pw.service_fee/100, decimal(12,2)) service_fee,
+		convert(pw.pay_amount/100, decimal(12,2)) pay_amount, convert((pw.pay_amount-pw.service_fee)/100, decimal(12,2)) received_amount,
+		pw.pay_account, pw.pay_bank, pw.pay_status, pw.oem_name, pw.wallet_type, pw.pay_way,
+		r.role_name role_name, u.username account ,ue.phone	phone,m.id_card_no, null level_name, u.nickname name
+		from t_e_pay_water pw
+		LEFT JOIN t_e_member_account m on pw.member_id = m.id
+		LEFT JOIN sys_e_user u on pw.member_id = u.id
+		LEFT JOIN sys_e_user_extend ue on pw.member_id = ue.user_id
+		LEFT JOIN sys_r_user_role ur on ur.user_id = u.id
+		LEFT JOIN sys_e_roles r on r.id = ur.role_id
+		LEFT join t_e_user_rela eur  on eur.user_id = pw.member_id
+		where pw.user_type != 1
+			<if test="tree != null and tree != ''">
+				and eur.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="payWaterType != null and payWaterType != ''">
+				and pw.pay_water_type =#{payWaterType}
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and pw.oem_code =#{oemCode}
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				and pw.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="orderType != null and orderType != ''">
+				and pw.order_type =#{orderType}
+			</if>
+			<if test="payStatus != null ">
+				and pw.pay_status =#{payStatus}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and pw.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="startCompleteDate != null and startCompleteDate != '' and endCompleteDate != '' and endCompleteDate != null  ">
+				and pw.update_time between #{startCompleteDate} and #{endCompleteDate} and pw.pay_status =2
+			</if>
+			<if test="account != null and account != ''">
+				and u.username like concat('%',#{account},'%')
+			</if>
+			<if test="roleName != null and roleName != ''">
+				and r.role_name like concat('%',#{roleName},'%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and ue.phone like concat('%',#{phone},'%')
+			</if>
+			<if test="name != null and name != ''">
+				and u.nickname like concat('%',#{name},'%')
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and pw.oem_name like concat('%',#{oemName},'%')
+			</if>
+			<if test="memberId != null and memberId != ''">
+				and pw.member_id =#{memberId}
+			</if>
+			<if test="walletType != null ">
+				and pw.wallet_type = #{walletType}
+			</if>
+			<if test="levelNo != null ">
+				and null = #{levelNo}
+			</if>
+		order by add_time desc
+	</select>
+
+	<!--更新支付流水订单信息 add by Kaven 2019-12-12-->
+	<update id="updatePayWater" parameterType="com.yuqian.itax.pay.entity.PayWaterEntity">
+		update t_e_pay_water
+		<trim prefix="set" suffixOverrides=",">
+			<if test="externalOrderNo != '' and externalOrderNo != null">
+				external_order_no = #{externalOrderNo},
+			</if>
+			<if test="payAmount != '' and payAmount != null">
+				pay_amount = #{payAmount},
+			</if>
+			<if test="payStatus != '' and payStatus != null">
+				pay_status = #{payStatus},
+			</if>
+			<if test="upStatusCode != '' and upStatusCode != null">
+				up_status_code = #{upStatusCode},
+			</if>
+			<if test="upResultMsg != '' and upResultMsg != null">
+				up_result_msg = #{upResultMsg},
+			</if>
+			<if test="payAccount != '' and payAccount != null">
+				pay_account = #{payAccount},
+			</if>
+			<if test="payBank != '' and payBank != null">
+				pay_bank = #{payBank},
+			</if>
+			<if test="remark != '' and remark != null">
+				remark = #{remark},
+			</if>
+			<if test="updateUser != '' and updateUser != null">
+				update_user = #{updateUser},
+			</if>
+			<if test="payTime != null">
+				pay_time = #{payTime},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime},
+			</if>
+		</trim>
+		where pay_no = #{payNo}
+	</update>
+
+	<!--根据订单号更新流水状态 add by Kaven 2020-03-05-->
+	<update id="updatePayStatus" parameterType="com.yuqian.itax.pay.entity.PayWaterEntity">
+		update t_e_pay_water
+		<trim prefix="set" suffixOverrides=",">
+
+			<if test="payStatus != '' and payStatus != null">
+				pay_status = #{payStatus},
+			</if>
+			<if test="externalOrderNo != '' and externalOrderNo != null">
+				external_order_no = #{externalOrderNo},
+			</if>
+			<if test="upStatusCode != '' and upStatusCode != null">
+				up_status_code = #{upStatusCode},
+			</if>
+			<if test="upResultMsg != '' and upResultMsg != null">
+				up_result_msg = #{upResultMsg},
+			</if>
+			<if test="payPic != '' and payPic != null">
+				pay_pic = #{payPic},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime},
+			</if>
+			<if test="updateUser != '' and updateUser != null">
+				update_user = #{updateUser},
+			</if>
+			<if test="refundStatus != null">
+				refund_status = #{refundStatus},
+			</if>
+		</trim>
+		<where>
+			order_no = #{orderNo}
+			<if test="id != null">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+
+	<select id="listPayWater" resultMap="payWaterEntityMap" parameterType="com.yuqian.itax.pay.entity.query.PayWaterQuery">
+		select pay_no, order_no, external_order_no, order_type, add_time, convert(pay_amount/100, decimal(12,2)) realAmount,
+		pay_way, pay_account, pay_bank, pay_status, oem_name,pay_pic
+		from t_e_pay_water
+		<where>
+		<!--
+			<if test="likeOrderNo != null">
+				and order_no like concat('%',#{likeOrderNo},'%')
+			</if>
+			<if test="memberId != null and memberId != ''">
+				and member_id = #{memberId}
+			</if>
+			<if test="userTypeNotIn != null">
+				and user_type not in (${userTypeNotIn})
+			</if>
+			<if test="orderTypes != null">
+				and user_type in (${orderTypes})
+			</if>
+			-->
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code = #{oemCode}
+			</if>
+			<if test="orderNo != null and orderNo.trim() != ''">
+				and order_no = #{orderNo}
+			</if>
+			<if test="orderType != null">
+				and order_type = #{orderType}
+			</if>
+			<if test="notPayWaterType != null">
+				and pay_water_type != #{notPayWaterType}
+			</if>
+			<if test="payStatus != null">
+				and pay_status = #{payStatus}
+			</if>
+		</where>
+	</select>
+
+	<!--支付流水列表 -->
+	<resultMap type="com.yuqian.itax.pay.entity.vo.PaywaterVO" id="payWaterEntityMap">
+		<result column="id" property="id"/>
+		<result column="pay_no" property="payNo"/>
+		<result column="pay_water_type" property="payWaterType"/>
+		<result column="external_order_no" property="externalOrderNo"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="order_type" property="orderType"/>
+		<result column="wallet_type" property="walletType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="pay_way" property="payWay"/>
+		<result column="pay_channels" property="payChannels"/>
+		<result column="pay_status" property="payStatus"/>
+		<result column="pay_account" property="payAccount"/>
+		<result column="pay_bank" property="payBank"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="real_name" property="realName"/>
+		<result column="member_phone" property="memberPhone"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="service_fee" property="serviceFee"/>
+		<result column="pay_time" property="payTime"/>
+		<result column="pay_pic" property="payPic"/>
+		<result column="up_result_msg" property="upResultMsg"/>
+		<result column="refund_status" property="refundStatus"/>
+		<result column="otherPayOemName" property="otherPayOemName"/>
+		<result column="other_pay_oemcode" property="otherPayOemcode"/>
+	</resultMap>
+	<select id="getPayWaterList" resultMap="payWaterEntityMap" parameterType="com.yuqian.itax.pay.entity.query.PayWaterQuery">
+		select
+			pw.id,
+			pw.pay_no,
+			pw.pay_water_type,
+			pw.external_order_no,
+			pw.order_no,
+			pw.order_type,
+			uca.wallet_type,
+			pw.add_time,
+			case when pw.pay_status in(2,3,5)  then pw.update_time end update_time,
+			convert(pw.order_amount/100, decimal(12,2))  order_amount,
+			convert(pw.pay_amount/100, decimal(12,2))  pay_amount,
+			convert(pw.service_fee/100, decimal(12,2))  service_fee,
+			pw.pay_way,
+			pw.pay_channels,
+			case when pw.order_type =2 and pw.pay_status=4 then 1 when  pw.order_type =4 and pw.pay_status=4 then 1 else  pw.pay_status end pay_status,
+			pw.pay_account,
+			pw.pay_bank,
+			pw.oem_name,
+			m.real_name,
+			m.member_phone,
+			pw.pay_time,
+			pw.pay_pic,
+			pw.up_result_msg,
+			pw.refund_status,
+			pw.other_pay_oemcode,
+			(select oem_name from t_e_oem where oem_code = pw.other_pay_oemcode) otherPayOemName
+		from t_e_pay_water pw
+		LEFT JOIN t_e_member_account m on pw.member_id=m.id
+		LEFT JOIN t_e_user_capital_account uca on uca.user_id=m.id and uca.user_type=1 and pw.wallet_type = uca.wallet_type
+		LEFT join t_e_user_rela ur  on ur.user_id=pw.member_id and ur.user_class = 5
+		<where>
+			<!-- 排除对公户提现订单 -->
+			order_type != 11
+			<if test="tree != null and tree != ''">
+				and ur.user_tree like  concat(#{tree},'%')
+			</if>
+			<if test="payNo != null and payNo != ''">
+				and pw.pay_no like  concat('%',#{payNo},'%')
+			</if>
+			<if test="payWaterType != null and payWaterType != ''">
+				and pw.pay_water_type=#{payWaterType}
+			</if>
+			<if test="externalOrderNo != null and externalOrderNo != ''">
+				and pw.external_order_no like  concat('%',#{externalOrderNo},'%')
+			</if>
+			<if test="realName != null and realName != ''">
+				and m.real_name like  concat('%',#{realName},'%')
+			</if>
+			<if test="memberPhone != null and memberPhone != ''">
+				and m.member_phone like  concat('%',#{memberPhone},'%')
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				and pw.order_no like  concat('%',#{orderNo},'%')
+			</if>
+			<if test="orderType != null and orderType != ''">
+				and pw.order_type=#{orderType}
+			</if>
+			<if test="walletType != null ">
+				and uca.wallet_type=#{walletType}
+			</if>
+			<if test="payWay != null and payWay != ''">
+				and pw.pay_way=#{payWay}
+			</if>
+			<if test="payChannels != null and payChannels != ''">
+				and pw.pay_channels=#{payChannels}
+			</if>
+			<if test="payAccount != null and payAccount != ''">
+				and pw.pay_account=#{payAccount}
+			</if>
+			<if test="payBank != null and payBank != ''">
+				and pw.pay_bank=#{payBank}
+			</if>
+			<if test="oemName != null and oemName != ''">
+				and pw.oem_name like  concat('%',#{oemName},'%')
+			</if>
+			<if test="oemCode != null and oemCode != ''">
+				and pw.oem_code =#{oemCode}
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+				and pw.add_time between #{startDate} and #{endDate}
+			</if>
+			<if test="startCompleteDate != null and startCompleteDate != '' and endCompleteDate != '' and endCompleteDate != null  ">
+				and pw.update_time between #{startCompleteDate} and #{endCompleteDate} and pw.pay_status=2
+			</if>
+			<if test="payStatus != null and payStatus > -1">
+				and pw.pay_status = #{payStatus}
+			</if>
+			<if test="refundStatus != null">
+				and pw.refund_status = #{refundStatus}
+			</if>
+			<if test="otherPayOemName != null and otherPayOemName.trim() !=''">
+				and pw.other_pay_oemcode in (select oem_code from t_e_oem where oem_name like concat('%',#{otherPayOemName},'%'))
+			</if>
+		</where>
+		order by add_time desc
+	</select>
+
+	<select id="selectPayingList" parameterType="java.lang.Integer" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_pay_water
+		<where>
+			pay_status = 1 and order_type in(1,5,7)  and pay_water_type !=5
+			<if test="payWay != null">
+				and pay_way = #{payWay}
+			</if>
+		</where>
+	</select>
+	<select id="selectRefundPayingList" parameterType="java.lang.Integer" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_pay_water
+		<where>
+			pay_status = 1 and pay_water_type =5
+			<if test="payWay != null">
+				and pay_way = #{payWay}
+			</if>
+			<if test="orderBy != null and orderBy == 2">
+				order by add_time desc
+			</if>
+		</where>
+	</select>
+
+	<select id="batchDownIdCard" resultType="map">
+		select  DISTINCT m.id_card_front,m.id_card_back,m.id_card_no
+		from t_e_pay_water pw
+		LEFT JOIN t_e_member_account m on pw.member_id = m.id
+		LEFT JOIN t_e_order o on pw.order_no = o.order_no
+		LEFT JOIN t_r_member_order r on o.rela_id = r.id
+		LEFT JOIN t_e_member_level lv ON pw.oem_code = lv.oem_code and level_no = r.member_level
+		<where>
+		 	pw.user_type = 1 and pw.wallet_type=2 and lv.level_no in (1,3)
+			<if test="startCompleteDate != null and startCompleteDate != '' and endCompleteDate != '' and endCompleteDate != null  ">
+				and pw.update_time between #{startCompleteDate} and #{endCompleteDate} and pw.pay_status=2
+			</if>
+		</where>
+
+	</select>
+
+	<select id="queryPayWaterListByOrderNoAndStaus" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		 from t_e_pay_water w
+		 where  w.pay_status =2
+		  and w.order_no=#{orderNo}
+	</select>
+
+	<select id="getPayWaterByOrderNo" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_pay_water w
+		where  w.pay_status =2 and order_type = 13
+		and w.order_no=#{orderNo}
+	</select>
+</mapper>

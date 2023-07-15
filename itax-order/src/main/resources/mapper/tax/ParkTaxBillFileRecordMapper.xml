@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.tax.dao.ParkTaxBillFileRecordMapper">
+    <resultMap type="com.yuqian.itax.tax.entity.ParkTaxBillFileRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="park_tax_bill" property="parkTaxBill"/>
+			<result column="company_id" property="companyId"/>
+			<result column="company_name" property="companyName"/>
+			<result column="ein" property="ein"/>
+			<result column="season_invoice_amount" property="seasonInvoiceAmount"/>
+			<result column="total_tax_amount" property="totalTaxAmount"/>
+			<result column="vat" property="vat"/>
+			<result column="additional" property="additional"/>
+			<result column="income" property="income"/>
+			<result column="file_url" property="fileUrl"/>
+			<result column="failed" property="failed"/>
+			<result column="status" property="status"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="cancellation_amount" property="cancellationAmount"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, park_tax_bill, company_id,company_name, ein, season_invoice_amount, total_tax_amount, vat, additional, income, file_url,failed,status, add_time, add_user, update_time, update_user, remark,cancellation_amount
+    </sql>
+
+
+	<insert id="addBatch">
+		insert into t_e_park_tax_bill_file_record (park_tax_bill,company_id, company_name, ein, season_invoice_amount,total_tax_amount,vat,additional,income,file_url,failed,status,add_time,add_user,remark,batch_number,cancellation_amount)
+		values
+		<foreach collection="lists" item="item" separator=",">
+			(#{item.parkTaxBill}, #{item.companyId}, #{item.companyName}, #{item.ein}, #{item.invoiceAmount}*100, #{item.shouldTaxMoney}*100, #{item.vatShouldTaxMoney}*100, #{item.additionalShouldTaxMoney}*100, #{item.incomeShouldTaxMoney}*100, #{item.fileUrl}, #{item.failed}, #{item.status}, now(), #{account}, #{item.remark},#{item.batchNumber},#{item.cancellationAmount})
+		</foreach>
+	</insert>
+
+
+	<resultMap type="com.yuqian.itax.tax.entity.vo.ParkTaxBillUploadVO" id="UploadVoMap">
+
+		<result column="park_tax_bill" property="parkTaxBill"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="ein" property="ein"/>
+		<result column="season_invoice_amount" property="invoiceAmount"/>
+		<result column="total_tax_amount" property="shouldTaxMoney"/>
+		<result column="vat" property="vatShouldTaxMoney"/>
+		<result column="additional" property="additionalShouldTaxMoney"/>
+		<result column="income" property="incomeShouldTaxMoney"/>
+		<result column="file_url" property="fileUrl"/>
+		<result column="failed" property="failed"/>
+		<result column="status" property="status"/>
+		<result column="remark" property="remark"/>
+		<result column="cancellation_amount" property="cancellationAmount"/>
+	</resultMap>
+    <select id="queryparkTaxBillFileRecordByParkTaxBillId" resultMap="UploadVoMap">
+		SELECT
+			bfr.id,
+			bfr.company_name,
+			bfr.ein,
+			convert(bfr.season_invoice_amount/100, decimal(12,2)) season_invoice_amount ,
+			convert(bfr.total_tax_amount/100, decimal(12,2))   total_tax_amount,
+			convert(bfr.vat/100, decimal(12,2)) vat,
+			convert(bfr.additional/100, decimal(12,2)) additional,
+			convert(bfr.income/100, decimal(12,2)) income,
+			convert(bfr.cancellation_amount/100, decimal(12,2)) cancellation_amount,
+			bfr.remark,
+			bfr.failed
+		FROM
+			t_e_park_tax_bill_file_record bfr
+
+		where bfr.park_tax_bill =#{parkTaxBill}
+			  and   bfr.batch_number=(select MAX(batch_number) from t_e_park_tax_bill_file_record where park_tax_bill=#{parkTaxBill})
+    </select>
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.TaxRulesConfigMapper">
+    <resultMap type="com.yuqian.itax.park.entity.TaxRulesConfigEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+			<result column="park_id" property="parkId"/>
+			<result column="policy_id" property="policyId"/>
+			<result column="company_type" property="companyType"/>
+			<result column="rate" property="rate"/>
+			<result column="min_amount" property="minAmount"/>
+			<result column="max_amount" property="maxAmount"/>
+			<result column="tax_type" property="taxType"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="urban_construction_tax_rate" property="urbanConstructionTaxRate"/>
+			<result column="education_surcharge_tax_rate" property="educationSurchargeTaxRate"/>
+			<result column="local_education_surcharge_rate" property="localEducationSurchargeRate"/>
+			<result column="is_open_pp" property="isOpenPp"/>
+			<result column="is_open_zp" property="isOpenZp"/>
+			<result column="taxpayer_type" property="taxpayerType"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.TaxRulesConfigVO" id="taxRuleVO">
+		<id column="id" property="id"/>
+		<result column="park_id" property="parkId"/>
+		<result column="policy_id" property="policyId"/>
+		<result column="company_type" property="companyType"/>
+		<result column="rate" property="rate"/>
+		<result column="min_amount" property="minAmount"/>
+		<result column="max_amount" property="maxAmount"/>
+		<result column="tax_type" property="taxType"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="urban_construction_tax_rate" property="urbanConstructionTaxRate"/>
+		<result column="education_surcharge_tax_rate" property="educationSurchargeTaxRate"/>
+		<result column="local_education_surcharge_rate" property="localEducationSurchargeRate"/>
+		<result column="taxpayer_type" property="taxpayerType"/>
+	</resultMap>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.TaxRulesVatRateVO" id="vatRateVO">
+		<result column="rate" property="vatRate"/>
+		<result column="is_open_pp" property="isOpenPp"/>
+		<result column="is_open_zp" property="isOpenZp"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, park_id, policy_id, company_type, rate, min_amount, max_amount, tax_type, add_time, add_user, update_time, update_user, remark,urban_construction_tax_rate,
+		education_surcharge_tax_rate,local_education_surcharge_rate,is_open_pp,is_open_zp,taxpayer_type
+    </sql>
+
+	<select id="queryTaxRulesConfigEntityByParkId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_tax_rules_config
+		where park_id=#{parkId}
+	</select>
+
+	<select id="queryTaxRulesConfigEntityByPolicyId" resultMap="baseEntityMap">
+		select <include refid="Base_Columns"/>
+		from t_e_tax_rules_config
+		where policy_id=#{policyId} and industry_id is null
+	</select>
+
+	<select id="queryTaxRulesConfig" resultMap="taxRuleVO">
+		select <include refid="Base_Columns"/>
+		from t_e_tax_rules_config
+		where industry_id is null and park_id = #{parkId} and company_type = #{companyType} and policy_id = #{policyId}
+		<choose>
+			<when test="taxType == 1 or taxType == 4 or taxType == 5">
+				and tax_type = #{taxType}
+			</when>
+			<when test="taxType == 2">
+				and tax_type = #{taxType}
+				order by add_time
+				limit 1
+			</when>
+			<when test="taxType == 3">
+				and tax_type = #{taxType}
+				order by add_time
+				limit 1
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="queryTaxRulesVatRate" resultMap="vatRateVO">
+		SELECT
+			rate, is_open_pp, is_open_zp
+		FROM
+			t_e_tax_rules_config
+		WHERE
+			park_id = #{parkId}
+		  AND company_type = #{companyType}
+		  AND tax_type = 2
+		  <if test="invoiceType != null and invoiceType == 1">
+			  AND is_open_pp = 1
+		  </if>
+		  <if test="invoiceType != null and invoiceType == 2">
+			  AND is_open_zp = 1
+		  </if>
+		order by add_time
+	</select>
+	<delete id="deleteByPolicyId">
+		delete from
+			t_e_tax_rules_config
+		where
+			policy_id = #{policyId}
+		<choose>
+			<when test="industryId != null and industryId != -1">
+				and industry_id = #{industryId}
+			</when>
+			<when test="industryId != null and industryId == -1">
+				and 1 = 1
+			</when>
+			<otherwise>
+				and industry_id is null
+			</otherwise>
+		</choose>
+	</delete>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.TaxRatesRulesVO" id="industryRulesMap">
+		<id column="id" property="id"/>
+		<result column="rate" property="rate"/>
+		<result column="min_amount" property="minAmount"/>
+		<result column="max_amount" property="maxAmount"/>
+	</resultMap>
+	<select id="queryByIndustryId" resultMap="industryRulesMap">
+		select
+			config.id, config.rate, config.min_amount, config.max_amount
+		from
+			t_e_tax_policy policy
+		inner join
+			t_e_tax_rules_config config on policy.id = config.policy_id
+		left join
+			t_e_industry industry on industry.id = config.industry_id
+		where
+			policy.id = #{policyId} and config.tax_type = #{taxType}
+		<if test="industryId != null">
+			and config.industry_id = #{industryId}
+		</if>
+	</select>
+
+	<select id="queryTaxRulesConfigEntityByTaxTypeAndInoviceAmount" resultMap="baseEntityMap">
+		SELECT
+			<include refid="Base_Columns"/>
+		FROM
+		t_e_tax_rules_config c
+		<where >
+			park_id = #{parkId}
+			AND c.tax_type = #{taxType}
+			AND #{invoiceAmount} <![CDATA[>=]]> c.min_amount
+			AND #{invoiceAmount} <![CDATA[<]]> c.max_amount
+			AND company_type = #{companyType}
+			<if test="industryId != null">
+				and industry_id = #{industryId}
+			</if>
+			<if test="industryId == null">
+				and industry_id is null
+			</if>
+		</where>
+	</select>
+
+	<select id="queryTaxRulesConfigMinRate" resultMap="taxRuleVO">
+		select <include refid="Base_Columns"/>
+		from t_e_tax_rules_config
+		where industry_id is null and park_id = #{parkId} and company_type = #{companyType}
+		<choose>
+			<when test="taxType == 1">
+				and tax_type = #{taxType}
+			</when>
+			<when test="taxType == 2">
+				and tax_type = #{taxType}
+				order by rate
+				limit 1
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.corporateaccount.dao.CorporateAccountContOrderMapper">
+    <resultMap type="com.yuqian.itax.corporateaccount.entity.CorporateAccountContOrderEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="user_id" property="userId"/>
+			<result column="company_id" property="companyId"/>
+			<result column="corporate_account_id" property="corporateAccountId"/>
+			<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+			<result column="corporate_account" property="corporateAccount"/>
+			<result column="order_amount" property="orderAmount"/>
+			<result column="pay_amount" property="payAmount"/>
+			<result column="park_id" property="parkId"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="expiration_time" property="expirationTime"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+	<resultMap type="com.yuqian.itax.corporateaccount.entity.vo.CorporateAccountContOrderVO" id="listMap">
+		<id column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="member_account" property="memberAccount"/>
+		<result column="user_id" property="userId"/>
+		<result column="company_name" property="companyName"/>
+		<result column="company_id" property="companyId"/>
+		<result column="company_id" property="companyId"/>
+		<result column="operator_name" property="operatorName"/>
+		<result column="corporate_account_bank_name" property="corporateAccountBankName"/>
+		<result column="corporate_account" property="corporateAccount"/>
+		<result column="order_amount" property="orderAmount"/>
+		<result column="pay_amount" property="payAmount"/>
+		<result column="order_status" property="orderStatus"/>
+		<result column="park_name" property="parkName"/>
+		<result column="oem_name" property="oemName"/>
+		<result column="add_time" property="addTime"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
+
+    <sql id="Base_Columns">
+		id, order_no, user_id, company_id, corporate_account_id, corporate_account_bank_name, corporate_account, order_amount, pay_amount, park_id, oem_code, expiration_time, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="listPages" resultMap="listMap">
+		select co.id,co.order_no,co.user_id,co.company_id,co.corporate_account_bank_name,co.corporate_account,
+		case  when p.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE CONVERT (co.order_amount / 100,DECIMAL (12, 2)) end order_amount,
+		case  when p.park_type = 2 and 3 = #{platformType} then
+		NULL
+		ELSE CONVERT (co.pay_amount / 100,DECIMAL (12, 2)) end pay_amount,
+		co.add_time,
+		acc.member_account,mem.company_name,mem.operator_name,o.order_status,p.park_name,oem.oem_name,
+		(case when o.order_status = 2 then o.update_time else null end ) update_time
+		from t_e_corporate_account_cont_order co
+		left join t_e_member_account acc on acc.id = co.user_id
+		left join t_e_member_company mem on mem.id = co.company_id
+		left join t_e_order o on o.order_no = co.order_no
+		left join t_e_park p on p.id = co.park_id
+		left join t_e_oem  oem on oem.oem_code = co.oem_code
+		<where>
+			<if test="orderNo != null and orderNo.trim() != ''">
+				and co.order_no like concat('%',#{orderNo},'%')
+			</if>
+			<if test="memberAccount != null and memberAccount.trim() != ''">
+				and acc.member_account like concat('%',#{memberAccount},'%')
+			</if>
+			<if test="companyName != null and companyName.trim() != ''">
+				and mem.company_name like concat('%',#{companyName},'%')
+			</if>
+			<if test="operatorName != null and operatorName.trim() != ''">
+				and mem.operator_name like concat('%',#{operatorName},'%')
+			</if>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+			<if test="parkId != null">
+				and p.id = #{parkId}
+			</if>
+			<if test="orderStatus != null">
+				and o.order_status = #{orderStatus}
+			</if>
+			<if test="corporateAccountBankName != null and corporateAccountBankName.trim() != ''">
+				and co.corporate_account_bank_name like concat('%',#{corporateAccountBankName},'%')
+			</if>
+			<if test="startAddTime != null and startAddTime.trim() != '' and endAddTime != null and endAddTime.trim() != ''">
+				and co.add_time between #{startAddTime} and #{endAddTime}
+			</if>
+			<if test="startAddTime != null and startAddTime.trim() != '' and endAddTime != null and endAddTime.trim() != ''">
+				and co.add_time between #{startAddTime} and #{endAddTime}
+			</if>
+			<if test="startCompelete != null and startCompelete.trim() != '' and endCompelete != null and endCompelete.trim() != ''">
+				and o.update_time between #{startCompelete} and #{endCompelete}
+			</if>
+		</where>
+		order by o.add_time desc
+	</select>
+	<resultMap id="corpAccUnpaidContOrderMap" type="com.yuqian.itax.corporateaccount.vo.CorpAccUnpaidContOrderVO">
+		<result column="id" property="id"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="corporate_account_id" property="corporateAccountId"/>
+	</resultMap>
+    <select id="queryUnpaidByCompanyCorpAccId" resultMap="corpAccUnpaidContOrderMap">
+		SELECT caco.`id`, caco.`order_no`, caco.`corporate_account_id`
+		FROM t_e_corporate_account_cont_order caco
+		INNER JOIN t_e_order o ON o.`order_no` = caco.`order_no`
+		WHERE o.`order_status` = 0 AND caco.`corporate_account_id` = #{companyCorpAccId}
+	</select>
+</mapper>

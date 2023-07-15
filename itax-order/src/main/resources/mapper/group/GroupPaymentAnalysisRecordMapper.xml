@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.group.dao.GroupPaymentAnalysisRecordMapper">
+    <resultMap type="com.yuqian.itax.group.entity.GroupPaymentAnalysisRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="group_order_no" property="groupOrderNo"/>
+			<result column="payment_group_name" property="paymentGroupName"/>
+			<result column="payment_bank_name" property="paymentBankName"/>
+			<result column="payment_bank_account" property="paymentBankAccount"/>
+			<result column="payment_time" property="paymentTime"/>
+			<result column="payment_amount" property="paymentAmount"/>
+			<result column="invoice_amount" property="invoiceAmount"/>
+			<result column="payee_name" property="payeeName"/>
+			<result column="payee_bank_name" property="payeeBankName"/>
+			<result column="payee_bank_account" property="payeeBankAccount"/>
+			<result column="payee_idcard" property="payeeIdcard"/>
+			<result column="invoice_company_name" property="invoiceCompanyName"/>
+			<result column="analysis_result" property="analysisResult"/>
+			<result column="error_result" property="errorResult"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, oem_code, group_order_no, payment_group_name, payment_bank_name, payment_bank_account, payment_time, payment_amount, invoice_amount, payee_name, payee_bank_name, payee_bank_account, payee_idcard, invoice_company_name, analysis_result, error_result, add_time, add_user, update_time, update_user, remark
+    </sql>
+
+	<select id="queryByOrderNo" resultMap="baseEntityMap">
+		select
+			<include refid="Base_Columns" />
+		from
+			t_e_group_payment_analysis_record
+		where
+			group_order_no = #{groupOrderNo}
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem_code = #{oemCode}
+			</if>
+	</select>
+
+	<select id="sumByGroupOrderNo" resultType="map">
+		select
+			sum(case when analysis_result = 1 then 1 else 0 end ) successNum,
+			sum(case when analysis_result = 1 then invoice_amount else 0 end ) successAmount,
+			sum(case when analysis_result = 2 then 1 else 0 end ) failNum,
+			sum(case when analysis_result = 2 then invoice_amount else 0 end ) failAmount,
+			count(1) allNum,
+			sum(invoice_amount) allAmount
+		from
+			t_e_group_payment_analysis_record
+		where
+			group_order_no = #{groupOrderNo}
+			and oem_code = #{oemCode}
+	</select>
+
+	<insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+		insert into t_e_group_payment_analysis_record
+		(oem_code, group_order_no, payment_group_name, payment_bank_name, payment_bank_account, payment_time,
+		payment_amount, invoice_amount, payee_name, payee_bank_name, payee_bank_account, payee_idcard, invoice_company_name,
+		analysis_result, error_result, add_time, add_user)
+		values
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(
+			#{item.oemCode},
+			#{item.groupOrderNo},
+			#{item.paymentGroupName},
+			#{item.paymentBankName},
+			#{item.paymentBankAccount},
+			#{item.paymentTime},
+			#{item.paymentAmount},
+			#{item.invoiceAmount},
+			#{item.payeeName},
+			#{item.payeeBankName},
+			#{item.payeeBankAccount},
+			#{item.payeeIdcard},
+			#{item.invoiceCompanyName},
+			#{item.analysisResult},
+			#{item.errorResult},
+			#{item.addTime},
+			#{item.addUser}
+			)
+		</foreach >
+	</insert>
+	<select id="countByStatus" resultType="int">
+		select
+			count(1)
+		from
+			t_e_group_payment_analysis_record
+		where
+			group_order_no = #{groupOrderNo}
+			and oem_code = #{oemCode}
+			and analysis_result = #{analysisResult}
+	</select>
+</mapper>

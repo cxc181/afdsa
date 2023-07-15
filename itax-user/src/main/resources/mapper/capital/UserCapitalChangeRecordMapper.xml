@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.capital.dao.UserCapitalChangeRecordMapper">
+    <resultMap type="com.yuqian.itax.capital.entity.UserCapitalChangeRecordEntity" id="baseEntityMap">
+			 
+		<id column="id" property="id"/>
+			<result column="capital_account_id" property="capitalAccountId"/>
+			<result column="user_id" property="userId"/>
+			<result column="user_type" property="userType"/>
+			<result column="oem_code" property="oemCode"/>
+			<result column="changes_amount" property="changesAmount"/>
+			<result column="changes_before_amount" property="changesBeforeAmount"/>
+			<result column="changes_after_amount" property="changesAfterAmount"/>
+			<result column="changes_type" property="changesType"/>
+			<result column="outstanding_amount" property="outstandingAmount"/>
+			<result column="detail_desc" property="detailDesc"/>
+			<result column="order_type" property="orderType"/>
+			<result column="order_no" property="orderNo"/>
+			<result column="add_time" property="addTime"/>
+			<result column="add_user" property="addUser"/>
+			<result column="update_time" property="updateTime"/>
+			<result column="update_user" property="updateUser"/>
+			<result column="remark" property="remark"/>
+			<result column="wallet_type" property="walletType"/>
+    </resultMap>
+
+    <sql id="Base_Columns">
+		id, capital_account_id, user_id,user_type, oem_code, changes_amount, changes_before_amount, changes_after_amount, changes_type,outstanding_amount,detail_desc, order_type, order_no, add_time, add_user, update_time, update_user, remark, wallet_type
+    </sql>
+
+	<resultMap type="com.yuqian.itax.capital.entity.vo.UserCapitalChangeRecordVO" id="userCapitalChangeRecordEntityPageInfoMap">
+
+		<id column="id" property="id"/>
+		<result column="capital_account" property="capitalAccount"/>
+		<result column="user_type" property="userType"/>
+		<result column="username" property="username"/>
+		<result column="nickname" property="nickname"/>
+		<result column="add_time" property="addTime"/>
+		<result column="changes_type" property="changesType"/>
+		<result column="detail_desc" property="detailDesc"/>
+		<result column="changes_amount" property="changesAmount"/>
+		<result column="changes_before_amount" property="changesBeforeAmount"/>
+		<result column="changes_after_amount" property="changesAfterAmount"/>
+		<result column="order_type" property="orderType"/>
+		<result column="order_no" property="orderNo"/>
+		<result column="wallet_type" property="walletType"/>
+		<result column="oem_code" property="oemCode"/>
+		<result column="oem_name" property="oemName"/>
+	</resultMap>
+	<select id="queryUserCapitalChangeRecordEntityPageInfo" resultMap="userCapitalChangeRecordEntityPageInfoMap">
+			select uca.capital_account,uca.user_type,u.username,
+			u.nickname,
+			uccr.add_time,
+			uccr.changes_type,
+			uccr.detail_desc,
+			uccr.changes_amount/100 changes_amount ,
+			uccr.changes_before_amount/100 changes_before_amount,
+			uccr.changes_after_amount/100 changes_after_amount,
+			uccr.order_type,
+			uccr.order_no,
+			uccr.wallet_type,
+			o.oem_code,
+			o.oem_name
+			from t_e_user_capital_change_record uccr
+			LEFT JOIN sys_e_user u on u.id=uccr.user_id
+			LEFT JOIN t_e_oem o ON o.oem_code = uccr.oem_code or (o.oem_code ='' and uccr.oem_code is null)
+			LEFT JOIN t_e_user_capital_account uca on uca.id=uccr.capital_account_id
+
+			<where>
+				uccr.user_type = 2
+				<if test="userId != null and userId != ''">
+					and uccr.user_id =#{userId}
+				</if>
+				<if test="account != null and account != ''">
+					and u.username like concat('%',#{account},'%')
+				</if>
+				<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+					and uccr.add_time between #{startDate} and #{endDate}
+				</if>
+				<if test="changesType != null and changesType != ''">
+					and uccr.changes_type =#{changesType}
+				</if>
+				<if test="detailDesc != null and detailDesc != ''">
+					and uccr.detail_desc like concat('%',#{detailDesc},'%')
+				</if>
+				<if test="orderType != null and orderType != ''">
+					and uccr.order_type =#{orderType}
+				</if>
+				<if test="orderNo != null and orderNo != ''">
+					and uccr.order_no like concat('%',#{orderNo},'%')
+				</if>
+				<if test="capitalAccount != null and capitalAccount != ''">
+					and uca.capital_account like concat('%',#{capitalAccount},'%')
+				</if>
+				<if test="walletType != null">
+					and uca.wallet_type =#{walletType}
+				</if>
+				<if test="oemName != null and oemName != ''">
+					and o.oem_name like concat('%',#{oemName},'%')
+				</if>
+			</where>
+			UNION
+			SELECT uca.capital_account,uca.user_type,MA.MEMBER_ACCOUNT username,
+			IFNULL(MA.real_name,MA.member_name) nickname,
+			UCCR.ADD_TIME,
+			UCCR.CHANGES_TYPE,
+			UCCR.DETAIL_DESC,
+			uccr.changes_amount/100 changes_amount ,
+			uccr.changes_before_amount/100 changes_before_amount,
+			uccr.changes_after_amount/100 changes_after_amount,
+			UCCR.ORDER_TYPE,
+			UCCR.ORDER_NO,
+			UCCR.WALLET_TYPE,
+			o.oem_code,
+			o.oem_name
+
+			FROM T_E_USER_CAPITAL_CHANGE_RECORD UCCR
+			LEFT JOIN T_E_USER_CAPITAL_ACCOUNT UCA ON UCA.ID=UCCR.CAPITAL_ACCOUNT_ID
+			LEFT JOIN t_e_oem o ON o.oem_code = uccr.oem_code
+			LEFT JOIN T_E_MEMBER_ACCOUNT MA ON MA.ID=UCCR.USER_ID
+			<where>
+				UCCR.USER_TYPE=1
+				<if test="userId != null and userId != ''">
+					and uccr.user_Id =#{userId}
+				</if>
+				<if test="account != null and account != ''">
+					and ma.member_account like concat('%',#{account},'%')
+				</if>
+				<if test="startDate != null and startDate != '' and endDate != '' and endDate != null  ">
+					and uccr.add_time between #{startDate} and #{endDate}
+				</if>
+				<if test="changesType != null and changesType != ''">
+					and uccr.changes_type =#{changesType}
+				</if>
+				<if test="detailDesc != null and detailDesc != ''">
+					and uccr.detail_desc like concat('%',#{detailDesc},'%')
+				</if>
+				<if test="orderType != null and orderType != ''">
+					and uccr.order_type =#{orderType}
+				</if>
+				<if test="walletType != null ">
+					and uccr.wallet_type =#{walletType}
+				</if>
+				<if test="orderNo != null and orderNo != ''">
+					and uccr.order_no like concat('%',#{orderNo},'%')
+				</if>
+				<if test="capitalAccount != null and capitalAccount != ''">
+					and uca.capital_account like concat('%',#{capitalAccount},'%')
+				</if>
+				<if test="oemName != null and oemName != ''">
+					and o.oem_name like concat('%',#{oemName},'%')
+				</if>
+			</where>
+			order by add_time desc
+	</select>
+</mapper>

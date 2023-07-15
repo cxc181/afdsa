@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuqian.itax.park.dao.ParkMapper">
+    <resultMap type="com.yuqian.itax.park.entity.ParkEntity" id="baseEntityMap">
+		<id column="id" property="id"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="service_content" property="serviceContent"/>
+		<result column="park_recommend" property="parkRecommend"/>
+		<result column="status" property="status"/>
+		<result column="add_time" property="addTime"/>
+		<result column="add_user" property="addUser"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="update_user" property="updateUser"/>
+		<result column="remark" property="remark"/>
+		<result column="invoice_example" property="invoiceExample"/>
+		<result column="authorization_file" property="authorizationFile"/>
+		<result column="park_address" property="parkAddress"/>
+		<result column="verify_desc" property="verifyDesc"/>
+		<result column="process_mark" property="processMark"/>
+		<result column="process_desc" property="processDesc"/>
+		<result column="special_considerations" property="specialConsiderations"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+		<result column="official_seal_img" property="officialSealImg"/>
+        <result column="affiliating_area" property="affiliatingArea"/>
+		<result column="park_type" property="parkType"/>
+		<result column="is_register_profit" property="isRegisterProfit"/>
+		<result column="is_renew_profit" property="isRenewProfit"/>
+	</resultMap>
+
+	<select id="queryParkList" parameterType="java.lang.Long" resultMap="parkVOMap">
+		SELECT DISTINCT
+		(t.id),
+		t.park_name,
+		t.park_code,
+		t.park_city,
+		t.belongs_company_name,
+		t.authorization_file,
+		t.park_address,
+		t.verify_desc,
+		t.service_content,
+		t.park_recommend,
+		t.affiliating_area,
+		t.STATUS, pr.process_mark, process_desc
+		<if test="companyType != null">
+			,
+			tp.vat_breaks_amount,
+			tp.vat_breaks_cycle,
+			tp.income_tax_breaks_amount,
+			tp.income_tax_breaks_cycle,
+			tp.transact_require,
+			tp.total_invoice_amount,
+			tp.policy_file_url,
+			tp.park_policy_desc
+		</if>
+		FROM
+		t_e_park t
+		INNER JOIN t_r_oem_park op on t.id = op.park_id
+		LEFT JOIN t_r_product_park pr ON t.id = pr.park_id
+		LEFT JOIN t_e_product p ON pr.product_id = p.id and op.oem_code = p.oem_code
+		<if test="companyType != null">
+			LEFT JOIN t_e_tax_policy tp ON tp.park_id = t.id
+			AND p.prod_type = tp.company_type AND tp.STATUS = 1 AND tp.taxpayer_type = 1
+		</if>
+		<where>
+			p.STATUS = 1 AND p.id = #{productId} AND t.STATUS = 1
+		</where>
+		order by t.add_time
+	</select>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkVO" id="parkVOMap">
+		<id column="id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="service_content" property="serviceContent"/>
+		<result column="park_recommend" property="parkRecommend"/>
+		<result column="status" property="status"/>
+		<result column="VAT_breaks_amount" property="vatBreaksAmount"/>
+		<result column="VAT_breaks_cycle" property="vatBreaksCycle"/>
+		<result column="transact_require" property="transactRequire"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<result column="income_tax_breaks_cycle" property="incomeTaxBreaksCycle"/>
+		<result column="total_invoice_amount" property="totalInvoiceAmount"/>
+		<result column="policy_file_url" property="policyFileUrl"/>
+		<result column="park_policy_desc" property="parkPolicyDesc"/>
+		<result column="authorization_file" property="authorizationFile"/>
+		<result column="park_address" property="parkAddress"/>
+		<result column="belongs_company_name" property="belongsCompanyName"/>
+		<result column="verify_desc" property="verifyDesc"/>
+		<result column="process_mark" property="processMark"/>
+		<result column="process_desc" property="processDesc"/>
+		<result column="affiliating_area" property="affiliatingArea"/>
+	</resultMap>
+
+	<!--查询当前OEM机构下开通的产品列表 add by Kaven 2910-12-10 -->
+    <sql id="Base_Columns">
+		id, park_name,park_code, park_city, service_content, park_recommend, status, add_time, add_user, update_time, update_user, remark,invoice_example,
+		authorization_file, park_address,belongs_company_name,verify_desc, process_mark, process_desc,special_considerations,official_seal_img,park_type, 
+		is_register_profit, is_renew_profit
+    </sql>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkListVO" id="parkListVOMap">
+		<id column="id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="username" property="username"/>
+		<result column="phone" property="phone"/>
+		<result column="add_time" property="addTime"/>
+		<result column="status" property="status"/>
+		<result column="income_levy_type" property="incomeLevyType"/>
+		<result column="park_type" property="parkType"/>
+	</resultMap>
+	<select id="getParkList" resultMap="parkListVOMap">
+		select  p.id,p.park_name,p.park_code,p.park_city park_city, u.username,ue.phone,p.add_time,p.status,
+		(select income_levy_type from t_e_tax_policy where park_id = p.id and company_type = 1 and taxpayer_type = 1 ) income_levy_type,p.park_type
+		from t_e_park p
+		left join  sys_e_user u on p.id=u.park_id and account_type=1
+		left join  sys_e_user_extend ue on ue.user_id=u.id
+		<where>
+			<if test="parkId != null">
+				and p.id=#{parkId}
+			</if>
+			<if test="parkType != null">
+				and p.park_type=#{parkType}
+			</if>
+			<if test="status != null">
+				and p.status=#{status}
+			</if>
+			<if test="parkName != null and parkName.trim()!=''">
+				and p.park_name like CONCAT('%', #{parkName}, '%')
+			</if>
+		</where>
+		order by p.add_time desc
+	</select>
+
+	<resultMap type="com.yuqian.itax.park.entity.vo.ParkSelectVO" id="parkSelectVOMap">
+		<id column="id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="agreement_template_id" property="agreementTemplateId"/>
+		<result column="template_name" property="templateName"/>
+	</resultMap>
+
+	<select id="getOemParkList" resultMap="parkSelectVOMap">
+		select  p.id,p.park_name,at.id as agreement_template_id,at.template_name  from t_e_park p
+		LEFT JOIN t_r_oem_park op ON op.park_id=p.id
+		LEFT JOIN t_e_agreement_template at ON at.id = op.agreement_template_id
+		<where>
+			op.oem_code=#{oemCode}
+		</where>
+	</select>
+	<select id="queryOemParkList" parameterType="com.yuqian.itax.park.entity.query.ParkQuery" resultMap="baseEntityMap">
+
+		SELECT
+			t.id, t.park_name,t.park_code, t.park_city, t.service_content, t.park_recommend, t.status, t.remark
+		FROM
+			t_e_park t
+			inner join t_r_oem_park op ON t.id = op.park_id
+			inner join t_e_oem oem ON op.oem_code = oem.oem_code
+			<if test="companyType != null">
+				inner join t_e_tax_policy ply on ply.park_id = t.id and ply.company_type = #{companyType} and ply.taxpayer_type = 1
+			</if>
+		<where>
+			<if test="oemCode != null and oemCode.trim() != ''">
+				and oem.oem_code = #{oemCode}
+			</if>
+			<if test="oemStatus != null">
+				and oem.oem_status = #{oemStatus}
+			</if>
+			<if test="status != null">
+				and t.status = #{status}
+			</if>
+			<if test="parkIds != null">
+				and t.id in (${parkIds})
+			</if>
+		</where>
+	</select>
+
+	<select id="queryProductParkList" parameterType="java.lang.Long" resultMap="parkVOMap">
+		SELECT
+			t.id,
+			t.park_name,
+			t.park_code,
+			t.park_city,
+			t.service_content,
+			t.park_recommend,
+			t.status
+		FROM
+			t_e_park t
+			LEFT JOIN t_r_product_park pr ON t.id = pr.park_id
+		WHERE
+			pr.product_id = #{productId}
+			AND t.status = '1'
+	</select>
+
+	<select id="getAllPark" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		FROM
+		t_e_park
+		WHERE status = '1'
+	</select>
+
+	<select id="getAllParkAndPolicy" resultMap="parkVOMap">
+		SELECT p.id, p.park_name,p.park_code, tp.VAT_breaks_cycle, tp.income_tax_breaks_cycle
+		FROM t_e_park p
+		LEFT JOIN t_r_oem_park op ON op.park_id = p.id
+		LEFT JOIN t_e_tax_policy tp ON tp.park_id = p.id AND tp.taxpayer_type = 1
+		WHERE p.status = 1 AND tp.status = 1 AND tp.company_type = #{companyType} AND op.oem_code = #{oemCode}
+		GROUP BY p.id
+	</select>
+	<select id="getParkByParkCode" resultMap="baseEntityMap">
+		select
+		<include refid="Base_Columns"/>
+		from
+		t_e_park
+		<where>
+			 park_code=#{parkCode}
+			 and status = 1
+			<if test="id != null ">
+				and id  not in ( #{id})
+			</if>
+		</where>
+	</select>
+
+	<resultMap id="SearchParkListMap" type="com.yuqian.itax.park.entity.vo.SearchParkListVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_code" property="parkCode"/>
+		<result column="process_mark" property="processMark"/>
+		<collection property="industryList" ofType="com.yuqian.itax.park.entity.vo.ParkInvoiceListVO">
+			<result column="industry_id" property="industryId"/>
+			<result column="industry_name" property="industryName"/>
+		</collection>
+	</resultMap>
+	<select id="queryParkListByParam" parameterType="com.yuqian.itax.park.entity.query.SearchParkQuery" resultMap="SearchParkListMap">
+		SELECT DISTINCT
+		p.`id` park_id,
+		p.`park_name` park_name,
+		p.`park_code`,
+		pp.`process_mark`,
+		i.`id` industry_id,
+		i.`industry_name` industry_name
+		FROM
+		`t_e_park` p
+		INNER JOIN `t_e_industry` i
+		ON p.`id` = i.`park_id`
+		INNER JOIN `t_r_oem_park` t
+		ON t.park_id = p.id
+		INNER JOIN t_e_tax_policy policy
+		ON policy.`park_id` = p.`id`
+		<if test="productId != null">
+			INNER JOIN `t_r_product_park` pp
+			ON pp.`park_id` = p.`id`
+		</if>
+		<if test="businessScope != null and businessScope.trim() != ''">
+			INNER JOIN `t_e_business_scope` b
+			ON i.`id` = b.`industry_id`
+		</if>
+		<if test="baseCategoryId != null">
+			INNER JOIN `t_e_invoice_category` ic
+			ON ic.`industry_id` = i.`id`
+		</if>
+		WHERE p.`status` = 1 AND i.`status` = 1
+		AND i.`id` NOT IN (SELECT opib.`industry_id` FROM `t_r_oem_park_industry_blacklist` opib WHERE opib.`oem_code` = #{oemCode} AND opib.`park_id` = p.`id`)
+		<if test="productId != null">
+			AND pp.`product_id` = #{productId}
+		</if>
+		<if test="businessScope != null and businessScope.trim() != ''">
+			AND b.`business_content` LIKE CONCAT('%', #{businessScope}, '%')
+		</if>
+		<if test="oemCode != null and oemCode.trim() != ''">
+			AND t.`oem_code` = #{oemCode}
+		</if>
+		<if test="baseCategoryId != null">
+			AND ic.`category_base_id` = #{baseCategoryId}
+		</if>
+		<if test="companyType != null">
+			AND i.`company_type` = #{companyType} AND policy.`company_type` = #{companyType}
+		</if>
+		ORDER BY p.`add_time` DESC, i.`id`
+	</select>
+
+	<resultMap id="UsableParkBusinessScopeMap" type="com.yuqian.itax.park.entity.vo.UsableParkBusinessScopeVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="tax_code_business_scope" property="taxCodeBusinessScope"/>
+		<result column="park_policy_desc" property="parkPolicyDesc"/>
+		<result column="is_suited" property="isSuited"/>
+		<result column="VAT_breaks_amount" property="vATBreaksAmount"/>
+		<result column="income_tax_breaks_amount" property="incomeTaxBreaksAmount"/>
+		<collection property="parkIndustryList" ofType="com.yuqian.itax.park.entity.vo.UsableParkIndustryVO">
+			<result column="industry_id" property="industryId"/>
+			<result column="industry_name" property="industryName"/>
+			<result column="business_content" property="businessContent"/>
+			<result column="example_name" property="exampleName"/>
+		</collection>
+	</resultMap>
+    <select id="getUsableParkBusinessScope" resultMap="UsableParkBusinessScopeMap">
+		SELECT a.park_id, a.park_name, GROUP_CONCAT(a.tax_code_business_scope SEPARATOR ';') tax_code_business_scope,
+				CASE WHEN COUNT(a.park_id) = #{taxCodeNum} THEN 1 ELSE 0 END is_suited, a.VAT_breaks_amount, a.income_tax_breaks_amount,a.park_policy_desc
+		FROM(
+		SELECT p.`id` park_id, p.`park_name`, pb.`businessscope_name` tax_code_business_scope, bt.`tax_classification_code`,
+				tp.`VAT_breaks_amount`, tp.`income_tax_breaks_amount`,tp.park_policy_desc
+		FROM t_e_park p
+		INNER JOIN t_e_park_businessscope pb ON pb.`park_id` = p.`id`
+		INNER JOIN t_r_oem_park op ON op.`park_id` = p.`id`
+		INNER JOIN t_e_oem o ON o.`oem_code` = op.`oem_code`
+		INNER JOIN t_r_park_businessscope_taxcode pbt ON pbt.`park_businessscope_id` = pb.`id`
+		INNER JOIN t_e_businessscope_taxcode bt ON bt.`id` = pbt.`businessscope_base_id`
+		INNER JOIN t_e_tax_policy tp ON tp.`park_id` = p.id AND tp.`company_type` = 1
+		WHERE o.`oem_code` = #{oemCode} AND o.`oem_status` = 1 AND p.`status` = 1
+		AND bt.`tax_classification_code` IN
+		<foreach collection="taxCodeList" open="(" close=")" item="taxCode" separator=",">
+			#{taxCode}
+		</foreach>
+		<if test="parkList != null and parkList.size() > 0">
+		AND p.`id` IN <foreach collection="parkList" open="(" close=")" separator="," item="parkId"> #{parkId} </foreach>
+		</if>
+		<if test="taxpayerType != null">
+			AND tp.taxpayer_type = #{taxpayerType}
+		</if>
+		GROUP BY p.`id`,bt.`tax_classification_code`)a
+		GROUP BY a.park_id
+	</select>
+    <select id="queryParkProcessMark" resultType="com.yuqian.itax.park.entity.vo.ParkProcessMarkVO">
+		SELECT id, park_code, process_mark
+		FROM t_e_park
+		WHERE id = #{parkId}
+	</select>
+	<select id="getUsableParkIndustry" resultMap="UsableParkBusinessScopeMap">
+		SELECT p.`id` park_id, p.`park_name`, tp.`VAT_breaks_amount`, tp.`income_tax_breaks_amount`,tp.park_policy_desc
+		<if test="responseType == 1">, i.`id` industry_id, i.`industry_name`, b.`business_content`, i.`example_name` </if>
+		FROM t_e_park p
+		INNER JOIN t_r_oem_park op ON op.`park_id` = p.`id`
+		INNER JOIN t_e_oem o ON o.`oem_code` = op.`oem_code`
+		<if test="responseType == 1">
+			INNER JOIN t_e_industry i ON i.`park_id` = p.`id`
+			INNER JOIN t_e_business_scope b ON b.`industry_id` = i.`id`
+		</if>
+		INNER JOIN t_e_tax_policy tp ON tp.`park_id` = p.id AND tp.`company_type` = 1
+		WHERE o.`oem_code` = #{oemCode} AND o.`oem_status` = 1 AND p.`status` = 1
+		<if test="parkList != null and parkList.size() > 0">
+			AND p.`id` IN <foreach collection="parkList" open="(" close=")" separator="," item="parkId"> #{parkId} </foreach>
+		</if>
+		<if test="responseType == 1">
+			AND i.`status` = 1 AND i.`id` NOT IN(SELECT industry_id FROM t_r_oem_park_industry_blacklist WHERE oem_code = #{oemCode})
+		</if>
+		<if test="taxpayerType != null">
+			AND tp.taxpayer_type = #{taxpayerType}
+		</if>
+		ORDER BY p.`id`
+	</select>
+
+
+	<resultMap id="taxCalculatorParkMap" type="com.yuqian.itax.park.entity.vo.TaxCalculatorParkVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="product_id" property="productId"/>
+	</resultMap>
+	<select id="getAllParkList" resultMap="taxCalculatorParkMap">
+		SELECT p.id park_id, p.park_name, pro.id product_id
+		FROM t_e_park p
+		LEFT JOIN t_r_oem_park op ON op.park_id = p.id
+		LEFT JOIN t_r_product_park tp ON tp.park_id = p.id
+		LEFT JOIN t_e_product pro ON pro.id = tp.product_id AND pro.company_type = #{companyType} AND pro.prod_type = #{companyType}
+		INNER JOIN t_e_tax_policy pol ON pol.`park_id` = p.`id` AND pol.`company_type` = #{companyType}
+		WHERE p.status = 1 AND pro.status = 1 AND op.oem_code = #{oemCode}
+		GROUP BY p.id
+	</select>
+
+	<resultMap id="ParkListOfMenuMap" type="com.yuqian.itax.park.entity.vo.ParkListOfMenuVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="park_type" property="parkType"/>
+		<result column="user_ratings" property="userRatings"/>
+		<result column="order_number" property="orderNumber"/>
+		<result column="park_thumbnail" property="parkThumbnail"/>
+		<result column="company_types" property="companyTypes"/>
+		<result column="policy_labels" property="policyLabels"/>
+		<result column="income_levy_type_label" property="incomeLevyTypeLabel"/>
+	</resultMap>
+    <select id="getParkListOfMenu" resultMap="ParkListOfMenuMap" parameterType="com.yuqian.itax.park.entity.query.ParkListOfMenuQuery">
+	SELECT a.park_id, a.`park_name`, a.`park_city`, a.`park_type`, a.user_ratings,
+		a.`order_number`, a.`park_thumbnail`, a.company_types, a.policy_labels, a.income_levy_type_label
+	FROM
+		(
+		SELECT p.`id` park_id, p.`park_name`, p.`park_city`, p.`park_type`, IFNULL(p.`user_ratings`,5) user_ratings, poqsv.`order_number`, p.`park_thumbnail`,
+			(SELECT GROUP_CONCAT(DISTINCT CASE policy.`company_type` WHEN 1 THEN '个体户' WHEN 2 THEN '个人独资企业' WHEN 3 THEN '有限合伙企业' ELSE '有限责任公司' END)
+				FROM t_e_tax_policy policy
+				INNER JOIN t_r_product_park pp ON pp.`park_id` = policy.`park_id`
+				INNER JOIN t_e_product product ON product.`id` = pp.`product_id`
+				WHERE policy.park_id = p.`id` AND product.`prod_type` IN(1,2,3,4) AND product.company_type IN(policy.company_type)
+				AND product.status = 1 AND product.`oem_code` = #{oemCode}) company_types,
+			GROUP_CONCAT(DISTINCT l.`reward_label`) policy_labels, GROUP_CONCAT(DISTINCT IF(tp.`income_levy_type` = 2, '核定征收', '')) income_levy_type_label
+		FROM t_e_park p
+		INNER JOIN t_r_oem_park op ON op.`park_id` = p.`id`
+		INNER JOIN t_e_oem o ON o.`oem_code` = op.`oem_code`
+		LEFT JOIN park_order_quantity_statistics_view poqsv ON poqsv.`park_id` = p.`id`
+		LEFT JOIN t_e_park_reward_policy_label l ON l.`park_id` = p.`id`
+		INNER JOIN t_e_tax_policy tp ON tp.`park_id` = p.`id`
+		INNER JOIN t_r_product_park rpp ON rpp.`park_id` = p.`id`
+		INNER JOIN t_e_product prod ON prod.`id` = rpp.`product_id`
+		WHERE
+			op.`oem_code` = #{oemCode} AND prod.`oem_code` = #{oemCode} AND o.`oem_status` = 1 AND prod.`status` = 1 AND prod.`prod_type` = tp.`company_type`
+			AND p.`id` IN
+			(select p1.`id`
+			from t_e_park p1
+			<if test="policyLabelList != null">
+				inner join t_e_park_reward_policy_label l1 on l1.`park_id` = p1.`id`
+			</if>
+			<where>
+				<if test="policyLabelList != null">
+					l1.`reward_label` in
+					<foreach collection="policyLabelList" item="policyLabel" open="(" close=")" separator=",">
+						#{policyLabel}
+					</foreach>
+				</if>
+			</where>
+			union
+			select p2.`id`
+			from t_e_park p2
+			inner join t_e_tax_policy tp2 on tp2.`park_id` = p2.`id`
+			where tp2.`income_levy_type` = #{incomeLevyType}
+			<if test="companyTypeList != null">
+				and tp2.`company_type` in
+				<foreach collection="companyTypeList" item="companyType" open="(" close=")" separator=",">
+					#{companyType}
+				</foreach>
+			</if>)
+		<if test="searchKey != null and searchKey.trim() != ''">
+			and (p.`park_name` like CONCAT('%',#{searchKey},'%') or p.`tax_policy_desc` like CONCAT('%',#{searchKey},'%'))
+		</if>
+		<if test="provinceCode != null and provinceCode.trim() != ''">
+			and p.`province_code` = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode.trim() != ''">
+			and p.`city_code` = #{cityCode}
+		</if>
+		<if test="companyTypeList != null">
+			and tp.`company_type` in
+			<foreach collection="companyTypeList" item="companyType" open="(" close=")" separator=",">
+				#{companyType}
+			</foreach>
+		</if>
+		GROUP BY p.`id`
+		)a
+	WHERE a.company_types != ''
+		<choose>
+			<when test="sort == 1">
+				ORDER BY a.`user_ratings` DESC, a.`park_type`
+			</when>
+			<when test="sort == 2">
+				ORDER BY a.`order_number` DESC
+			</when>
+			<otherwise>
+				ORDER BY a.`park_type`,a.`user_ratings` is null,a.`user_ratings` DESC,a.`order_number` DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<resultMap id="ParkDetailOfMenuMap" type="com.yuqian.itax.park.entity.vo.ParkDetailOfMenuVO">
+		<result column="park_id" property="parkId"/>
+		<result column="park_name" property="parkName"/>
+		<result column="park_city" property="parkCity"/>
+		<result column="belongs_company_name" property="belongsCompanyName"/>
+		<result column="park_address" property="parkAddress"/>
+		<result column="user_ratings" property="userRatings"/>
+		<result column="user_ratings_number" property="userRatingsNumber"/>
+		<result column="park_imgs" property="parkImgs"/>
+		<result column="company_types" property="companyTypes"/>
+		<result column="tax_policy_desc" property="taxPolicyDesc"/>
+		<result column="register_desc" property="registerDesc"/>
+		<result column="tax_handle_desc" property="taxHandleDesc"/>
+		<result column="corporate_account_handle_desc" property="corporateAccountHandleDesc"/>
+		<collection property="policyLabels" ofType="com.yuqian.itax.park.entity.ParkRewardPolicyLabelEntity">
+			<result column="id" property="id"/>
+			<result column="reward_label" property="rewardLabel"/>
+			<result column="reward_desc" property="rewardDesc"/>
+		</collection>
+	</resultMap>
+	<select id="getParkDetailOfMenu" resultMap="ParkDetailOfMenuMap">
+		SELECT p.`id` park_id, p.`park_name`, p.`park_city`, p.`belongs_company_name`, p.`park_address`, IFNULL(p.`user_ratings`,5) user_ratings,
+			COUNT(DISTINCT pc.`id`) user_ratings_number, p.`park_imgs`,
+			(SELECT GROUP_CONCAT(DISTINCT CASE policy.`company_type` WHEN 1 THEN '个体户' WHEN 2 THEN '个人独资企业' WHEN 3 THEN '有限合伙企业' ELSE '有限责任公司' END)
+				FROM t_e_tax_policy policy
+				INNER JOIN t_r_product_park pp ON pp.`park_id` = policy.`park_id`
+				INNER JOIN t_e_product product ON product.`id` = pp.`product_id`
+				WHERE policy.park_id = p.`id` AND product.`prod_type` IN(1,2,3,4) AND product.company_type IN(policy.company_type)
+				AND product.status = 1 AND product.`oem_code` = #{oemCode}) company_types,
+			p.`tax_policy_desc`, l.`id`, l.`reward_label`, l.`reward_desc`, p.`register_desc`, p.`tax_handle_desc`, p.`corporate_account_handle_desc`
+		FROM t_e_park p
+		LEFT JOIN t_e_park_comments pc ON pc.`park_id` = p.`id` AND pc.`status` = 1
+		LEFT JOIN t_e_tax_policy tp ON tp.`park_id` = p.`id`
+		LEFT JOIN t_e_park_reward_policy_label l ON l.`park_id` = p.`id`
+		WHERE p.`id`= #{parkId}
+		GROUP BY p.`id`,l.`id`
+	</select>
+</mapper>
